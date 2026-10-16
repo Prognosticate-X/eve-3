@@ -66,9 +66,10 @@ class CEGISLoop:
         config: Optional[EveConfig] = None,
         knowledge_library: Optional[Any] = None,
     ):
+        from eve3.search.controller import SearchController
         self.config = config or EveConfig()
         self.knowledge_library = knowledge_library
-        self.generator = HypothesisGenerator(self.config)
+        self.search_controller = SearchController(self.config, self.knowledge_library)
         self.prober = BayesianProber(
             cost_penalty_lambda=self.config.probe_cost_penalty_lambda,
             smoothing_epsilon=self.config.laplace_smoothing_epsilon,
@@ -82,25 +83,16 @@ class CEGISLoop:
         held_out_tests: Optional[List[Tuple[Any, Any]]] = None,
         task_family: str = "generic",
         library_primitives: Optional[List[str]] = None,
+        search_strategy: str = "hybrid",
     ) -> CEGISResult:
         """Run active falsification loop and validate against held-out tests."""
         current_examples = list(initial_examples)
         probes_used: List[Tuple[Any, Any]] = []
 
-        # Pull crystallized operators from knowledge base if available
-        active_prims = list(library_primitives or [])
-        crystallized_ops = []
-        if self.knowledge_library is not None:
-            crystallized_ops = self.knowledge_library.get_crystallized_operators()
-            for op in crystallized_ops:
-                if op["operator_name"] not in active_prims:
-                    active_prims.append(op["operator_name"])
-
-        # 1. Generate initial hypotheses
-        hypotheses = self.generator.generate_hypotheses(
-            current_examples,
-            library_primitives=active_prims,
-            crystallized_operators=crystallized_ops,
+        # 1. Generate initial hypotheses via unified search controller
+        hypotheses = self.search_controller.propose_candidates(
+            examples=current_examples,
+            strategy=search_strategy,
             max_candidates=self.config.max_hypotheses_per_round,
         )
 
@@ -113,6 +105,7 @@ class CEGISLoop:
                 final_beliefs=[],
                 surviving_candidates=[],
             )
+
 
         beliefs = self.prober.initialize_beliefs(hypotheses)
 
@@ -187,10 +180,9 @@ class CEGISLoop:
 
             if not survivors:
                 # Version space collapse: re-generate hypotheses with updated examples
-                hypotheses = self.generator.generate_hypotheses(
-                    current_examples,
-                    library_primitives=active_prims,
-                    crystallized_operators=crystallized_ops,
+                hypotheses = self.search_controller.propose_candidates(
+                    examples=current_examples,
+                    strategy=search_strategy,
                     max_candidates=self.config.max_hypotheses_per_round,
                 )
                 if not hypotheses:

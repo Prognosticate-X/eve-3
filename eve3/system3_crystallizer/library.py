@@ -64,6 +64,25 @@ class KnowledgeLibrary:
                     created_at REAL NOT NULL
                 )
             """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS learned_abstractions (
+                    abstraction_id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    pattern_sexpr TEXT NOT NULL,
+                    type_signature TEXT NOT NULL,
+                    arity INTEGER NOT NULL,
+                    preconditions_json TEXT NOT NULL,
+                    postconditions_json TEXT NOT NULL,
+                    evidence_ids_json TEXT NOT NULL,
+                    source_program_ids_json TEXT NOT NULL,
+                    applicable_task_families_json TEXT NOT NULL,
+                    reuse_count INTEGER DEFAULT 0,
+                    search_cost_delta REAL,
+                    version INTEGER DEFAULT 1,
+                    status TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )
+            """)
             conn.commit()
 
     def record_verified_program(
@@ -140,3 +159,53 @@ class KnowledgeLibrary:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM crystallized_operators ORDER BY benefit_score DESC")
             return [dict(row) for row in cursor.fetchall()]
+
+    def record_learned_abstraction(self, abs_record: Any):
+        """Insert or update structured LearnedAbstraction."""
+        import json
+        with self._connection() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO learned_abstractions (
+                    abstraction_id, name, pattern_sexpr, type_signature, arity,
+                    preconditions_json, postconditions_json, evidence_ids_json,
+                    source_program_ids_json, applicable_task_families_json,
+                    reuse_count, search_cost_delta, version, status, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    abs_record.abstraction_id,
+                    abs_record.name,
+                    abs_record.pattern_sexpr,
+                    abs_record.type_signature,
+                    abs_record.arity,
+                    json.dumps(abs_record.preconditions),
+                    json.dumps(abs_record.postconditions),
+                    json.dumps(abs_record.verification_evidence_ids),
+                    json.dumps(abs_record.source_program_ids),
+                    json.dumps(abs_record.applicable_task_families),
+                    abs_record.reuse_count,
+                    abs_record.search_cost_delta,
+                    abs_record.version,
+                    abs_record.status,
+                    abs_record.created_at,
+                ),
+            )
+            # Also mirror to crystallized_operators for execution
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO crystallized_operators
+                (operator_name, body_sexpr, arity, benefit_score, task_diversity_score, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (abs_record.name, abs_record.pattern_sexpr, abs_record.arity, 10.0, len(abs_record.applicable_task_families) or 1, time.time()),
+            )
+            conn.commit()
+
+    def get_learned_abstractions(self) -> List[Dict[str, Any]]:
+        """Fetch all structured learned abstractions."""
+        with self._connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM learned_abstractions ORDER BY reuse_count DESC")
+            return [dict(row) for row in cursor.fetchall()]
+

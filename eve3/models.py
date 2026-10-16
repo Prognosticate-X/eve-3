@@ -130,3 +130,46 @@ class CandidateProgram:
 
     def __hash__(self) -> int:
         return hash(self.code_str)
+
+
+@dataclass
+class LearnedAbstraction:
+    """Represents a verified, reusable symbolic operator with full evidence linkage."""
+    abstraction_id: str = field(default_factory=lambda: f"abs_{uuid.uuid4().hex[:8]}")
+    name: str = ""
+    definition_ast: Optional[ASTNode] = None
+    pattern_sexpr: str = ""
+    type_signature: str = "(List[Int]) -> List[Int]"
+    arity: int = 1
+    preconditions: List[str] = field(default_factory=list)
+    postconditions: List[str] = field(default_factory=list)
+    verification_evidence_ids: List[str] = field(default_factory=list)
+    source_program_ids: List[str] = field(default_factory=list)
+    applicable_task_families: List[str] = field(default_factory=list)
+    reuse_count: int = 0
+    search_cost_delta: Optional[float] = None
+    version: int = 1
+    status: str = "verified"  # candidate, verified, deprecated
+    created_at: str = field(
+        default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat()
+    )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "abstraction_id": self.abstraction_id,
+            "name": self.name,
+            "pattern_sexpr": self.pattern_sexpr,
+            "type_signature": self.type_signature,
+            "arity": self.arity,
+            "preconditions": self.preconditions,
+            "postconditions": self.postconditions,
+            "verification_evidence_ids": self.verification_evidence_ids,
+            "source_program_ids": self.source_program_ids,
+            "applicable_task_families": self.applicable_task_families,
+            "reuse_count": self.reuse_count,
+            "search_cost_delta": self.search_cost_delta,
+            "version": self.version,
+            "status": self.status,
+            "created_at": self.created_at,
+        }
+
