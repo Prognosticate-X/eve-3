@@ -5,10 +5,42 @@ discovery histories as structured trees enabling zero-marginal-cost counterfactu
 policy replay with strict causal reachability and topological dependencies.
 """
 
+from dataclasses import dataclass, field
 import json
 import time
 import uuid
 from typing import Any, Callable, Dict, List, Optional, Set
+
+from eve3.discovery.policy import ExplorationPolicy
+
+
+@dataclass
+class ExplorationTransition:
+    """Rigorous state transition record tracking decision context and costs without future leakage."""
+    transition_id: str = field(default_factory=lambda: f"trans_{uuid.uuid4().hex[:8]}")
+    parent_state_id: Optional[str] = None
+    state_id: str = ""
+    policy_version: str = "v1.0.0"
+    available_actions: List[str] = field(default_factory=list)
+    chosen_action: str = ""
+    visible_observations: List[str] = field(default_factory=list)
+    outcome_ids: List[str] = field(default_factory=list)
+    costs: Dict[str, float] = field(default_factory=dict)
+    terminal_reason: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "transition_id": self.transition_id,
+            "parent_state_id": self.parent_state_id,
+            "state_id": self.state_id,
+            "policy_version": self.policy_version,
+            "available_actions": self.available_actions,
+            "chosen_action": self.chosen_action,
+            "visible_observations": self.visible_observations,
+            "outcome_ids": self.outcome_ids,
+            "costs": self.costs,
+            "terminal_reason": self.terminal_reason,
+        }
 
 
 class DiscoveryNode:
@@ -65,6 +97,7 @@ class DiscoveryTree:
     def __init__(self, task_id: str):
         self.task_id = task_id
         self.nodes: Dict[str, DiscoveryNode] = {}
+        self.transitions: List[ExplorationTransition] = []
         self.root_id: Optional[str] = None
 
     def add_node(
@@ -91,6 +124,17 @@ class DiscoveryTree:
         elif parent_id in self.nodes:
             self.nodes[parent_id].children.append(node_id)
 
+        # Record formal exploration transition
+        trans = ExplorationTransition(
+            parent_state_id=parent_id,
+            state_id=node_id,
+            available_actions=[action_type],
+            chosen_action=action_type,
+            costs={"cost": cost},
+            terminal_reason="verified" if outcome == "verified" else None,
+        )
+        self.transitions.append(trans)
+
         return node_id
 
     def get_path_from_root(self, target_node_id: str) -> List[str]:
@@ -109,7 +153,8 @@ class DiscoveryTree:
         return json.dumps({
             "task_id": self.task_id,
             "root_id": self.root_id,
-            "nodes": {nid: n.to_dict() for nid, n in self.nodes.items()}
+            "nodes": {nid: n.to_dict() for nid, n in self.nodes.items()},
+            "transitions": [t.to_dict() for t in self.transitions],
         }, indent=2)
 
     @classmethod
@@ -131,6 +176,12 @@ class ReplaySimulator:
 
     def __init__(self, tree: DiscoveryTree):
         self.tree = tree
+
+    def evaluate_policy(self, policy: ExplorationPolicy) -> Dict[str, Any]:
+        """Convenience method to evaluate a versioned ExplorationPolicy."""
+        return self.evaluate_policy_sample_efficiency(
+            policy_priority_fn=lambda n: policy.score_node(n.action_type, n.cost)
+        )
 
     def evaluate_policy_sample_efficiency(
         self,
@@ -156,7 +207,7 @@ class ReplaySimulator:
         target_node_id: Optional[str] = None
 
         while frontier:
-            # Policy chooses the highest priority node among CURRENTLY REACHABLE frontier nodes
+            # Policy chooses highest priority node among CURRENTLY REACHABLE frontier nodes
             candidates = [self.tree.nodes[nid] for nid in frontier]
             best_node = max(candidates, key=policy_priority_fn)
 
