@@ -1,0 +1,90 @@
+{
+  "tasks": [
+    {
+      "task_id": "list_increment_all",
+      "task_family": "list_mapping",
+      "description": "Increment each element in list by 1",
+      "visible_examples": [
+        {"input": [1, 2, 3], "output": [2, 3, 4]},
+        {"input": [0, -1, 5], "output": [1, 0, 6]}
+      ],
+      "hidden_tests": [
+        {"input": [], "output": []},
+        {"input": [10, 20, 30], "output": [11, 21, 31]},
+        {"input": [-5, -10], "output": [-4, -9]}
+      ],
+      "reference_program": "(map (lambda (a) (+ a 1)) x)"
+    },
+    {
+      "task_id": "list_double_all",
+      "task_family": "list_mapping",
+      "description": "Multiply each element in list by 2",
+      "visible_examples": [
+        {"input": [1, 2, 3], "output": [2, 4, 6]},
+        {"input": [4, 0], "output": [8, 0]}
+      ],
+      "hidden_tests": [
+        {"input": [], "output": []},
+        {"input": [-3, 5], "output": [-6, 10]}
+      ],
+      "reference_program": "(map (lambda (a) (* a 2)) x)"
+    },
+    {
+      "task_id": "filter_evens",
+      "task_family": "list_filtering",
+      "description": "Keep only even integers from list",
+      "visible_examples": [
+        {"input": [1, 2, 3, 4], "output": [2, 4]},
+        {"input": [7, 9, 11], "output": []}
+      ],
+      "hidden_tests": [
+        {"input": [0, 1, 2], "output": [0, 2]},
+        {"input": [2, 4, 6], "output": [2, 4, 6]}
+      ],
+      "reference_program": "(filter (lambda (a) (is_even a)) x)"
+    },
+    {
+      "task_id": "filter_greater_than_two",
+      "task_family": "list_filtering",
+      "description": "Filter elements strictly greater than 2",
+      "visible_examples": [
+        {"input": [1, 2, 3, 4], "output": [3, 4]},
+        {"input": [0, 5, -2], "output": [5]}
+      ],
+      "hidden_tests": [
+        {"input": [2, 2, 2], "output": []},
+        {"input": [10, 20], "output": [10, 20]}
+      ],
+      "reference_program": "(filter (lambda (a) (gt a 2)) x)"
+    },
+    {
+      "task_id": "list_sum",
+      "task_family": "list_reduction",
+      "description": "Compute sum of all elements in list",
+      "visible_examples": [
+        {"input": [1, 2, 3], "output": 6},
+        {"input": [10, -5], "output": 5}
+      ],
+      "hidden_tests": [
+        {"input": [], "output": 0},
+        {"input": [100, 200, 300], "output": 600}
+      ],
+      "reference_program": "(sum x)"
+    },
+    {
+      "task_id": "list_reverse",
+      "task_family": "list_structural",
+      "description": "Reverse list order",
+      "visible_examples": [
+        {"input": [1, 2, 3], "output": [3, 2, 1]},
+        {"input": [4, 5], "output": [5, 4]}
+      ],
+      "hidden_tests": [
+        {"input": [], "output": []},
+        {"input": [1], "output": [1]},
+        {"input": [1, 2, 1], "output": [1, 2, 1]}
+      ],
+      "reference_program": "(reverse x)"
+    }
+  ]
+}

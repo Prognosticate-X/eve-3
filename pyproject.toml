@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eve-3"
+version = "0.1.0"
+description = "EVE-3: Neurosymbolic AGI Architecture based on Hypothesis Generation, Bayesian Active Falsification, and Value-Weighted Knowledge Crystallization"
+readme = "README.md"
+authors = [{ name = "Prognosticate X", email = "Prognosticate@Outlook.fr" }]
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "hypothesis>=6.80.0",
+]
+smt = [
+    "z3-solver>=4.12.0",
+]
+mlx = [
+    "mlx>=0.16.0",
+    "mlx-lm>=0.18.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
