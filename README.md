@@ -1,17 +1,13 @@
 # EVE-3: Neurosymbolic AGI Architecture
-# EVE-3：神经符号 AGI 算法与自主演化架构
 
-> **A closed-loop cognitive architecture combining Hypothesis Proposal, Bayesian Active Falsification, and Value-Weighted Knowledge Crystallization.**  
-> **融合「直觉假设生成 → 贝叶斯主动证伪 → 价值加权知识晶化」的三系统闭环认知架构。**
+> **A closed-loop cognitive architecture combining Hypothesis Proposal, Bayesian Active Falsification, and Value-Weighted Knowledge Crystallization.**
 
 <p align="center">
-  <a href="#english">English</a> •
-  <a href="#中文">中文</a>
+  <b>English</b> • <a href="README_zh.md">简体中文</a>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Active%20Research-orange.svg" alt="Status: Active Research" />
-  <img src="https://img.shields.io/badge/阶段-研究进行中-orange.svg" alt="阶段: 研究进行中" />
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" />
   <img src="https://img.shields.io/badge/python-3.10+-brightgreen.svg" alt="Python 3.10+" />
   <img src="https://img.shields.io/badge/Apple%20Silicon-M--series%20Optimized-black.svg" alt="Apple Silicon Optimized" />
@@ -20,14 +16,10 @@
 ---
 
 > [!NOTE]
-> **Project Status: Active Research / 项目状态：研究进行中**  
-> **EN**: This repository represents an ongoing, active foundational research project. Algorithms, domain-specific languages (DSLs), and system interfaces are undergoing rapid iterative experimentation.  
-> **ZH**: 本项目处于核心算法攻关与经验验证的**活跃研究阶段**。系统架构、DSL 规范、贝叶斯探针选择器与知识算子库处于快速迭代演进中。
+> **Project Status: Active Research**  
+> This repository represents an ongoing, active foundational research project exploring neurosymbolic AGI algorithms. Algorithms, domain-specific languages (DSLs), active probers, and system interfaces are undergoing rapid iterative experimentation.
 
 ---
-
-<a name="english"></a>
-# English
 
 ## 🔬 1. Core Thesis & Research Motivation
 
@@ -117,7 +109,8 @@ In line with recent breakthroughs in recursive self-improvement (*Dream-RSI*, ar
 
 ```
 eve-3/
-├── README.md                          # Bilingual overview & system architecture
+├── README.md                          # English project overview & architecture
+├── README_zh.md                       # 中文文档与系统架构说明
 ├── pyproject.toml                     # Python packaging & dependencies
 ├── requirements.txt                   # Pip dependency requirements
 ├── LICENSE                            # MIT License
@@ -191,87 +184,28 @@ if result.converged:
 ```
 
 ---
----
 
-<a name="中文"></a>
-# 中文说明
+## 📈 6. Experimental Roadmap
 
-## 🔬 1. 核心假说与研究动机
-
-当前的大语言模型（LLM）主要依赖海量静态数据的模式匹配与无向随机采样。然而，通向通用人工智能（AGI）的核心瓶颈在于**自主构建新知识与高效验证新假说的能力**。真正的认知智能必须具备自闭环的科学探索机制：
-
-$$\text{直觉假设提议} \xrightarrow{\quad} \text{主动反例证伪} \xrightarrow{\quad} \text{抽象晶化固化}$$
-
-EVE-3 项目旨在验证一个严谨且可工程测量的科学问题：
-
-> **在消费级单机环境（如 MacBook M1 Max，32GB 统一内存）下，“假设生成 → 主动证伪 → 算子晶化”的三段认知循环，相比“直接生成”或“随机测试”，在样本效率与跨任务知识复用率上是否具备决定性优势？**
-
-为了避免过早陷入不可微分的连续多模态开放物理世界，本项目将首期实验域聚焦在**神经符号程序合成（Neurosymbolic Program Synthesis）**——这是目前学界已证明能够跑通完整闭环的符号领域。
+- **Phase 0: Foundations & Substrate** (Completed) — Functional DSL AST, safe interpreter, and benchmark schemas.
+- **Phase 1: System 1 Intuition Proposer** (Completed) — Prompt orchestration, MLX Qwen2.5-Coder harness, and sandbox validator.
+- **Phase 2: System 2 Active Falsifier** (Completed) — Exact closed-form Information Gain, Z3 SMT distinguishing inputs, and Laplace-smoothed CEGIS loop.
+- **Phase 3: System 3 Value-Weighted Crystallizer** (Completed) — SQLite persistent store, task-diversity weighting, and submodular greedy library learning.
+- **Phase 4: Closed-Loop Benchmarking** (In Progress) — Ablation experiments against No-Crystallization and No-Falsification baselines.
+- **Phase 5: Cross-Domain Transfer** (Planned) — Downstream migration to autonomous agent parameter tuning and rule discovery.
 
 ---
 
-## 🏛️ 2. 三系统认知架构设计
+## 📚 7. Key References & Literature
 
-EVE-3 将通用认知回路解构为三个紧密集成的子系统：
-
-### System 1：直觉与假设提议器（`eve3/system1_proposer`）
-- 采用本地轻量化开源模型（基于 Apple Silicon MLX 优化的 `Qwen2.5-Coder-3B-Instruct` 4-bit 量化版），免除大规模预训练开销，专职作为**直觉提议器（Intuition Generator）**。
-- 根据领域特定语言（DSL）语法规范与可见示例，快速提议候选程序假设空间 $\mathcal{H} = \{P_1, \dots, P_k\}$。
-- 安全沙盒机制在独立执行上下文中快速剔除语法错误与死循环候选。
-
-### System 2：贝叶斯主动证伪引擎（`eve3/system2_falsifier`）
-- 将证伪过程形式化为 **CEGIS（反例引导的归纳合成）** 与 **广义二分搜索（Generalized Binary Search）**。
-- 引入 **Z3 SMT 符号求解器**，针对每对候选程序求解使其输出相异的区分性输入（Distinguishing Inputs）：
-  $$\exists x : P_i(x) \neq P_j(x)$$
-- 基于候选集输出分布，直接计算**香农互信息（闭式解，无需蒙特卡洛采样）**，选取信息增益最大且执行代价最优的探针：
-  $$x^* = \arg\max_{x \in X_{\text{cand}}} \Big[ IG(x) - \lambda \cdot C(x) \Big]$$
-- 配套 Laplace 平滑与假设空间坍塌保护，杜绝因外部环境异常导致的后验概率除零崩溃。
-
-### System 3：知识晶化与算子库学习（`eve3/system3_crystallizer`）
-- 克服传统 Stitch / DreamCoder 纯按语料压缩率选取算子的局限，提出**面向复用价值的加权次模压缩目标**：
-  $$\mathcal{L}^* = \arg\max_{\mathcal{L} \subseteq \text{Candidates}} \Big[ \sum_{i=1}^N w_i \cdot \big(\text{DL}(P_i \mid \varnothing) - \text{DL}(P_i \mid \mathcal{L})\big) - \gamma |\mathcal{L}| \Big]$$
-- 权重 $w_i = |\text{TaskFamilies}(P_i)| \times (1 + \ln(1 + \text{ReuseCount}_i))$ 强力惩罚仅在单一任务偶然出现的高压缩模式，优先固化横跨多个不同任务家族的高泛化算子。
-- 固化成果以 SQLite 单文件存储，作为持久化知识资产反哺 System 1 提示词。
+1. **Active Learning for Neurosymbolic Program Synthesis** (arXiv:2508.15750) — *Version space splitting and distinguishing query synthesis.*
+2. **Dream-RSI: Recursive Self-Improvement through Evolving Worlds** (arXiv:2609.14858, Google × DeepMind × UMD) — *Exploration policy refinement via discovery tree replay simulators.*
+3. **The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement** (arXiv:2609.11873) — *RSI formalization and five-stage autonomy roadmap.*
+4. **Generalized Binary Search** (Nowak, 2011) — *Information-theoretic sample complexity bounds for version space disambiguation.*
+5. **DreamCoder: Bootstrapping inductive program synthesis with wake-sleep library learning** (Ellis et al.) — *Foundational neurosymbolic program synthesis and library learning.*
+6. **Stitch: Top-Down Synthesis for Library Learning** (Bowers et al., arXiv:2211.16605) — *Scalable AST compression and abstraction extraction.*
 
 ---
 
-## 🔄 3. 递归自我改进（RSI）与发现树重放机制
-
-参考 Google / DeepMind 最新关于 RSI 的理论进展（*Dream-RSI*, arXiv:2609.14858；*The Last AI Built by Humans*, arXiv:2609.11873）：
-
-- **“轨迹是资产，不是日志”**：EVE-3 将所有探索过程以拓扑树（`DiscoveryTree`）的形式进行持久化结构存储，而非无结构的线性聊天记录。
-- **近零成本的离线策略评估**：在科学发现与算法探索中，环境评估器（编译、执行、外部测试）极为昂贵。累积的发现树本身即为已探索空间的**重放模拟器（Replay Simulator）**，允许系统通过离线“做梦”，以几乎为零的边际成本评估不同的探针搜索策略，规避自然语言总结带来的偏见与探索多样性坍塌。
-
----
-
-## 📈 4. 阶段性研发路线图（Roadmap）
-
-- **Phase 0：基础地基**（已完成）  
-  轻量级函数式 DSL AST、S-表达式解析器、沙盒执行器与基准测试集规范。
-- **Phase 1：System 1 假设生成器**（已完成）  
-  Few-shot 提示词编排、本地模型/启发式生成管线与语法沙盒过滤。
-- **Phase 2：System 2 贝叶斯主动证伪**（已完成核心闭环）  
-  精确互信息闭式解、SMT 区分性输入提取、Laplace 后验更新与 CEGIS 主循环。
-- **Phase 3：System 3 价值加权晶化**（已完成核心机制）  
-  SQLite 知识库底座、任务家族多样性加权、次模贪心算子库压缩。
-- **Phase 4：对照消融与量化评测**（进行中）  
-  在完整基准任务集上对比：① EVE-3 完整版、② 无晶化版、③ 无证伪过拟合版，产出样本效率与泛化率消融曲线。
-- **Phase 5：跨域迁移与业务落地**（规划中）  
-  将这套流程迁移至 Agent 规则推断与超参自动调优等实际复杂任务。
-
----
-
-## 📚 参考文献与理论根基
-
-1. **Active Learning for Neurosymbolic Program Synthesis** (arXiv:2508.15750) — *版本空间剪枝与区分性主动探测*
-2. **Dream-RSI: Recursive Self-Improvement through Evolving Worlds** (arXiv:2609.14858, Google × DeepMind × UMD) — *基于历史发现树重放模拟的探索策略递归演化*
-3. **The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement** (arXiv:2609.11873) — *RSI 严格定义与五阶段自主演化分级*
-4. **Generalized Binary Search** (Nowak, 2011) — *广义二分搜索与版本空间信息论样本复杂度上界*
-5. **DreamCoder: Bootstrapping inductive program synthesis with wake-sleep library learning** (Ellis et al.) — *神经符号唤醒-睡眠库学习范式*
-6. **Stitch: Top-Down Synthesis for Library Learning** (Bowers et al., arXiv:2211.16605) — *自顶向下 AST 高效程序压缩与抽象学习*
-
----
-
-## 📄 开源许可证
-
-本项目采用 [MIT 许可证](LICENSE) 开源。
+## 📄 License
+This project is licensed under the [MIT License](LICENSE).
