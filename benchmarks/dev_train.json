@@ -1,0 +1,35 @@
+{
+  "split": "dev_train",
+  "description": "Seed tasks used for few-shot prompt synthesis and initial development",
+  "tasks": [
+    {
+      "task_id": "list_increment_all",
+      "task_family": "list_mapping",
+      "description": "Increment each element in list by 1",
+      "visible_examples": [
+        {"input": [1, 2, 3], "output": [2, 3, 4]},
+        {"input": [0, -1, 5], "output": [1, 0, 6]}
+      ],
+      "hidden_tests": [
+        {"input": [], "output": []},
+        {"input": [10, 20, 30], "output": [11, 21, 31]},
+        {"input": [-5, -10], "output": [-4, -9]}
+      ],
+      "reference_program": "(map (lambda (a) (+ a 1)) x)"
+    },
+    {
+      "task_id": "filter_evens",
+      "task_family": "list_filtering",
+      "description": "Keep only even integers from list",
+      "visible_examples": [
+        {"input": [1, 2, 3, 4], "output": [2, 4]},
+        {"input": [7, 9, 11], "output": []}
+      ],
+      "hidden_tests": [
+        {"input": [0, 1, 2], "output": [0, 2]},
+        {"input": [2, 4, 6], "output": [2, 4, 6]}
+      ],
+      "reference_program": "(filter (lambda (a) (is_even a)) x)"
+    }
+  ]
+}

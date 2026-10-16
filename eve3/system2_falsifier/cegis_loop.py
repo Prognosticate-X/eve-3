@@ -231,18 +231,32 @@ class CEGISLoop:
         task_family: str,
     ) -> CEGISResult:
         """Evaluate candidate on held-out tests and assign honest verification status."""
+        import time
+        from eve3.models import VerificationEvidence
+
         if held_out_tests:
             passed = 0
+            t0 = time.perf_counter()
             for test_x, expected_y in held_out_tests:
                 try:
                     if candidate.evaluate(test_x) == expected_y:
                         passed += 1
                 except Exception:
                     pass
+            runtime_ms = (time.perf_counter() - t0) * 1000.0
 
             accuracy = passed / len(held_out_tests)
-            if accuracy >= 1.0:
-                # Verified against unseen test suite
+            is_verified = (accuracy >= 1.0)
+
+            evidence = VerificationEvidence(
+                method="held_out_test",
+                scope="held_out_suite",
+                passed=is_verified,
+                runtime_ms=runtime_ms,
+            )
+            candidate.attach_evidence(evidence)
+
+            if is_verified:
                 if self.knowledge_library is not None:
                     self.knowledge_library.record_verified_program(
                         candidate, task_family=task_family
@@ -257,7 +271,6 @@ class CEGISLoop:
                     held_out_accuracy=1.0,
                 )
             else:
-                # Failed held-out tests: cannot claim converged!
                 return CEGISResult(
                     status=VerificationStatus.EXHAUSTED_UNVERIFIED,
                     verified_program=candidate,
@@ -269,6 +282,12 @@ class CEGISLoop:
                 )
 
         # No held-out tests provided
+        evidence = VerificationEvidence(
+            method="unit_test",
+            scope="observed_examples",
+            passed=True,
+        )
+        candidate.attach_evidence(evidence)
         return CEGISResult(
             status=VerificationStatus.CONSISTENT_WITH_OBSERVATIONS,
             verified_program=candidate,
@@ -278,3 +297,4 @@ class CEGISLoop:
             surviving_candidates=survivors,
             held_out_accuracy=None,
         )
+

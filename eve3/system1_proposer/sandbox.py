@@ -3,38 +3,8 @@
 import time
 from typing import Any, List, Optional, Tuple
 
-from eve3.dsl.ast import ASTNode
-from eve3.dsl.interpreter import DSLInterpreter, DSLParserError, ExecutionTimeoutError, SExprParser
-
-
-class CandidateProgram:
-    """Represents a hypothesized program candidate with metadata."""
-
-    def __init__(self, code_str: str, ast: Optional[ASTNode] = None):
-        self.code_str = code_str.strip()
-        self.ast = ast if ast is not None else SExprParser.parse(self.code_str)
-
-    @property
-    def description_length(self) -> int:
-        return self.ast.description_length
-
-    def evaluate(self, input_val: Any, timeout: float = 1.0) -> Any:
-        interp = DSLInterpreter()
-        return interp.run(self.ast, input_val, timeout_seconds=timeout)
-
-    def __str__(self) -> str:
-        return self.code_str
-
-    def __repr__(self) -> str:
-        return f"CandidateProgram({self.code_str!r})"
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, CandidateProgram):
-            return False
-        return self.code_str == other.code_str
-
-    def __hash__(self) -> int:
-        return hash(self.code_str)
+from eve3.dsl.interpreter import DSLInterpreter, DSLParserError, ExecutionTimeoutError
+from eve3.models import CandidateProgram, CandidateStatus, VerificationEvidence
 
 
 class ProgramSandbox:
@@ -48,17 +18,19 @@ class ProgramSandbox:
         self,
         raw_candidates: List[str],
         examples: List[Tuple[Any, Any]],
+        created_by: str = "heuristic",
     ) -> List[CandidateProgram]:
         """Parse raw code strings and keep only those that satisfy all given examples."""
         valid_candidates: List[CandidateProgram] = []
 
         for code in raw_candidates:
             try:
-                candidate = CandidateProgram(code)
+                candidate = CandidateProgram(code, created_by=created_by)
             except (DSLParserError, Exception):
                 continue
 
             matches_all = True
+            t0 = time.perf_counter()
             for inp, expected_out in examples:
                 try:
                     actual_out = self.interpreter.run(candidate.ast, inp, timeout_seconds=self.timeout)
@@ -68,6 +40,15 @@ class ProgramSandbox:
                 except (ExecutionTimeoutError, Exception):
                     matches_all = False
                     break
+            runtime_ms = (time.perf_counter() - t0) * 1000.0
+
+            evidence = VerificationEvidence(
+                method="unit_test",
+                scope="observed_examples",
+                passed=matches_all,
+                runtime_ms=runtime_ms,
+            )
+            candidate.attach_evidence(evidence)
 
             if matches_all and candidate not in valid_candidates:
                 valid_candidates.append(candidate)

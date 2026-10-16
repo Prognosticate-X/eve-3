@@ -1,12 +1,13 @@
 """System 3: SQLite Persistent Knowledge Base and Operator Library."""
 
+from contextlib import contextmanager
 import json
+from pathlib import Path
 import sqlite3
 import time
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from eve3.system1_proposer.sandbox import CandidateProgram
+from eve3.models import CandidateProgram
 
 
 class KnowledgeLibrary:
@@ -16,13 +17,17 @@ class KnowledgeLibrary:
         self.db_path = Path(db_path)
         self._init_db()
 
-    def _get_connection(self) -> sqlite3.Connection:
+    @contextmanager
+    def _connection(self):
         conn = sqlite3.connect(str(self.db_path))
         conn.row_factory = sqlite3.Row
-        return conn
+        try:
+            yield conn
+        finally:
+            conn.close()
 
     def _init_db(self):
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS verified_programs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,7 +73,7 @@ class KnowledgeLibrary:
     ) -> int:
         """Insert or update verified program record."""
         now = time.time()
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
                 "SELECT id, verification_count, reuse_count FROM verified_programs WHERE code = ?",
@@ -103,7 +108,7 @@ class KnowledgeLibrary:
 
     def get_all_verified_programs(self) -> List[Dict[str, Any]]:
         """Fetch all verified programs with metadata."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM verified_programs ORDER BY reuse_count DESC, verification_count DESC")
             return [dict(row) for row in cursor.fetchall()]
@@ -118,7 +123,7 @@ class KnowledgeLibrary:
     ):
         """Insert or update crystallized operator."""
         now = time.time()
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             conn.execute(
                 """
                 INSERT OR REPLACE INTO crystallized_operators
@@ -131,7 +136,7 @@ class KnowledgeLibrary:
 
     def get_crystallized_operators(self) -> List[Dict[str, Any]]:
         """Fetch crystallized library operators."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM crystallized_operators ORDER BY benefit_score DESC")
             return [dict(row) for row in cursor.fetchall()]
