@@ -1,15 +1,30 @@
 """Safe S-Expression Parser and Evaluation Runtime for EVE-3 DSL."""
 
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 import re
 import time
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from eve3.dsl.ast import ASTNode, ApplyNode, ConstNode, IfElseNode, LambdaNode, VarNode
+from eve3.dsl.ast import (
+    ASTNode,
+    ApplyNode,
+    ConstNode,
+    ExecutionContext,
+    ExecutionStepLimitExceeded,
+    IfElseNode,
+    LambdaNode,
+    VarNode,
+)
 from eve3.dsl.primitives import get_default_primitives
 
 
 class ExecutionTimeoutError(RuntimeError):
     """Raised when DSL execution exceeds time budget."""
+    pass
+
+
+class DSLDepthExceededError(ValueError):
+    """Raised when AST depth exceeds allowed threshold."""
     pass
 
 
@@ -28,15 +43,18 @@ class SExprParser:
         tokens = re.findall(token_pattern, code)
         return tokens
 
-
     @classmethod
-    def parse(cls, code: str) -> ASTNode:
+    def parse(cls, code: str, max_depth: Optional[int] = None) -> ASTNode:
         tokens = cls.tokenize(code.strip())
         if not tokens:
             raise DSLParserError("Empty program code")
         ast, remaining = cls._parse_tokens(tokens)
         if remaining:
             raise DSLParserError(f"Unexpected trailing tokens: {remaining}")
+        if max_depth is not None and ast.depth > max_depth:
+            raise DSLDepthExceededError(
+                f"AST depth ({ast.depth}) exceeds maximum allowed depth ({max_depth})"
+            )
         return ast
 
     @classmethod
@@ -78,8 +96,6 @@ class SExprParser:
                     else:
                         arg_names = [str(var_form).strip("()")]
                     return LambdaNode(arg_names=arg_names, body=body), closing
-
-
 
                 if head.name == "if":
                     # (if cond then else)
@@ -153,29 +169,48 @@ class SExprParser:
 
 
 class DSLInterpreter:
-    """Execution engine for AST nodes with sandboxing and metrics."""
+    """Execution engine for AST nodes with step budgeting and timeout protection."""
 
     def __init__(self, extra_primitives: Optional[Dict[str, Any]] = None):
         self.base_env: Dict[str, Any] = get_default_primitives()
         if extra_primitives:
             self.base_env.update(extra_primitives)
 
-    def run(self, program: Union[str, ASTNode], input_val: Any, timeout_seconds: float = 1.0) -> Any:
-        """Execute program on an input value within a timeout."""
+    def run(
+        self,
+        program: Union[str, ASTNode],
+        input_val: Any,
+        timeout_seconds: float = 1.0,
+        step_budget: int = 20000,
+        max_depth: Optional[int] = None,
+    ) -> Any:
+        """Execute program on an input value with hard step budget and timeout."""
         if isinstance(program, str):
-            ast = SExprParser.parse(program)
+            ast = SExprParser.parse(program, max_depth=max_depth)
         else:
             ast = program
+            if max_depth is not None and ast.depth > max_depth:
+                raise DSLDepthExceededError(
+                    f"AST depth ({ast.depth}) exceeds maximum allowed depth ({max_depth})"
+                )
 
         env = dict(self.base_env)
         env["x"] = input_val
         env["input"] = input_val
 
-        start_time = time.monotonic()
-        try:
-            res = ast.evaluate(env)
-            if time.monotonic() - start_time > timeout_seconds:
-                raise ExecutionTimeoutError(f"Execution exceeded {timeout_seconds}s")
-            return res
-        except RecursionError:
-            raise RuntimeError("DSL execution hit max recursion depth")
+        context = ExecutionContext(step_budget=step_budget)
+
+        def _execute_sync():
+            return ast.evaluate(env, context)
+
+        # Execute with thread pool to enforce hard wall-clock timeout
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(_execute_sync)
+            try:
+                return future.result(timeout=timeout_seconds)
+            except FuturesTimeoutError:
+                raise ExecutionTimeoutError(
+                    f"Execution exceeded hard timeout budget of {timeout_seconds}s"
+                )
+            except RecursionError:
+                raise RuntimeError("DSL execution hit max Python recursion depth")

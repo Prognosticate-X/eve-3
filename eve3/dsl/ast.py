@@ -4,11 +4,31 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Optional
 
 
+class ExecutionStepLimitExceeded(RuntimeError):
+    """Raised when DSL execution exceeds instruction step budget."""
+    pass
+
+
+class ExecutionContext:
+    """Tracks execution budget and resource consumption."""
+
+    def __init__(self, step_budget: int = 20000):
+        self.step_budget = step_budget
+        self.steps_executed = 0
+
+    def tick(self):
+        self.steps_executed += 1
+        if self.steps_executed > self.step_budget:
+            raise ExecutionStepLimitExceeded(
+                f"DSL execution step budget exceeded ({self.step_budget} steps)"
+            )
+
+
 class ASTNode(ABC):
     """Base class for all DSL AST nodes."""
 
     @abstractmethod
-    def evaluate(self, env: Dict[str, Any]) -> Any:
+    def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
         """Evaluate node within the provided lexical environment."""
         pass
 
@@ -21,6 +41,12 @@ class ASTNode(ABC):
     @abstractmethod
     def description_length(self) -> int:
         """MDL (Minimum Description Length) size metric (node count)."""
+        pass
+
+    @property
+    @abstractmethod
+    def depth(self) -> int:
+        """Maximum depth of AST tree."""
         pass
 
     def __str__(self) -> str:
@@ -44,7 +70,9 @@ class ConstNode(ASTNode):
     def __init__(self, value: Any):
         self.value = value
 
-    def evaluate(self, env: Dict[str, Any]) -> Any:
+    def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
+        if context:
+            context.tick()
         return self.value
 
     def to_sexpr(self) -> str:
@@ -58,6 +86,10 @@ class ConstNode(ASTNode):
     def description_length(self) -> int:
         return 1
 
+    @property
+    def depth(self) -> int:
+        return 1
+
 
 class VarNode(ASTNode):
     """Variable reference."""
@@ -65,7 +97,9 @@ class VarNode(ASTNode):
     def __init__(self, name: str):
         self.name = name
 
-    def evaluate(self, env: Dict[str, Any]) -> Any:
+    def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
+        if context:
+            context.tick()
         if self.name not in env:
             raise NameError(f"Undefined variable in DSL environment: '{self.name}'")
         return env[self.name]
@@ -77,6 +111,10 @@ class VarNode(ASTNode):
     def description_length(self) -> int:
         return 1
 
+    @property
+    def depth(self) -> int:
+        return 1
+
 
 class LambdaNode(ASTNode):
     """Anonymous function expression: (lambda (arg1 arg2 ...) body)."""
@@ -85,12 +123,16 @@ class LambdaNode(ASTNode):
         self.arg_names = arg_names
         self.body = body
 
-    def evaluate(self, env: Dict[str, Any]) -> Callable[..., Any]:
+    def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Callable[..., Any]:
+        if context:
+            context.tick()
+
         def closure(*args: Any) -> Any:
             new_env = dict(env)
             for name, val in zip(self.arg_names, args):
                 new_env[name] = val
-            return self.body.evaluate(new_env)
+            return self.body.evaluate(new_env, context)
+
         return closure
 
     def to_sexpr(self) -> str:
@@ -101,6 +143,9 @@ class LambdaNode(ASTNode):
     def description_length(self) -> int:
         return 1 + len(self.arg_names) + self.body.description_length
 
+    @property
+    def depth(self) -> int:
+        return 1 + self.body.depth
 
 
 class ApplyNode(ASTNode):
@@ -110,11 +155,13 @@ class ApplyNode(ASTNode):
         self.op_name = op_name
         self.args = args
 
-    def evaluate(self, env: Dict[str, Any]) -> Any:
+    def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
+        if context:
+            context.tick()
         if self.op_name not in env:
             raise NameError(f"Unknown primitive or function '{self.op_name}' in environment")
         fn = env[self.op_name]
-        evaluated_args = [arg.evaluate(env) for arg in self.args]
+        evaluated_args = [arg.evaluate(env, context) for arg in self.args]
         return fn(*evaluated_args)
 
     def to_sexpr(self) -> str:
@@ -127,6 +174,10 @@ class ApplyNode(ASTNode):
     def description_length(self) -> int:
         return 1 + sum(arg.description_length for arg in self.args)
 
+    @property
+    def depth(self) -> int:
+        return 1 + max((arg.depth for arg in self.args), default=0)
+
 
 class IfElseNode(ASTNode):
     """Conditional branching: (if condition then_expr else_expr)."""
@@ -136,12 +187,14 @@ class IfElseNode(ASTNode):
         self.then_expr = then_expr
         self.else_expr = else_expr
 
-    def evaluate(self, env: Dict[str, Any]) -> Any:
-        cond_val = self.condition.evaluate(env)
+    def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
+        if context:
+            context.tick()
+        cond_val = self.condition.evaluate(env, context)
         if cond_val:
-            return self.then_expr.evaluate(env)
+            return self.then_expr.evaluate(env, context)
         else:
-            return self.else_expr.evaluate(env)
+            return self.else_expr.evaluate(env, context)
 
     def to_sexpr(self) -> str:
         return f"(if {self.condition.to_sexpr()} {self.then_expr.to_sexpr()} {self.else_expr.to_sexpr()})"
@@ -149,3 +202,7 @@ class IfElseNode(ASTNode):
     @property
     def description_length(self) -> int:
         return 1 + self.condition.description_length + self.then_expr.description_length + self.else_expr.description_length
+
+    @property
+    def depth(self) -> int:
+        return 1 + max(self.condition.depth, self.then_expr.depth, self.else_expr.depth)

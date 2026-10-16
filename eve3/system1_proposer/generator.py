@@ -4,8 +4,7 @@ Combines local LLM generation (via Apple Silicon MLX) with an enumerative
 grammar fallback for zero-dependency local testing.
 """
 
-from typing import Any, List, Optional, Tuple
-import json
+from typing import Any, Dict, List, Optional, Tuple
 
 from eve3.config import EveConfig
 from eve3.system1_proposer.sandbox import CandidateProgram, ProgramSandbox
@@ -24,14 +23,19 @@ class HypothesisGenerator:
         self,
         examples: List[Tuple[Any, Any]],
         library_primitives: Optional[List[str]] = None,
+        crystallized_operators: Optional[List[Dict[str, Any]]] = None,
     ) -> str:
         """Construct prompt for local LLM (e.g. Qwen2.5-Coder-3B)."""
-        prims = library_primitives or [
+        prims = list(library_primitives or [
             "map", "filter", "fold", "head", "tail", "cons", "reverse", "sum",
             "+", "-", "*", "inc", "dec", "is_even", "is_odd", "gt", "lt", "eq"
-        ]
+        ])
+        if crystallized_operators:
+            for op in crystallized_operators:
+                prims.append(f"{op['operator_name']}(arity={op['arity']})")
+
         ex_str = "\n".join([f"Input: {inp} -> Output: {out}" for inp, out in examples])
-        
+
         prompt = (
             "You are an expert neurosymbolic program synthesizer for EVE-3.\n"
             f"Available DSL primitives: {', '.join(prims)}\n"
@@ -47,27 +51,34 @@ class HypothesisGenerator:
         self,
         examples: List[Tuple[Any, Any]],
         library_primitives: Optional[List[str]] = None,
+        crystallized_operators: Optional[List[Dict[str, Any]]] = None,
         max_candidates: int = 10,
     ) -> List[CandidateProgram]:
         """Generate verified candidates that pass all current examples."""
-        raw_candidates = self._generate_raw_proposals(examples, library_primitives, max_candidates)
+        raw_candidates = self._generate_raw_proposals(
+            examples, library_primitives, crystallized_operators, max_candidates
+        )
         return self.sandbox.filter_valid_candidates(raw_candidates, examples)
 
     def _generate_raw_proposals(
         self,
         examples: List[Tuple[Any, Any]],
         library_primitives: Optional[List[str]] = None,
+        crystallized_operators: Optional[List[Dict[str, Any]]] = None,
         max_candidates: int = 10,
     ) -> List[str]:
         """Generate raw S-expression proposal strings."""
-        # Check if MLX is available and loaded
         if self._can_use_mlx():
             try:
-                return self._generate_with_mlx(examples, library_primitives, max_candidates)
+                return self._generate_with_mlx(
+                    examples, library_primitives, crystallized_operators, max_candidates
+                )
             except Exception:
                 pass  # Fall back to heuristic synthesizer
 
-        return self._heuristic_synthesizer(examples, max_candidates)
+        return self._heuristic_synthesizer(
+            examples, library_primitives, crystallized_operators, max_candidates
+        )
 
     def _can_use_mlx(self) -> bool:
         try:
@@ -81,6 +92,7 @@ class HypothesisGenerator:
         self,
         examples: List[Tuple[Any, Any]],
         library_primitives: Optional[List[str]],
+        crystallized_operators: Optional[List[Dict[str, Any]]],
         max_candidates: int,
     ) -> List[str]:
         """Generate candidate programs using MLX."""
@@ -88,7 +100,7 @@ class HypothesisGenerator:
         if self._mlx_model is None:
             self._mlx_model, self._mlx_tokenizer = mlx_lm.load(self.config.model_name)
 
-        prompt = self.build_prompt(examples, library_primitives)
+        prompt = self.build_prompt(examples, library_primitives, crystallized_operators)
         response = mlx_lm.generate(
             self._mlx_model,
             self._mlx_tokenizer,
@@ -102,9 +114,11 @@ class HypothesisGenerator:
     def _heuristic_synthesizer(
         self,
         examples: List[Tuple[Any, Any]],
+        library_primitives: Optional[List[str]] = None,
+        crystallized_operators: Optional[List[Dict[str, Any]]] = None,
         max_candidates: int = 10,
     ) -> List[str]:
-        """Built-in heuristic generator for common transformations."""
+        """Built-in heuristic generator for common transformations and learned operators."""
         if not examples:
             return []
 
@@ -143,9 +157,25 @@ class HypothesisGenerator:
             "(sum (filter (lambda (a) (is_even a)) x))",
         ]
 
+        # Dynamically inject learned crystallized operators into candidate templates
+        if crystallized_operators:
+            for op in crystallized_operators:
+                op_name = op.get("operator_name")
+                arity = op.get("arity", 1)
+                if arity == 1:
+                    templates.insert(0, f"({op_name} x)")
+                elif arity == 2:
+                    for k in (1, 2, 0, -1):
+                        templates.insert(0, f"({op_name} {k} x)")
+
+        # Inject custom library primitives if supplied
+        if library_primitives:
+            for prim in library_primitives:
+                templates.append(f"({prim} x)")
+
         candidates = []
         for t in templates:
             candidates.append(t)
-            if len(candidates) >= max_candidates * 2:
+            if len(candidates) >= max_candidates * 3:
                 break
         return candidates

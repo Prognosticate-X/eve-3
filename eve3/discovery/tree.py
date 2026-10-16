@@ -2,13 +2,13 @@
 
 Implements the Recursive Self-Improvement (RSI) insight from Dream-RSI:
 discovery histories as structured trees enabling zero-marginal-cost counterfactual
-policy replay and exploration strategy refinement.
+policy replay with strict causal reachability and topological dependencies.
 """
 
 import json
 import time
 import uuid
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Set
 
 
 class DiscoveryNode:
@@ -21,7 +21,7 @@ class DiscoveryNode:
         action_type: str,  # 'propose', 'probe', 'falsify', 'verify'
         payload: Dict[str, Any],  # code, probe_input, observation, etc.
         cost: float = 1.0,
-        outcome: str = "pending",  # 'success', 'falsified', 'timeout'
+        outcome: str = "pending",  # 'success', 'falsified', 'verified', 'timeout'
     ):
         self.node_id = node_id
         self.parent_id = parent_id
@@ -93,6 +93,15 @@ class DiscoveryTree:
 
         return node_id
 
+    def get_path_from_root(self, target_node_id: str) -> List[str]:
+        """Return the directed causal path of node IDs from root to target."""
+        path = []
+        curr = target_node_id
+        while curr is not None and curr in self.nodes:
+            path.append(curr)
+            curr = self.nodes[curr].parent_id
+        return list(reversed(path))
+
     def total_cost(self) -> float:
         return sum(node.cost for node in self.nodes.values())
 
@@ -116,9 +125,8 @@ class DiscoveryTree:
 class ReplaySimulator:
     """Evaluates counterfactual exploration policies using recorded discovery trees.
 
-    Allows assessing: 'What if we prioritized shorter programs first?',
-    'What if we probed with boundary inputs earlier?',
-    without re-running expensive LLM generators or slow environments.
+    Enforces strict causal reachability: a node can ONLY be evaluated if its
+    ancestor lineage from the root has already been explored.
     """
 
     def __init__(self, tree: DiscoveryTree):
@@ -128,25 +136,55 @@ class ReplaySimulator:
         self,
         policy_priority_fn: Callable[[DiscoveryNode], float],
     ) -> Dict[str, Any]:
-        """Simulate an alternative exploration order and calculate cumulative cost to first verified hit."""
-        # Rank all proposal/probe nodes by policy priority
-        nodes = list(self.tree.nodes.values())
-        sorted_nodes = sorted(nodes, key=policy_priority_fn, reverse=True)
+        """Simulate an alternative exploration policy by rolling out the tree along its causal frontier."""
+        if not self.tree.nodes or self.tree.root_id is None:
+            return {
+                "found_verified": False,
+                "simulated_cost": 0.0,
+                "simulated_steps": 0,
+                "causal_path_cost": 0.0,
+                "tree_total_cost": 0.0,
+            }
+
+        # Initialize frontier strictly at the root
+        frontier: Set[str] = {self.tree.root_id}
+        explored: Set[str] = set()
 
         simulated_cost = 0.0
-        found_verified = False
         steps = 0
+        found_verified = False
+        target_node_id: Optional[str] = None
 
-        for node in sorted_nodes:
-            simulated_cost += node.cost
+        while frontier:
+            # Policy chooses the highest priority node among CURRENTLY REACHABLE frontier nodes
+            candidates = [self.tree.nodes[nid] for nid in frontier]
+            best_node = max(candidates, key=policy_priority_fn)
+
+            frontier.remove(best_node.node_id)
+            explored.add(best_node.node_id)
+
+            simulated_cost += best_node.cost
             steps += 1
-            if node.outcome == "verified" or node.action_type == "verify":
+
+            if best_node.outcome in ("verified", "success") or best_node.action_type == "verify":
                 found_verified = True
+                target_node_id = best_node.node_id
                 break
+
+            # Add newly unlocked child nodes whose parent is now explored
+            for child_id in best_node.children:
+                if child_id not in explored and child_id in self.tree.nodes:
+                    frontier.add(child_id)
+
+        causal_path_cost = 0.0
+        if target_node_id:
+            path_from_root = self.tree.get_path_from_root(target_node_id)
+            causal_path_cost = sum(self.tree.nodes[nid].cost for nid in path_from_root)
 
         return {
             "found_verified": found_verified,
             "simulated_cost": simulated_cost,
             "simulated_steps": steps,
+            "causal_path_cost": causal_path_cost,
             "tree_total_cost": self.tree.total_cost(),
         }

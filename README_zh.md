@@ -139,12 +139,13 @@ eve-3/
 │       └── tree.py                    # 发现树与反事实离线策略重放器
 ├── benchmarks/
 │   └── list_functions.json            # 列表变换、过滤与归约基准任务集
-└── tests/
-    ├── test_dsl.py                    # DSL AST 与语法解析单元测试
+├── tests/
+    ├── test_dsl.py                    # DSL AST、硬步数预算与语法解析单元测试
     ├── test_prober.py                 # 信息增益与贝叶斯更新单元测试
-    ├── test_crystallizer.py           # SQLite 持久化与价值加权测试
-    ├── test_discovery_tree.py         # 发现树构建与离线重放测试
-    └── test_cegis_loop.py             # CEGIS 端到端主动合成测试
+    ├── test_crystallizer.py           # SQLite 持久化与动态 AST 模式挖掘测试
+    ├── test_discovery_tree.py         # 因果拓扑发现树前沿重放模拟测试
+    ├── test_cegis_loop.py             # CEGIS 端到端主动合成与严格验证等级测试
+    └── test_benchmark_evaluation.py   # 全量基准任务测试与随机测试基线消融对比
 ```
 
 ---
@@ -159,28 +160,38 @@ pip install -e .
 ```
 
 ### 运行全套单元测试
+兼容 Python 标准库 `unittest` 与 `pytest`：
+
 ```bash
+# 使用标准库 unittest discover 运行
 python3 -m unittest discover -s tests -p "test_*.py"
+
+# 或使用 pytest 运行
+pytest tests/
 ```
 
 ### 运行端到端主动 CEGIS 合成实验
 ```python
 from eve3.config import EveConfig
-from eve3.system2_falsifier.cegis_loop import CEGISLoop
+from eve3.system2_falsifier.cegis_loop import CEGISLoop, VerificationStatus
 
 # 定义真实环境逻辑（例如：对列表各元素自增 1）
 def oracle(lst):
     return [x + 1 for x in lst]
 
-# 启动主动 CEGIS 循环
+# 启动主动 CEGIS 循环，并注入独立隐藏测试集严格检验
 config = EveConfig(max_falsification_rounds=5)
 loop = CEGISLoop(config)
-result = loop.run_synthesis([([1, 2], [2, 3])], oracle_fn=oracle)
+result = loop.run_synthesis(
+    initial_examples=[([1, 2], [2, 3])],
+    oracle_fn=oracle,
+    held_out_tests=[([10, 20], [11, 21]), ([-5, 0], [-4, 1])],
+)
 
+print(f"验证状态: {result.status.value}, 是否最终收敛: {result.converged}")
 if result.converged:
     print(f"成功合成程序: {result.verified_program.code_str}")
-    print(f"执行轮数: {result.rounds_executed}, 消耗探针数: {len(result.probes_used)}")
-    print("未见输入 [10, 20] 泛化测试输出:", result.verified_program.evaluate([10, 20]))
+    print(f"隐藏测试集准确率: {result.held_out_accuracy * 100:.1f}%")
 ```
 
 ---

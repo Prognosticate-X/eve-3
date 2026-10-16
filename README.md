@@ -139,12 +139,13 @@ eve-3/
 │       └── tree.py                    # Discovery Tree & counterfactual simulator
 ├── benchmarks/
 │   └── list_functions.json            # Benchmark tasks (mapping, filtering, reductions)
-└── tests/
-    ├── test_dsl.py                    # AST and parser verification
+├── tests/
+    ├── test_dsl.py                    # AST, step budget, and parser verification
     ├── test_prober.py                 # Information Gain & Bayesian update tests
-    ├── test_crystallizer.py           # SQLite persistence & value weighting tests
-    ├── test_discovery_tree.py         # Discovery tree recording and replay tests
-    └── test_cegis_loop.py             # End-to-end CEGIS active synthesis tests
+    ├── test_crystallizer.py           # SQLite persistence & dynamic pattern mining tests
+    ├── test_discovery_tree.py         # Causal tree frontier replay tests
+    ├── test_cegis_loop.py             # CEGIS active synthesis & verification status tests
+    └── test_benchmark_evaluation.py   # Full benchmark suite & baseline comparison
 ```
 
 ---
@@ -159,28 +160,38 @@ pip install -e .
 ```
 
 ### Running Test Suite
+Compatible with both standard library `unittest` and `pytest`:
+
 ```bash
+# Run via standard library unittest discover
 python3 -m unittest discover -s tests -p "test_*.py"
+
+# Or run via pytest
+pytest tests/
 ```
 
 ### Running an Active Synthesis Experiment
 ```python
 from eve3.config import EveConfig
-from eve3.system2_falsifier.cegis_loop import CEGISLoop
+from eve3.system2_falsifier.cegis_loop import CEGISLoop, VerificationStatus
 
 # Ground-truth oracle function
 def oracle(lst):
     return [x + 1 for x in lst]
 
-# Execute active CEGIS loop
+# Execute active CEGIS loop with held-out validation
 config = EveConfig(max_falsification_rounds=5)
 loop = CEGISLoop(config)
-result = loop.run_synthesis([([1, 2], [2, 3])], oracle_fn=oracle)
+result = loop.run_synthesis(
+    initial_examples=[([1, 2], [2, 3])],
+    oracle_fn=oracle,
+    held_out_tests=[([10, 20], [11, 21]), ([-5, 0], [-4, 1])],
+)
 
+print(f"Status: {result.status.value}, Converged: {result.converged}")
 if result.converged:
     print(f"Synthesized Program: {result.verified_program.code_str}")
-    print(f"Rounds: {result.rounds_executed}, Probes: {result.probes_used}")
-    print("Generalization Check on [10, 20]:", result.verified_program.evaluate([10, 20]))
+    print(f"Held-out Accuracy: {result.held_out_accuracy * 100:.1f}%")
 ```
 
 ---
