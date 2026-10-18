@@ -129,6 +129,8 @@ eve-3/
 ├── LICENSE                            # MIT 开源许可证
 ├── docs/
 │   ├── ARCHITECTURE.md                # 架构设计详解
+│   ├── CONSOLIDATION.md               # 睡眠微调与安全回滚门禁架构设计
+│   ├── CONTINUAL_LEARNING_RESULTS.md  # 持续学习 (BWT抗遗忘/FWT前向迁移) 评测报告
 │   ├── EXPERIMENT_RESULTS.md          # 4组基线全量消融实验报告
 │   ├── MATHEMATICS.md                 # 完整数学公式推导与算法规范
 │   ├── PREREGISTRATION.md             # 预注册指标与验收阈值协议
@@ -174,10 +176,11 @@ eve-3/
 │   ├── dev_eval.json                  # 域内评测集拆分
 │   └── held_out_test.json             # 严格泛化隐藏测试集
 ├── experiments/
+│   ├── run_continual_learning.py      # 持续学习 (BWT/FWT) 评测脚本
 │   ├── run_full_ablation.py           # 4组基线全量消融实验脚本 (支持多种子评测)
 │   ├── run_library_ablation.py        # 知识库复用收益消融脚本
 │   └── run_policy_evolution.py        # 发现树因果策略回放与泛化验证脚本
-├── tests/                             # 41 项严密单元测试套件 (100% 通过)
+├── tests/                             # 44 项严密单元测试套件 (100% 通过)
 ```
 
 ---

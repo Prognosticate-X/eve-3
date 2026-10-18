@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 import datetime
 import math
 import random
+import statistics
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from eve3.discovery.tree import DiscoveryTree, DiscoveryNode
@@ -146,6 +147,93 @@ class Consolidator:
 
         total_sum = sum(scores)
         return [sc / total_sum for sc in scores]
+
+    def extract_all_samples(
+        self,
+        trees: List[DiscoveryTree],
+        current_time: Optional[float] = None,
+    ) -> List[ConsolidationSample]:
+        """Extract all consolidation samples across multiple discovery trees."""
+        all_samples: List[ConsolidationSample] = []
+        for tree in trees:
+            all_samples.extend(self.extract_samples_from_tree(tree, current_time=current_time))
+        return all_samples
+
+    def sample_replay_batch(
+        self,
+        samples: List[ConsolidationSample],
+        n: int,
+        current_time: Optional[float] = None,
+        random_seed: Optional[int] = None,
+    ) -> List[ConsolidationSample]:
+        """Sample n samples according to value-weighted probabilities p(i)."""
+        if not samples or n <= 0:
+            return []
+        if len(samples) <= n:
+            return list(samples)
+
+        probs = self.compute_replay_probabilities(samples, current_time=current_time)
+        rng = random.Random(random_seed)
+        chosen_indices = rng.choices(range(len(samples)), weights=probs, k=n)
+        return [samples[idx] for idx in chosen_indices]
+
+    def format_mlx_dataset(
+        self,
+        samples: List[ConsolidationSample],
+    ) -> List[Dict[str, Any]]:
+        """Format samples into MLX-LM fine-tuning pairs (prompt, completion)."""
+        dataset: List[Dict[str, Any]] = []
+        for s in samples:
+            dataset.append({
+                "prompt": f"<|im_start|>user\nSynthesize DSL function for task {s.task_id} in family {s.task_family}.<|im_end|>\n<|im_start|>assistant\n",
+                "completion": f"{s.target_code}<|im_end|>",
+                "weight": s.value_weight,
+            })
+        return dataset
+
+    def compute_surrogate_loss(
+        self,
+        new_samples: List[ConsolidationSample],
+        replay_samples: List[ConsolidationSample],
+        kl_penalty: float = 0.05,
+    ) -> Dict[str, float]:
+        """Compute four-part consolidation loss per Roadmap Section 4.2:
+        L = L_sft(new) + lambda_pref * L_pref + lambda_replay * L_sft(replay) + lambda_kl * KL(pi || pi_base)
+        """
+        # SFT surrogate: normalized description length of target
+        l_sft_new = (
+            statistics.mean([len(s.target_code) / 50.0 for s in new_samples])
+            if new_samples else 0.0
+        )
+        # Replay loss
+        l_replay = (
+            statistics.mean([len(s.target_code) / 50.0 for s in replay_samples])
+            if replay_samples else 0.0
+        )
+        # Preference loss: penalty if rejected code is shorter or closer than target
+        pref_pairs = [s for s in new_samples if s.rejected_code]
+        if pref_pairs:
+            l_pref = statistics.mean([
+                max(0.0, 1.0 - (len(s.target_code) - len(s.rejected_code)) / 20.0)
+                for s in pref_pairs
+            ])
+        else:
+            l_pref = 0.0
+
+        total_loss = (
+            l_sft_new
+            + self.config.lambda_pref * l_pref
+            + self.config.lambda_replay * l_replay
+            + self.config.lambda_kl * kl_penalty
+        )
+
+        return {
+            "loss_total": total_loss,
+            "loss_sft_new": l_sft_new,
+            "loss_pref": l_pref,
+            "loss_replay": l_replay,
+            "loss_kl": kl_penalty,
+        }
 
     def run_sleep_cycle(
         self,

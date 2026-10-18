@@ -96,6 +96,52 @@ class TestConsolidator(unittest.TestCase):
         self.assertTrue(res.gate_result.passed)
         self.assertIsNotNone(self.bank.get_active_adapter("list_reduction"))
 
+    def test_sample_replay_batch_and_mlx_dataset_formatting(self):
+        tree1 = DiscoveryTree(task_id="t1")
+        tree1.add_node(
+            action_type="verify",
+            payload={"code": "(map inc x)", "task_family": "list_mapping"},
+            outcome="verified",
+        )
+        tree2 = DiscoveryTree(task_id="t2")
+        tree2.add_node(
+            action_type="verify",
+            payload={"code": "(map dec x)", "task_family": "list_mapping"},
+            outcome="verified",
+        )
+        tree3 = DiscoveryTree(task_id="t3")
+        tree3.add_node(
+            action_type="verify",
+            payload={"code": "(filter is_even x)", "task_family": "list_filtering"},
+            outcome="verified",
+        )
+
+        all_samples = self.consolidator.extract_all_samples([tree1, tree2, tree3])
+        self.assertEqual(len(all_samples), 3)
+
+        # Sample 2 from 3
+        replay_batch = self.consolidator.sample_replay_batch(all_samples, n=2, random_seed=42)
+        self.assertEqual(len(replay_batch), 2)
+
+        # Format into MLX pairs
+        mlx_data = self.consolidator.format_mlx_dataset(replay_batch)
+        self.assertEqual(len(mlx_data), 2)
+        for item in mlx_data:
+            self.assertIn("prompt", item)
+            self.assertIn("completion", item)
+            self.assertIn("<|im_start|>", item["prompt"])
+
+        # Compute surrogate loss
+        loss_dict = self.consolidator.compute_surrogate_loss(
+            new_samples=all_samples[:2],
+            replay_samples=all_samples[2:],
+            kl_penalty=0.05,
+        )
+        self.assertIn("loss_total", loss_dict)
+        self.assertIn("loss_sft_new", loss_dict)
+        self.assertIn("loss_replay", loss_dict)
+        self.assertGreater(loss_dict["loss_total"], 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

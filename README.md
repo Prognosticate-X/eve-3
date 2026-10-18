@@ -129,6 +129,8 @@ eve-3/
 ├── LICENSE                            # MIT License
 ├── docs/
 │   ├── ARCHITECTURE.md                # In-depth architectural blueprint
+│   ├── CONSOLIDATION.md               # Sleep consolidation & replay gate design
+│   ├── CONTINUAL_LEARNING_RESULTS.md  # Continual learning (BWT/FWT) empirical benchmark results
 │   ├── EXPERIMENT_RESULTS.md          # 4-Regime empirical benchmark results
 │   ├── MATHEMATICS.md                 # Full mathematical formulations & derivations
 │   ├── PREREGISTRATION.md             # Formal preregistered metrics and acceptance criteria
@@ -174,10 +176,11 @@ eve-3/
 │   ├── dev_eval.json                  # In-distribution evaluation split
 │   └── held_out_test.json             # Held-out generalization split
 ├── experiments/
+│   ├── run_continual_learning.py      # Continual learning (BWT/FWT) benchmark runner
 │   ├── run_full_ablation.py           # 4-regime ablation benchmark runner
 │   ├── run_library_ablation.py        # Library reuse ablation runner
 │   └── run_policy_evolution.py        # Policy replay & held-out correlation runner
-├── tests/                             # 41 rigorous test suites (100% passing)
+├── tests/                             # 44 rigorous test suites (100% passing)
 ```
 
 ---
