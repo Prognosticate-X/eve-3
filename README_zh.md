@@ -161,6 +161,11 @@ eve-3/
 │   ├── memory/                        # 认知分层记忆与全生命周期溯源 (Phase 8)
 │   │   ├── tiers.py                   # 工作记忆 (隔离擦除)、情景记忆 (无损摘要) 与语义记忆 (冷热衰减)
 │   │   └── provenance.py              # 算子事件流追踪、不可变快照与事务级安全回滚
+│   ├── envs/                          # 离散与物理仿真环境基准 (Phase 9)
+│   │   ├── grid_tasks.py              # L1 ARC 风格 2D 离散网格空间变换与程序化 Oracle
+│   │   └── sim_adapter.py             # L2 连续 2D 平面动力学仿真环境 (含过程与传感器高斯噪声)
+│   ├── safety/                        # 硬安全与物理边界防护层 (Phase 9)
+│   │   └── action_limiter.py          # ActionLimiter 空间边界截断、幅度限幅、急停与人工使能开关
 │   ├── discovery/                     # RSI 递归自我改进层
 │   │   ├── tree.py                    # 因果拓扑发现树与反事实离线策略重放器
 │   │   └── policy.py                  # 版本化探索策略配置与打分
@@ -186,11 +191,12 @@ eve-3/
 ├── experiments/
 │   ├── run_autonomous_curriculum.py   # 自主探索课程基准消融实验 (Arm A5 vs A4)
 │   ├── run_continual_learning.py      # 持续学习 (BWT/FWT) 评测脚本
+│   ├── run_env_simulation.py          # Phase 9 L1/L2 仿真与带噪统计主动证伪实验脚本
 │   ├── run_full_ablation.py           # 4组基线全量消融实验脚本 (支持多种子评测)
 │   ├── run_library_ablation.py        # 知识库复用收益消融脚本
 │   ├── run_memory_consolidation.py    # 分层记忆管理与衰减消融实验脚本
 │   └── run_policy_evolution.py        # 发现树因果策略回放与泛化验证脚本
-├── tests/                             # 59 项严密单元测试套件 (100% 通过)
+├── tests/                             # 68 项严密单元测试套件 (100% 通过)
 ```
 
 ---
@@ -261,8 +267,10 @@ if result.converged:
   自生成出题、ZPD 可学习性过滤 [0.2, 0.8]、聚类香农熵监控、防塌缩护栏与变形测试。
 - **Phase 8：分层记忆管理与知识库二次整合**（已完成）  
   三层认知记忆（工作/无损情景摘要/语义冷热衰减）、保留分动态演化、Stitch 式去冗余与快照回滚。
-- **Phase 9：离散视觉与物理仿真环境扩展**（规划中）  
-  带程序化 Oracle 的网格离散与 MuJoCo/Gymnasium 物理仿真任务接入。
+- **Phase 9：离散视觉与物理仿真环境扩展（带噪统计主动证伪）**（已完成）  
+  L1 ARC 风格网格感知套件、L2 连续 2D 平面动力学仿真、ActionLimiter 强物理安全层（0.00% 穿透率）、回火后验 $b_T(h)$、弥散空假设 $h_\varnothing$、SPRT 统计证伪与自适应温度校准（ECE = 0.0200 <= 0.05）。
+- **Phase 10：终极端到端自主演化 AGI 闭环**（下一步）  
+  跨多模态感知、物理交互、多时间尺度记忆与自主探索的端到端持续进化系统。
 
 ---
 
