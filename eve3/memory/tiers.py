@@ -214,6 +214,14 @@ class SemanticMemory:
         self._master_archive: Dict[str, LearnedAbstraction] = {}
         self.metadata: Dict[str, Dict[str, Any]] = {}
 
+    @property
+    def hot_tier(self) -> Dict[str, LearnedAbstraction]:
+        return self.hot_abstractions
+
+    @property
+    def cold_tier(self) -> Dict[str, LearnedAbstraction]:
+        return self.cold_abstractions
+
     def register_abstraction(
         self,
         abstraction: LearnedAbstraction,
