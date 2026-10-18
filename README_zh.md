@@ -134,6 +134,7 @@ eve-3/
 │   ├── CONTINUAL_LEARNING_RESULTS.md  # 持续学习 (BWT抗遗忘/FWT前向迁移) 评测报告
 │   ├── EXPERIMENT_RESULTS.md          # 4组基线全量消融实验报告
 │   ├── MATHEMATICS.md                 # 完整数学公式推导与算法规范
+│   ├── MEMORY_MANAGEMENT_RESULTS.md   # Phase 8 分层记忆管理与衰减实验报告
 │   ├── PREREGISTRATION.md             # 预注册指标与验收阈值协议
 │   ├── ROADMAP.md                     # 分阶段路线图与验收标准 (Phase 0-11)
 │   └── RSI_INTEGRATION.md             # 发现树与 RSI 重放模拟理论
@@ -157,6 +158,9 @@ eve-3/
 │   ├── explorer/                      # 自主探索与课程生成引擎 (Phase 7)
 │   │   ├── curriculum.py              # 任务自生成、ZPD 可学习性过滤 [0.2, 0.8] 与多目标打分
 │   │   └── coverage.py                # 聚类香农熵 H(C)、防塌缩护栏与变形测试
+│   ├── memory/                        # 认知分层记忆与全生命周期溯源 (Phase 8)
+│   │   ├── tiers.py                   # 工作记忆 (隔离擦除)、情景记忆 (无损摘要) 与语义记忆 (冷热衰减)
+│   │   └── provenance.py              # 算子事件流追踪、不可变快照与事务级安全回滚
 │   ├── discovery/                     # RSI 递归自我改进层
 │   │   ├── tree.py                    # 因果拓扑发现树与反事实离线策略重放器
 │   │   └── policy.py                  # 版本化探索策略配置与打分
@@ -184,8 +188,9 @@ eve-3/
 │   ├── run_continual_learning.py      # 持续学习 (BWT/FWT) 评测脚本
 │   ├── run_full_ablation.py           # 4组基线全量消融实验脚本 (支持多种子评测)
 │   ├── run_library_ablation.py        # 知识库复用收益消融脚本
+│   ├── run_memory_consolidation.py    # 分层记忆管理与衰减消融实验脚本
 │   └── run_policy_evolution.py        # 发现树因果策略回放与泛化验证脚本
-├── tests/                             # 52 项严密单元测试套件 (100% 通过)
+├── tests/                             # 59 项严密单元测试套件 (100% 通过)
 ```
 
 ---
@@ -254,8 +259,8 @@ if result.converged:
   多时间尺度 LoRA 库、因果加权回放、后向零遗忘（BWT = 0.0%）与前向迁移（FWT = +33.3%）。
 - **Phase 7：自主探索与课程生成引擎**（已完成）  
   自生成出题、ZPD 可学习性过滤 [0.2, 0.8]、聚类香农熵监控、防塌缩护栏与变形测试。
-- **Phase 8：分层记忆管理与 Stitch 式算子二次整合**（规划中）  
-  三层记忆（工作/情景/语义）与衰减降级机制、溯源版本回滚。
+- **Phase 8：分层记忆管理与知识库二次整合**（已完成）  
+  三层认知记忆（工作/无损情景摘要/语义冷热衰减）、保留分动态演化、Stitch 式去冗余与快照回滚。
 - **Phase 9：离散视觉与物理仿真环境扩展**（规划中）  
   带程序化 Oracle 的网格离散与 MuJoCo/Gymnasium 物理仿真任务接入。
 

@@ -134,6 +134,7 @@ eve-3/
 │   ├── CONTINUAL_LEARNING_RESULTS.md  # Continual learning (BWT/FWT) empirical benchmark results
 │   ├── EXPERIMENT_RESULTS.md          # 4-Regime empirical benchmark results
 │   ├── MATHEMATICS.md                 # Full mathematical formulations & derivations
+│   ├── MEMORY_MANAGEMENT_RESULTS.md   # Phase 8 tiered memory & retention decay results
 │   ├── PREREGISTRATION.md             # Formal preregistered metrics and acceptance criteria
 │   ├── ROADMAP.md                     # Phased experimental roadmap (Phases 0-11)
 │   └── RSI_INTEGRATION.md             # Discovery tree & replay simulator theory
@@ -157,6 +158,9 @@ eve-3/
 │   ├── explorer/                      # Autonomous Curriculum & Coverage Guards (Phase 7)
 │   │   ├── curriculum.py              # Task generation, ZPD filter [0.2, 0.8], multi-objective scoring
 │   │   └── coverage.py                # Clustering entropy H(C), anti-collapse guards, metamorphic validation
+│   ├── memory/                        # Tiered Cognitive Memory & Provenance (Phase 8)
+│   │   ├── tiers.py                   # Working, Episodic (summarized), and Semantic (Hot/Cold decay) memory
+│   │   └── provenance.py              # Provenance event tracking, immutable snapshots, and rollback
 │   ├── discovery/                     # RSI replay engine
 │   │   ├── tree.py                    # Causal Discovery Tree & counterfactual simulator
 │   │   └── policy.py                  # Versioned exploration policies
@@ -184,8 +188,9 @@ eve-3/
 │   ├── run_continual_learning.py      # Continual learning (BWT/FWT) benchmark runner
 │   ├── run_full_ablation.py           # 4-regime ablation benchmark runner
 │   ├── run_library_ablation.py        # Library reuse ablation runner
+│   ├── run_memory_consolidation.py    # Tiered memory & retention decay benchmark runner
 │   └── run_policy_evolution.py        # Policy replay & held-out correlation runner
-├── tests/                             # 52 rigorous test suites (100% passing)
+├── tests/                             # 59 rigorous test suites (100% passing)
 ```
 
 ---
@@ -246,7 +251,7 @@ if result.converged:
 - **Phase 5: Preregistration & Safety Gatekeeping** (Completed) — Preregistered metrics frozen (`docs/PREREGISTRATION.md`), task family benchmarks, and `RegressionGate`.
 - **Phase 6: Sleep Consolidation & Continual Learning** (Completed) — Multi-timescale LoRA bank, value-weighted replay, zero forgetting (BWT = 0.0%), and forward transfer (FWT = +33.3%).
 - **Phase 7: Autonomous Curriculum & Exploration** (Completed) — Self-generating tasks, ZPD learnability filtering [0.2, 0.8], cluster entropy tracking, anti-collapse guards, and metamorphic validation.
-- **Phase 8: Tiered Memory Management & Stitch Library Consolidation** (Planned) — Working, episodic, and semantic memory decay, provenance, and Stitch-style operator factoring.
+- **Phase 8: Tiered Memory Management & Provenance** (Completed) — Working, episodic (lossless summarization), and semantic (Hot/Cold decay) memory with Stitch-style compaction and rollback.
 - **Phase 9: Discrete Visualized & Simulated Environments** (Planned) — Grid environments with programmatic verifiers and active falsification under noise.
 
 ---

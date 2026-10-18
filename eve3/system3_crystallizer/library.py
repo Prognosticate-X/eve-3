@@ -202,10 +202,67 @@ class KnowledgeLibrary:
             )
             conn.commit()
 
-    def get_learned_abstractions(self) -> List[Dict[str, Any]]:
-        """Fetch all structured learned abstractions."""
+    def get_learned_abstractions(self, status: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Fetch all structured learned abstractions, optionally filtered by status."""
         with self._connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM learned_abstractions ORDER BY reuse_count DESC")
+            if status is not None:
+                cursor.execute(
+                    "SELECT * FROM learned_abstractions WHERE status = ? ORDER BY reuse_count DESC",
+                    (status,),
+                )
+            else:
+                cursor.execute("SELECT * FROM learned_abstractions ORDER BY reuse_count DESC")
             return [dict(row) for row in cursor.fetchall()]
+
+    def get_active_learned_abstractions(self) -> List[Dict[str, Any]]:
+        """Fetch only active (non-demoted) learned abstractions for search."""
+        with self._connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM learned_abstractions WHERE status != 'demoted' ORDER BY reuse_count DESC"
+            )
+            return [dict(row) for row in cursor.fetchall()]
+
+    def demote_learned_abstraction(self, abstraction_id: str, reason: str = "decay"):
+        """Demote an abstraction to cold storage without deleting."""
+        with self._connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE learned_abstractions SET status = 'demoted' WHERE abstraction_id = ?",
+                (abstraction_id,),
+            )
+            # Remove from active crystallized_operators table
+            cursor.execute(
+                "DELETE FROM crystallized_operators WHERE operator_name = "
+                "(SELECT name FROM learned_abstractions WHERE abstraction_id = ?)",
+                (abstraction_id,),
+            )
+            conn.commit()
+
+    def promote_learned_abstraction(self, abstraction_id: str):
+        """Promote a cold abstraction back to active hot status."""
+        with self._connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE learned_abstractions SET status = 'verified' WHERE abstraction_id = ?",
+                (abstraction_id,),
+            )
+            cursor.execute(
+                "SELECT name, pattern_sexpr, arity, applicable_task_families_json FROM learned_abstractions WHERE abstraction_id = ?",
+                (abstraction_id,),
+            )
+            row = cursor.fetchone()
+            if row:
+                import json
+                families = json.loads(row["applicable_task_families_json"])
+                cursor.execute(
+                    """
+                    INSERT OR REPLACE INTO crystallized_operators
+                    (operator_name, body_sexpr, arity, benefit_score, task_diversity_score, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (row["name"], row["pattern_sexpr"], row["arity"], 10.0, len(families) or 1, time.time()),
+                )
+            conn.commit()
 
