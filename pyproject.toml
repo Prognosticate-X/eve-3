@@ -27,6 +27,12 @@ mlx = [
     "mlx-lm>=0.18.0",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["eve3*"]
+exclude = ["tests*", "experiments*", "benchmarks*", "docs*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+pythonpath = ["."]
