@@ -129,6 +129,7 @@ eve-3/
 ├── LICENSE                            # MIT 开源许可证
 ├── docs/
 │   ├── ARCHITECTURE.md                # 架构设计详解
+│   ├── AUTONOMOUS_CURRICULUM_RESULTS.md # Phase 7 自主探索与课程实验结果报告
 │   ├── CONSOLIDATION.md               # 睡眠微调与安全回滚门禁架构设计
 │   ├── CONTINUAL_LEARNING_RESULTS.md  # 持续学习 (BWT抗遗忘/FWT前向迁移) 评测报告
 │   ├── EXPERIMENT_RESULTS.md          # 4组基线全量消融实验报告
@@ -138,11 +139,11 @@ eve-3/
 │   └── RSI_INTEGRATION.md             # 发现树与 RSI 重放模拟理论
 ├── eve3/
 │   ├── config.py                      # 全局运行时配置与超参数控制
-│   ├── models.py                      # 证据链模型、验证凭证与学习抽象类
+│   ├── models.py                      # 证据链模型、验证凭证、学习抽象类与 Task
 │   ├── dsl/                           # 确定性函数领域特定语言 (DSL)
 │   │   ├── ast.py                     # AST 节点抽象、MDL 描述长度与硬深度检查
 │   │   ├── interpreter.py             # S-表达式解析与沙盒执行环境
-│   │   └── primitives.py              # 高阶函数与列表/逻辑算子
+│   │   └── primitives.py              # 高阶函数与列表/逻辑/比较算子
 │   ├── system1_proposer/              # 直觉与假设提议器 (System 1)
 │   │   ├── generator.py               # MLX-LM 编排与启发式候选生成
 │   │   └── sandbox.py                 # 可见示例多候选沙盒验证
@@ -153,6 +154,9 @@ eve-3/
 │   ├── system3_crystallizer/          # 知识晶化与算子库学习 (System 3)
 │   │   ├── library.py                 # SQLite 持久化抽象算子库
 │   │   └── value_compressor.py        # 基于 AST 节点 MDL 的次模价值加权贪心压缩
+│   ├── explorer/                      # 自主探索与课程生成引擎 (Phase 7)
+│   │   ├── curriculum.py              # 任务自生成、ZPD 可学习性过滤 [0.2, 0.8] 与多目标打分
+│   │   └── coverage.py                # 聚类香农熵 H(C)、防塌缩护栏与变形测试
 │   ├── discovery/                     # RSI 递归自我改进层
 │   │   ├── tree.py                    # 因果拓扑发现树与反事实离线策略重放器
 │   │   └── policy.py                  # 版本化探索策略配置与打分
@@ -176,11 +180,12 @@ eve-3/
 │   ├── dev_eval.json                  # 域内评测集拆分
 │   └── held_out_test.json             # 严格泛化隐藏测试集
 ├── experiments/
+│   ├── run_autonomous_curriculum.py   # 自主探索课程基准消融实验 (Arm A5 vs A4)
 │   ├── run_continual_learning.py      # 持续学习 (BWT/FWT) 评测脚本
 │   ├── run_full_ablation.py           # 4组基线全量消融实验脚本 (支持多种子评测)
 │   ├── run_library_ablation.py        # 知识库复用收益消融脚本
 │   └── run_policy_evolution.py        # 发现树因果策略回放与泛化验证脚本
-├── tests/                             # 44 项严密单元测试套件 (100% 通过)
+├── tests/                             # 52 项严密单元测试套件 (100% 通过)
 ```
 
 ---
@@ -237,14 +242,22 @@ if result.converged:
   轻量级函数式 DSL AST、S-表达式解析器、沙盒执行器与基准测试集规范。
 - **Phase 1：System 1 假设生成器**（已完成）  
   Few-shot 提示词编排、本地模型/启发式生成管线与语法沙盒过滤。
-- **Phase 2：System 2 贝叶斯主动证伪**（已完成核心闭环）  
+- **Phase 2：System 2 贝叶斯主动证伪**（已完成）  
   精确互信息闭式解、SMT 区分性输入提取、Laplace 后验更新与 CEGIS 主循环。
-- **Phase 3：System 3 价值加权晶化**（已完成核心机制）  
+- **Phase 3：System 3 价值加权晶化**（已完成）  
   SQLite 知识库底座、任务家族多样性加权、次模贪心算子库压缩。
-- **Phase 4：对照消融与量化评测**（进行中）  
-  在完整基准任务集上对比：① EVE-3 完整版、② 无晶化版、③ 无证伪过拟合版，产出样本效率与泛化率消融曲线。
-- **Phase 5：跨域迁移与业务落地**（规划中）  
-  将这套流程迁移至 Agent 规则推断与超参自动调优等实际复杂任务。
+- **Phase 4：对照消融与全量评测**（已完成）  
+  4 组基线全量消融实验与假验证率绝对清零（0.0%）。
+- **Phase 5：预注册协议与自动化安全门禁**（已完成）  
+  预注册指标与阈值冻结（`docs/PREREGISTRATION.md`）、任务族切分与 `RegressionGate`。
+- **Phase 6：睡眠巩固与持续学习**（已完成）  
+  多时间尺度 LoRA 库、因果加权回放、后向零遗忘（BWT = 0.0%）与前向迁移（FWT = +33.3%）。
+- **Phase 7：自主探索与课程生成引擎**（已完成）  
+  自生成出题、ZPD 可学习性过滤 [0.2, 0.8]、聚类香农熵监控、防塌缩护栏与变形测试。
+- **Phase 8：分层记忆管理与 Stitch 式算子二次整合**（规划中）  
+  三层记忆（工作/情景/语义）与衰减降级机制、溯源版本回滚。
+- **Phase 9：离散视觉与物理仿真环境扩展**（规划中）  
+  带程序化 Oracle 的网格离散与 MuJoCo/Gymnasium 物理仿真任务接入。
 
 ---
 

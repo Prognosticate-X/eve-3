@@ -22,6 +22,11 @@ def get_default_primitives() -> Dict[str, Callable[..., Any]]:
     prims["lt"] = lambda a, b: a < b
     prims["gte"] = lambda a, b: a >= b
     prims["lte"] = lambda a, b: a <= b
+    prims[">"] = prims["gt"]
+    prims["<"] = prims["lt"]
+    prims[">="] = prims["gte"]
+    prims["<="] = prims["lte"]
+    prims["=="] = prims["eq"]
     prims["not"] = lambda a: not a
     prims["and"] = lambda a, b: bool(a and b)
     prims["or"] = lambda a, b: bool(a or b)

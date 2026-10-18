@@ -129,6 +129,7 @@ eve-3/
 ├── LICENSE                            # MIT License
 ├── docs/
 │   ├── ARCHITECTURE.md                # In-depth architectural blueprint
+│   ├── AUTONOMOUS_CURRICULUM_RESULTS.md # Phase 7 autonomous curriculum & exploration results
 │   ├── CONSOLIDATION.md               # Sleep consolidation & replay gate design
 │   ├── CONTINUAL_LEARNING_RESULTS.md  # Continual learning (BWT/FWT) empirical benchmark results
 │   ├── EXPERIMENT_RESULTS.md          # 4-Regime empirical benchmark results
@@ -138,11 +139,11 @@ eve-3/
 │   └── RSI_INTEGRATION.md             # Discovery tree & replay simulator theory
 ├── eve3/
 │   ├── config.py                      # Global configuration & hyperparameters
-│   ├── models.py                      # CandidateProgram, VerificationEvidence, LearnedAbstraction
+│   ├── models.py                      # CandidateProgram, VerificationEvidence, LearnedAbstraction, Task
 │   ├── dsl/                           # Functional Domain-Specific Language
 │   │   ├── ast.py                     # AST nodes, MDL metrics, step limits
 │   │   ├── interpreter.py             # Parser & sandboxed execution engine
-│   │   └── primitives.py              # Functional primitives (+, -, map, filter, fold)
+│   │   └── primitives.py              # Functional primitives (+, -, map, filter, fold, comparisons)
 │   ├── system1_proposer/              # Intuition generator & sandbox
 │   │   ├── generator.py               # MLX-LM harness & heuristic synthesizer
 │   │   └── sandbox.py                 # Candidate program validator
@@ -153,6 +154,9 @@ eve-3/
 │   ├── system3_crystallizer/          # Knowledge base & library learning
 │   │   ├── library.py                 # SQLite persistent storage of learned abstractions
 │   │   └── value_compressor.py        # Submodular AST-node MDL value-weighted compression
+│   ├── explorer/                      # Autonomous Curriculum & Coverage Guards (Phase 7)
+│   │   ├── curriculum.py              # Task generation, ZPD filter [0.2, 0.8], multi-objective scoring
+│   │   └── coverage.py                # Clustering entropy H(C), anti-collapse guards, metamorphic validation
 │   ├── discovery/                     # RSI replay engine
 │   │   ├── tree.py                    # Causal Discovery Tree & counterfactual simulator
 │   │   └── policy.py                  # Versioned exploration policies
@@ -176,11 +180,12 @@ eve-3/
 │   ├── dev_eval.json                  # In-distribution evaluation split
 │   └── held_out_test.json             # Held-out generalization split
 ├── experiments/
+│   ├── run_autonomous_curriculum.py   # Autonomous curriculum benchmark runner (Arm A5 vs A4)
 │   ├── run_continual_learning.py      # Continual learning (BWT/FWT) benchmark runner
 │   ├── run_full_ablation.py           # 4-regime ablation benchmark runner
 │   ├── run_library_ablation.py        # Library reuse ablation runner
 │   └── run_policy_evolution.py        # Policy replay & held-out correlation runner
-├── tests/                             # 44 rigorous test suites (100% passing)
+├── tests/                             # 52 rigorous test suites (100% passing)
 ```
 
 ---
@@ -237,8 +242,12 @@ if result.converged:
 - **Phase 1: System 1 Intuition Proposer** (Completed) — Prompt orchestration, MLX Qwen2.5-Coder harness, and sandbox validator.
 - **Phase 2: System 2 Active Falsifier** (Completed) — Exact closed-form Information Gain, Z3 SMT distinguishing inputs, and Laplace-smoothed CEGIS loop.
 - **Phase 3: System 3 Value-Weighted Crystallizer** (Completed) — SQLite persistent store, task-diversity weighting, and submodular greedy library learning.
-- **Phase 4: Closed-Loop Benchmarking** (In Progress) — Ablation experiments against No-Crystallization and No-Falsification baselines.
-- **Phase 5: Cross-Domain Transfer** (Planned) — Downstream migration to autonomous agent parameter tuning and rule discovery.
+- **Phase 4: Closed-Loop Benchmarking** (Completed) — 4-regime baseline ablation with zero false verification rate (0.0%).
+- **Phase 5: Preregistration & Safety Gatekeeping** (Completed) — Preregistered metrics frozen (`docs/PREREGISTRATION.md`), task family benchmarks, and `RegressionGate`.
+- **Phase 6: Sleep Consolidation & Continual Learning** (Completed) — Multi-timescale LoRA bank, value-weighted replay, zero forgetting (BWT = 0.0%), and forward transfer (FWT = +33.3%).
+- **Phase 7: Autonomous Curriculum & Exploration** (Completed) — Self-generating tasks, ZPD learnability filtering [0.2, 0.8], cluster entropy tracking, anti-collapse guards, and metamorphic validation.
+- **Phase 8: Tiered Memory Management & Stitch Library Consolidation** (Planned) — Working, episodic, and semantic memory decay, provenance, and Stitch-style operator factoring.
+- **Phase 9: Discrete Visualized & Simulated Environments** (Planned) — Grid environments with programmatic verifiers and active falsification under noise.
 
 ---
 

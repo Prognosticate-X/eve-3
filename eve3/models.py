@@ -173,3 +173,47 @@ class LearnedAbstraction:
             "created_at": self.created_at,
         }
 
+
+@dataclass
+class Task:
+    """Represents a synthesis problem specification with visible and hidden examples."""
+    task_id: str
+    task_family: str
+    description: str
+    visible_examples: List[Dict[str, Any]]
+    hidden_tests: List[Dict[str, Any]]
+    reference_program: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    source: str = "benchmark"  # benchmark, mutation, decomposition, anchor
+    difficulty_estimate: float = 0.5
+    created_at: float = field(default_factory=time.time)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "task_id": self.task_id,
+            "task_family": self.task_family,
+            "description": self.description,
+            "visible_examples": self.visible_examples,
+            "hidden_tests": self.hidden_tests,
+            "reference_program": self.reference_program,
+            "metadata": self.metadata,
+            "source": self.source,
+            "difficulty_estimate": self.difficulty_estimate,
+            "created_at": self.created_at,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Task":
+        return cls(
+            task_id=data["task_id"],
+            task_family=data.get("task_family", "generic"),
+            description=data.get("description", ""),
+            visible_examples=data.get("visible_examples", []),
+            hidden_tests=data.get("hidden_tests", []),
+            reference_program=data.get("reference_program"),
+            metadata=data.get("metadata", {}),
+            source=data.get("source", "benchmark"),
+            difficulty_estimate=data.get("difficulty_estimate", 0.5),
+            created_at=data.get("created_at", time.time()),
+        )
+
