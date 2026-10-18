@@ -1,0 +1,50 @@
+{
+  "family_id": "list_filtering",
+  "name": "List Filtering Operations",
+  "description": "Predicate-based selection and filtering operations over integer lists",
+  "is_held_out": false,
+  "tasks": [
+    {
+      "task_id": "filter_evens",
+      "task_family": "list_filtering",
+      "description": "Keep only even integers from list",
+      "visible_examples": [
+        {"input": [1, 2, 3, 4], "output": [2, 4]},
+        {"input": [7, 9, 11], "output": []}
+      ],
+      "hidden_tests": [
+        {"input": [0, 1, 2], "output": [0, 2]},
+        {"input": [2, 4, 6], "output": [2, 4, 6]}
+      ],
+      "reference_program": "(filter (lambda (a) (is_even a)) x)"
+    },
+    {
+      "task_id": "filter_greater_than_two",
+      "task_family": "list_filtering",
+      "description": "Filter elements strictly greater than 2",
+      "visible_examples": [
+        {"input": [1, 2, 3, 4], "output": [3, 4]},
+        {"input": [0, 5, -2], "output": [5]}
+      ],
+      "hidden_tests": [
+        {"input": [2, 2, 2], "output": []},
+        {"input": [10, 20], "output": [10, 20]}
+      ],
+      "reference_program": "(filter (lambda (a) (gt a 2)) x)"
+    },
+    {
+      "task_id": "filter_positive",
+      "task_family": "list_filtering",
+      "description": "Filter positive numbers strictly greater than 0",
+      "visible_examples": [
+        {"input": [-1, 0, 1, 2], "output": [1, 2]},
+        {"input": [-5, -10], "output": []}
+      ],
+      "hidden_tests": [
+        {"input": [], "output": []},
+        {"input": [100, -50, 25], "output": [100, 25]}
+      ],
+      "reference_program": "(filter (lambda (a) (gt a 0)) x)"
+    }
+  ]
+}

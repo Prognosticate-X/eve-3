@@ -105,7 +105,20 @@ In line with recent breakthroughs in recursive self-improvement (*Dream-RSI*, ar
 
 ---
 
-## 📂 4. Repository Structure
+## 🛡️ 4. Multi-Timescale Plasticity & Regression Gatekeeper
+
+Following our pre-registered protocol ([`docs/PREREGISTRATION.md`](docs/PREREGISTRATION.md)), parameter adaptability and continual learning follow a multi-timescale hierarchy rather than fragile online SGD:
+
+- **T0 (Immediate)**: In-context retrieval from persistent SQLite symbolic library (`KnowledgeLibrary`).
+- **T1 (Consolidation)**: Offline "sleep" phase LoRA fine-tuning (`Consolidator`) with value-weighted replay:
+  $$p(i) \propto w_i \cdot e^{-\Delta t_i / \tau} \cdot (1 + \text{hardness}_i)$$
+- **T2 (Base Merge)**: Long-term periodic weight assimilation following audit approval.
+- **Task Family Isolation**: LoRA adapters are compartmentalized by task family (`AdapterBank`) to prevent negative interference.
+- **Automated Regression Gate (`RegressionGate`)**: Strictly rejects adapter updates if any historical family regresses $> 2\%$, general non-DSL coding probe score drops $> 3\%$, or false verification rate exceeds $0.0\%$.
+
+---
+
+## 📂 5. Repository Structure
 
 ```
 eve-3/
@@ -116,13 +129,16 @@ eve-3/
 ├── LICENSE                            # MIT License
 ├── docs/
 │   ├── ARCHITECTURE.md                # In-depth architectural blueprint
+│   ├── EXPERIMENT_RESULTS.md          # 4-Regime empirical benchmark results
 │   ├── MATHEMATICS.md                 # Full mathematical formulations & derivations
-│   ├── ROADMAP.md                     # Phased experimental roadmap (Phases 0-5)
+│   ├── PREREGISTRATION.md             # Formal preregistered metrics and acceptance criteria
+│   ├── ROADMAP.md                     # Phased experimental roadmap (Phases 0-11)
 │   └── RSI_INTEGRATION.md             # Discovery tree & replay simulator theory
 ├── eve3/
 │   ├── config.py                      # Global configuration & hyperparameters
+│   ├── models.py                      # CandidateProgram, VerificationEvidence, LearnedAbstraction
 │   ├── dsl/                           # Functional Domain-Specific Language
-│   │   ├── ast.py                     # AST nodes, MDL metrics, S-expression serializer
+│   │   ├── ast.py                     # AST nodes, MDL metrics, step limits
 │   │   ├── interpreter.py             # Parser & sandboxed execution engine
 │   │   └── primitives.py              # Functional primitives (+, -, map, filter, fold)
 │   ├── system1_proposer/              # Intuition generator & sandbox
@@ -130,27 +146,43 @@ eve-3/
 │   │   └── sandbox.py                 # Candidate program validator
 │   ├── system2_falsifier/             # Active Bayesian falsification engine
 │   │   ├── bayesian_prober.py         # Shannon entropy, closed-form IG, Laplace update
-│   │   ├── smt_distinguisher.py       # Z3 distinguishing probe synthesis
-│   │   └── cegis_loop.py              # CEGIS orchestration loop
+│   │   ├── smt_distinguisher.py       # Z3 distinguishing probe synthesis & SMT matrix
+│   │   └── cegis_loop.py              # CEGIS orchestration loop with honest status
 │   ├── system3_crystallizer/          # Knowledge base & library learning
-│   │   ├── library.py                 # SQLite persistent storage
-│   │   └── value_compressor.py        # Submodular value-weighted compression
-│   └── discovery/                     # RSI replay engine
-│       └── tree.py                    # Discovery Tree & counterfactual simulator
+│   │   ├── library.py                 # SQLite persistent storage of learned abstractions
+│   │   └── value_compressor.py        # Submodular AST-node MDL value-weighted compression
+│   ├── discovery/                     # RSI replay engine
+│   │   ├── tree.py                    # Causal Discovery Tree & counterfactual simulator
+│   │   └── policy.py                  # Versioned exploration policies
+│   ├── plasticity/                    # Multi-timescale plasticity & safety gate
+│   │   ├── adapter_bank.py            # Isolated LoRA adapter management & rollback
+│   │   ├── consolidator.py            # Sleep phase value-weighted replay & training loop
+│   │   └── regression_gate.py         # Preregistered regression safety gatekeeper
+│   └── search/                        # Multi-strategy search controller
+│       ├── controller.py              # Unified neural/symbolic search scheduler
+│       └── enumerator.py              # Type-directed symbolic AST enumerator
 ├── benchmarks/
-│   └── list_functions.json            # Benchmark tasks (mapping, filtering, reductions)
-├── tests/
-    ├── test_dsl.py                    # AST, step budget, and parser verification
-    ├── test_prober.py                 # Information Gain & Bayesian update tests
-    ├── test_crystallizer.py           # SQLite persistence & dynamic pattern mining tests
-    ├── test_discovery_tree.py         # Causal tree frontier replay tests
-    ├── test_cegis_loop.py             # CEGIS active synthesis & verification status tests
-    └── test_benchmark_evaluation.py   # Full benchmark suite & baseline comparison
+│   ├── families/                      # Structured benchmark task families
+│   │   ├── manifest.json              # Task family index & hold-out declarations
+│   │   ├── list_mapping.json          # Mapping family
+│   │   ├── list_filtering.json        # Filtering family
+│   │   ├── list_reduction.json        # Reduction family
+│   │   ├── list_structural.json       # Structural family
+│   │   └── list_composition.json      # Strictly held-out composition family (FWT test)
+│   ├── general_coding_probe.json      # General non-DSL coding probe (retention test)
+│   ├── dev_train.json                 # Training split
+│   ├── dev_eval.json                  # In-distribution evaluation split
+│   └── held_out_test.json             # Held-out generalization split
+├── experiments/
+│   ├── run_full_ablation.py           # 4-regime ablation benchmark runner
+│   ├── run_library_ablation.py        # Library reuse ablation runner
+│   └── run_policy_evolution.py        # Policy replay & held-out correlation runner
+├── tests/                             # 41 rigorous test suites (100% passing)
 ```
 
 ---
 
-## ⚡ 5. Quickstart
+## ⚡ 6. Quickstart
 
 ### Installation
 ```bash

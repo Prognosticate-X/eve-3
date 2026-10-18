@@ -1,0 +1,59 @@
+{
+  "suite_name": "general_coding_probe",
+  "version": "1.0",
+  "description": "General non-DSL programming, algorithmic reasoning, and logic probes to verify foundation capability retention",
+  "probes": [
+    {
+      "probe_id": "probe_fibonacci",
+      "category": "recursion_and_math",
+      "description": "Compute n-th Fibonacci number (0-indexed)",
+      "test_cases": [
+        {"input": 0, "expected": 0},
+        {"input": 1, "expected": 1},
+        {"input": 6, "expected": 8},
+        {"input": 10, "expected": 55}
+      ]
+    },
+    {
+      "probe_id": "probe_is_palindrome",
+      "category": "string_and_pointers",
+      "description": "Determine whether string is a palindrome ignoring casing",
+      "test_cases": [
+        {"input": "racecar", "expected": true},
+        {"input": "Aba", "expected": true},
+        {"input": "hello", "expected": false},
+        {"input": "", "expected": true}
+      ]
+    },
+    {
+      "probe_id": "probe_frequency_count",
+      "category": "hash_and_counting",
+      "description": "Return dictionary frequency mapping for elements in list",
+      "test_cases": [
+        {"input": [1, 2, 2, 3, 3, 3], "expected": {"1": 1, "2": 2, "3": 3}},
+        {"input": [], "expected": {}}
+      ]
+    },
+    {
+      "probe_id": "probe_valid_parentheses",
+      "category": "stack_and_state",
+      "description": "Check if bracket sequence is balanced",
+      "test_cases": [
+        {"input": "()[]{}", "expected": true},
+        {"input": "([)]", "expected": false},
+        {"input": "((()))", "expected": true},
+        {"input": "(((", "expected": false}
+      ]
+    },
+    {
+      "probe_id": "probe_binary_search_index",
+      "category": "divide_and_conquer",
+      "description": "Find exact target index in sorted array or return -1",
+      "test_cases": [
+        {"input": {"arr": [1, 3, 5, 7, 9], "target": 5}, "expected": 2},
+        {"input": {"arr": [1, 3, 5, 7, 9], "target": 4}, "expected": -1},
+        {"input": {"arr": [], "target": 10}, "expected": -1}
+      ]
+    }
+  ]
+}

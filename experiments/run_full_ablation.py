@@ -12,11 +12,12 @@ Library Marginal Value, and Wall-clock Latency.
 
 import json
 from pathlib import Path
+import random
 import statistics
 import sys
 import tempfile
 import time
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -28,9 +29,10 @@ from eve3.system2_falsifier.cegis_loop import CEGISLoop, VerificationStatus
 from eve3.system3_crystallizer.library import KnowledgeLibrary
 
 
-def run_full_ablation() -> Dict[str, Any]:
+def run_full_ablation(seeds: Optional[List[int]] = None) -> Dict[str, Any]:
+    eval_seeds = seeds or [42]
     print("=====================================================================")
-    print("  EVE-3 PHASE P3: FULL 4-REGIME ABLATION BENCHMARK EXPERIMENT")
+    print(f"  EVE-3 PHASE P3/P5: FULL 4-REGIME ABLATION BENCHMARK (SEEDS: {eval_seeds})")
     print("=====================================================================")
 
     interpreter = DSLInterpreter()
@@ -244,4 +246,7 @@ def run_full_ablation() -> Dict[str, Any]:
 
 
 if __name__ == "__main__":
-    run_full_ablation()
+    seeds = [42]
+    if "--multi-seed" in sys.argv or "--seeds" in sys.argv:
+        seeds = [42, 100, 2024, 777, 999]
+    run_full_ablation(seeds=seeds)

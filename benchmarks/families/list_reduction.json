@@ -1,0 +1,36 @@
+{
+  "family_id": "list_reduction",
+  "name": "List Reduction Operations",
+  "description": "Aggregation and reduction operations over integer lists",
+  "is_held_out": false,
+  "tasks": [
+    {
+      "task_id": "list_sum",
+      "task_family": "list_reduction",
+      "description": "Compute sum of all elements in list",
+      "visible_examples": [
+        {"input": [1, 2, 3], "output": 6},
+        {"input": [10, -5], "output": 5}
+      ],
+      "hidden_tests": [
+        {"input": [], "output": 0},
+        {"input": [100, 200, 300], "output": 600}
+      ],
+      "reference_program": "(sum x)"
+    },
+    {
+      "task_id": "list_length",
+      "task_family": "list_reduction",
+      "description": "Count total number of elements in list",
+      "visible_examples": [
+        {"input": [1, 2, 3], "output": 3},
+        {"input": [], "output": 0}
+      ],
+      "hidden_tests": [
+        {"input": [10, 20, 30, 40], "output": 4},
+        {"input": [-1], "output": 1}
+      ],
+      "reference_program": "(length x)"
+    }
+  ]
+}

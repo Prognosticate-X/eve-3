@@ -105,7 +105,20 @@ EVE-3 将通用认知回路解构为三个紧密集成的子系统：
 
 ---
 
-## 📂 4. 仓库目录结构
+## 🛡️ 4. 多时间尺度可塑性与回归安全门禁
+
+根据预注册演进协议（[`docs/PREREGISTRATION.md`](docs/PREREGISTRATION.md)），系统的持续学习与权重可塑性采用严格的**多时间尺度分层机制**，取代容易导致灾难性遗忘的在线单步 SGD：
+
+- **T0（即时）**：符号知识库检索增强与 Context 提示词动态加载（`KnowledgeLibrary`）。
+- **T1（巩固）**：离线“睡眠”阶段的任务族 LoRA 适配器参数微调（`Consolidator`），采用因果价值加权回放：
+  $$p(i) \propto w_i \cdot e^{-\Delta t_i / \tau} \cdot (1 + \text{hardness}_i)$$
+- **T2（合并）**：跨周期通过长期审核后，将成熟适配器合并入基座。
+- **任务族适配器物理隔离**：各任务族 LoRA（`AdapterBank`）独立寻址与路由，互不干扰，杜绝跨族负迁移。
+- **自动化回归门禁（`RegressionGate`）**：提交前自动评测，若历史任一任务族准确率下降 $> 2\%$、通用无 DSL 编程探针得分下降 $> 3\%$、或假验证率 $> 0.0\%$，即刻阻断提交并触发版本回滚。
+
+---
+
+## 📂 5. 仓库目录结构
 
 ```
 eve-3/
@@ -116,13 +129,16 @@ eve-3/
 ├── LICENSE                            # MIT 开源许可证
 ├── docs/
 │   ├── ARCHITECTURE.md                # 架构设计详解
+│   ├── EXPERIMENT_RESULTS.md          # 4组基线全量消融实验报告
 │   ├── MATHEMATICS.md                 # 完整数学公式推导与算法规范
-│   ├── ROADMAP.md                     # 分阶段路线图与验收标准
+│   ├── PREREGISTRATION.md             # 预注册指标与验收阈值协议
+│   ├── ROADMAP.md                     # 分阶段路线图与验收标准 (Phase 0-11)
 │   └── RSI_INTEGRATION.md             # 发现树与 RSI 重放模拟理论
 ├── eve3/
 │   ├── config.py                      # 全局运行时配置与超参数控制
+│   ├── models.py                      # 证据链模型、验证凭证与学习抽象类
 │   ├── dsl/                           # 确定性函数领域特定语言 (DSL)
-│   │   ├── ast.py                     # AST 节点抽象与 MDL 描述长度
+│   │   ├── ast.py                     # AST 节点抽象、MDL 描述长度与硬深度检查
 │   │   ├── interpreter.py             # S-表达式解析与沙盒执行环境
 │   │   └── primitives.py              # 高阶函数与列表/逻辑算子
 │   ├── system1_proposer/              # 直觉与假设提议器 (System 1)
@@ -130,27 +146,43 @@ eve-3/
 │   │   └── sandbox.py                 # 可见示例多候选沙盒验证
 │   ├── system2_falsifier/             # 贝叶斯主动证伪引擎 (System 2)
 │   │   ├── bayesian_prober.py         # 闭式互信息 IG(x) 与 Laplace 后验更新
-│   │   ├── smt_distinguisher.py       # Z3 SMT 符号区分输入生成
-│   │   └── cegis_loop.py              # CEGIS 主动证伪协调回路
+│   │   ├── smt_distinguisher.py       # Z3 SMT 符号区分输入生成与支持矩阵
+│   │   └── cegis_loop.py              # CEGIS 主动证伪协调回路与诚实验证状态机
 │   ├── system3_crystallizer/          # 知识晶化与算子库学习 (System 3)
-│   │   ├── library.py                 # SQLite 持久化算子库底座
-│   │   └── value_compressor.py        # 面向复用价值的次模贪心压缩
-│   └── discovery/                     # RSI 递归自我改进层
-│       └── tree.py                    # 发现树与反事实离线策略重放器
+│   │   ├── library.py                 # SQLite 持久化抽象算子库
+│   │   └── value_compressor.py        # 基于 AST 节点 MDL 的次模价值加权贪心压缩
+│   ├── discovery/                     # RSI 递归自我改进层
+│   │   ├── tree.py                    # 因果拓扑发现树与反事实离线策略重放器
+│   │   └── policy.py                  # 版本化探索策略配置与打分
+│   ├── plasticity/                    # 多时间尺度可塑性与安全门禁
+│   │   ├── adapter_bank.py            # 任务族隔离 LoRA 库管理与安全回滚
+│   │   ├── consolidator.py            # 离线睡眠微调训练循环与因果加权回放
+│   │   └── regression_gate.py         # 预注册指标自动化回归安全门禁
+│   └── search/                        # 多策略搜索控制器
+│       ├── controller.py              # 统一神经/符号搜索调度器
+│       └── enumerator.py              # 类型剪枝符号 AST 枚举器
 ├── benchmarks/
-│   └── list_functions.json            # 列表变换、过滤与归约基准任务集
-├── tests/
-    ├── test_dsl.py                    # DSL AST、硬步数预算与语法解析单元测试
-    ├── test_prober.py                 # 信息增益与贝叶斯更新单元测试
-    ├── test_crystallizer.py           # SQLite 持久化与动态 AST 模式挖掘测试
-    ├── test_discovery_tree.py         # 因果拓扑发现树前沿重放模拟测试
-    ├── test_cegis_loop.py             # CEGIS 端到端主动合成与严格验证等级测试
-    └── test_benchmark_evaluation.py   # 全量基准任务测试与随机测试基线消融对比
+│   ├── families/                      # 结构化任务族基准集
+│   │   ├── manifest.json              # 任务族清单与留出族定义
+│   │   ├── list_mapping.json          # 映射类任务族
+│   │   ├── list_filtering.json        # 过滤类任务族
+│   │   ├── list_reduction.json        # 归约类任务族
+│   │   ├── list_structural.json       # 结构变换任务族
+│   │   └── list_composition.json      # 严格留出组合任务族 (前向迁移 FWT 测试)
+│   ├── general_coding_probe.json      # 通用无 DSL 编程能力探针集 (抗遗忘测试)
+│   ├── dev_train.json                 # 训练集拆分
+│   ├── dev_eval.json                  # 域内评测集拆分
+│   └── held_out_test.json             # 严格泛化隐藏测试集
+├── experiments/
+│   ├── run_full_ablation.py           # 4组基线全量消融实验脚本 (支持多种子评测)
+│   ├── run_library_ablation.py        # 知识库复用收益消融脚本
+│   └── run_policy_evolution.py        # 发现树因果策略回放与泛化验证脚本
+├── tests/                             # 41 项严密单元测试套件 (100% 通过)
 ```
 
 ---
 
-## ⚡ 5. 快速开始与实验运行
+## ⚡ 6. 快速开始与实验运行
 
 ### 安装环境
 ```bash

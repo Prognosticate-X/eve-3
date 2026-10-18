@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-10-18T19:00:00Z",
+  "description": "Index of all benchmark task families for continual learning, transfer, and regression gates",
+  "training_families": [
+    "list_mapping",
+    "list_filtering",
+    "list_reduction",
+    "list_structural"
+  ],
+  "held_out_families": [
+    "list_composition"
+  ],
+  "families": {
+    "list_mapping": {
+      "path": "list_mapping.json",
+      "task_count": 3,
+      "is_held_out": false
+    },
+    "list_filtering": {
+      "path": "list_filtering.json",
+      "task_count": 3,
+      "is_held_out": false
+    },
+    "list_reduction": {
+      "path": "list_reduction.json",
+      "task_count": 2,
+      "is_held_out": false
+    },
+    "list_structural": {
+      "path": "list_structural.json",
+      "task_count": 2,
+      "is_held_out": false
+    },
+    "list_composition": {
+      "path": "list_composition.json",
+      "task_count": 3,
+      "is_held_out": true
+    }
+  }
+}
