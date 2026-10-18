@@ -166,6 +166,10 @@ eve-3/
 │   │   └── sim_adapter.py             # L2 continuous 2D planar physics simulation with process/sensor noise
 │   ├── safety/                        # Hard Execution Safety & Boundary Enforcement (Phase 9)
 │   │   └── action_limiter.py          # ActionLimiter workspace bounds, magnitude clamping, E-stop & human enable
+│   ├── perception/                    # L3 Perception Front-End & Symbolic State (Phase 10)
+│   │   ├── symbolic_state.py          # SceneGraph, ObjectNode, RelationEdge, and PredicateState
+│   │   ├── encoder.py                 # VLM & sensory connected-component encoder with parametric noise modeling
+│   │   └── robust_verifier.py         # Neurosymbolic verification with graph distance and h_empty anomaly shielding
 │   ├── discovery/                     # RSI replay engine
 │   │   ├── tree.py                    # Causal Discovery Tree & counterfactual simulator
 │   │   └── policy.py                  # Versioned exploration policies
@@ -195,8 +199,9 @@ eve-3/
 │   ├── run_full_ablation.py           # 4-regime ablation benchmark runner
 │   ├── run_library_ablation.py        # Library reuse ablation runner
 │   ├── run_memory_consolidation.py    # Tiered memory & retention decay benchmark runner
+│   ├── run_perception_frontend.py     # Phase 10 L3 perception front-end & noise impact runner
 │   └── run_policy_evolution.py        # Policy replay & held-out correlation runner
-├── tests/                             # 68 rigorous test suites (100% passing)
+├── tests/                             # 74 rigorous test suites (100% passing)
 ```
 
 ---
@@ -259,7 +264,8 @@ if result.converged:
 - **Phase 7: Autonomous Curriculum & Exploration** (Completed) — Self-generating tasks, ZPD learnability filtering [0.2, 0.8], cluster entropy tracking, anti-collapse guards, and metamorphic validation.
 - **Phase 8: Tiered Memory Management & Provenance** (Completed) — Working, episodic (lossless summarization), and semantic (Hot/Cold decay) memory with Stitch-style compaction and rollback.
 - **Phase 9: Discrete Visualized & Simulated Environments with Statistical Active Falsification under Noise** (Completed) — L1 ARC-style grid perception, L2 continuous 2D planar physics, ActionLimiter safety layer (0.00% penetrations), tempered posterior $b_T(h)$, diffuse null hypothesis $h_\varnothing$, SPRT hypothesis testing, and calibrated posterior (ECE = 0.0200 <= 0.05).
-- **Phase 10: End-to-End Autonomous AGI Loop & Continual Self-Evolution** (Next) — Closed-loop integration across all multi-modal perception, simulation, tiered memory, and autonomous curriculum layers.
+- **Phase 10: L3 Perception Front-End & Quantified Noise Impact** (Completed) — VLM & sensory SceneGraph extraction, spatial topology relations, parametric noise degradation quantification, and h_empty anomaly shielding (0.00% FVR).
+- **Phase 11: Real-World Grounding & Continual Autonomous AGI Evolution** (Next) — Multi-modal perception and physical deployment with human-in-the-loop safety audit.
 
 ---
 

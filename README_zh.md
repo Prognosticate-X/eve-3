@@ -166,6 +166,10 @@ eve-3/
 │   │   └── sim_adapter.py             # L2 连续 2D 平面动力学仿真环境 (含过程与传感器高斯噪声)
 │   ├── safety/                        # 硬安全与物理边界防护层 (Phase 9)
 │   │   └── action_limiter.py          # ActionLimiter 空间边界截断、幅度限幅、急停与人工使能开关
+│   ├── perception/                    # L3 感知前端与符号状态提取 (Phase 10)
+│   │   ├── symbolic_state.py          # 场景图 SceneGraph、实体节点 ObjectNode、拓扑关系 RelationEdge 与谓词状态 PredicateState
+│   │   ├── encoder.py                 # 神经符号连通域分割与参数化噪声编码器 (属性漂移、空间抖动、漏检、虚警)
+│   │   └── robust_verifier.py         # 鲁棒神经符号图比对验证器与弥散空假设 h_empty 异常屏蔽
 │   ├── discovery/                     # RSI 递归自我改进层
 │   │   ├── tree.py                    # 因果拓扑发现树与反事实离线策略重放器
 │   │   └── policy.py                  # 版本化探索策略配置与打分
@@ -195,8 +199,9 @@ eve-3/
 │   ├── run_full_ablation.py           # 4组基线全量消融实验脚本 (支持多种子评测)
 │   ├── run_library_ablation.py        # 知识库复用收益消融脚本
 │   ├── run_memory_consolidation.py    # 分层记忆管理与衰减消融实验脚本
+│   ├── run_perception_frontend.py     # Phase 10 L3 感知前端与噪声影响量化实验脚本
 │   └── run_policy_evolution.py        # 发现树因果策略回放与泛化验证脚本
-├── tests/                             # 68 项严密单元测试套件 (100% 通过)
+├── tests/                             # 74 项严密单元测试套件 (100% 通过)
 ```
 
 ---
@@ -269,8 +274,10 @@ if result.converged:
   三层认知记忆（工作/无损情景摘要/语义冷热衰减）、保留分动态演化、Stitch 式去冗余与快照回滚。
 - **Phase 9：离散视觉与物理仿真环境扩展（带噪统计主动证伪）**（已完成）  
   L1 ARC 风格网格感知套件、L2 连续 2D 平面动力学仿真、ActionLimiter 强物理安全层（0.00% 穿透率）、回火后验 $b_T(h)$、弥散空假设 $h_\varnothing$、SPRT 统计证伪与自适应温度校准（ECE = 0.0200 <= 0.05）。
-- **Phase 10：终极端到端自主演化 AGI 闭环**（下一步）  
-  跨多模态感知、物理交互、多时间尺度记忆与自主探索的端到端持续进化系统。
+- **Phase 10：L3 神经符号感知前端与感知误差量化分析**（已完成）  
+  VLM 场景图提取、空间拓扑约束推理、参数化感知噪声退化曲线量化、弥散空假设 $h_\varnothing$ 异常屏蔽（0.00% 假验证率）。
+- **Phase 11：真实环境落地与自主演化闭环**（下一步）  
+  多模态物理交互、真实传感器部署与人工在环安全审计演化。
 
 ---
 
