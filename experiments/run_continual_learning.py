@@ -32,7 +32,7 @@ from eve3.system2_falsifier.cegis_loop import CEGISLoop, VerificationStatus
 from eve3.system3_crystallizer.library import KnowledgeLibrary
 
 
-def run_continual_learning_experiment() -> Dict[str, Any]:
+def run_continual_learning_experiment(proposer_mode: str = "leaky_templates") -> Dict[str, Any]:
     print("=====================================================================")
     print("  EVE-3 PHASE 6: CONTINUAL LEARNING, RETENTION & TRANSFER EXPERIMENT  ")
     print("=====================================================================")
@@ -61,7 +61,9 @@ def run_continual_learning_experiment() -> Dict[str, Any]:
         gate = RegressionGate(benchmarks_dir=benchmarks_dir)
         consolidator = Consolidator(adapter_bank=bank, regression_gate=gate)
 
-        config = EveConfig(max_falsification_rounds=8)
+        # Note (S1/H15): Until Stage S4/S6 wire crystallized library & AdapterBank into CEGISLoop,
+        # this script's FWT delta depends on leaky_templates vs symbolic_only.
+        config = EveConfig(max_falsification_rounds=8, proposer_mode=proposer_mode)
         loop = CEGISLoop(config)
 
         # Baseline evaluation on general coding probe

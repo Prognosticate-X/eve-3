@@ -52,7 +52,7 @@ class CandidateAbstraction:
             m = re.search(r"\(filter \(lambda \(a\) \(gt a (\d+)\)\) x\)", code_str)
             if m:
                 k_val = m.group(1)
-                replacement = f"({self.name} {self.name and k_val} x)"
+                replacement = f"({self.name} {k_val} x)"
                 compressed_code = code_str.replace(m.group(0), replacement)
 
         elif self.pattern == "(map (lambda (a) (* a $k)) x)":

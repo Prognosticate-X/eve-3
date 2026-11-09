@@ -22,12 +22,16 @@ _ACTIVE_DIAGNOSTICS_SINKS: List["Diagnostics"] = []
 
 @dataclass
 class Diagnostics:
-    """Unified diagnostic counters for oracle, Z3, LLM, sandbox, and swallowed exceptions (S0)."""
+    """Unified diagnostic counters for oracle, Z3, LLM, sandbox, and swallowed exceptions (S0/S1)."""
     oracle_queries: int = 0
     z3_calls: int = 0
     z3_fallbacks: int = 0
     z3_timeouts: int = 0
     llm_calls: int = 0
+    llm_latencies_ms: List[float] = field(default_factory=list)
+    llm_raw_candidates: int = 0
+    llm_syntax_valid_candidates: int = 0
+    llm_sandbox_passed_candidates: int = 0
     sandbox_rejections: Dict[str, int] = field(default_factory=dict)
     swallowed_errors: Dict[str, int] = field(default_factory=dict)
     swallowed_error_details: Dict[str, Dict[str, int]] = field(default_factory=dict)
@@ -61,6 +65,21 @@ class Diagnostics:
         for t in self._targets():
             t.llm_calls += 1
 
+    def record_llm_latency(self, latency_ms: float) -> None:
+        for t in self._targets():
+            t.llm_latencies_ms.append(float(latency_ms))
+
+    def record_llm_candidate_stats(
+        self,
+        raw: int = 0,
+        syntax_valid: int = 0,
+        sandbox_passed: int = 0,
+    ) -> None:
+        for t in self._targets():
+            t.llm_raw_candidates += raw
+            t.llm_syntax_valid_candidates += syntax_valid
+            t.llm_sandbox_passed_candidates += sandbox_passed
+
     def record_sandbox_rejection(self, exc: BaseException) -> None:
         exc_type = type(exc).__name__
         for t in self._targets():
@@ -80,6 +99,10 @@ class Diagnostics:
         self.z3_fallbacks = 0
         self.z3_timeouts = 0
         self.llm_calls = 0
+        self.llm_latencies_ms.clear()
+        self.llm_raw_candidates = 0
+        self.llm_syntax_valid_candidates = 0
+        self.llm_sandbox_passed_candidates = 0
         self.sandbox_rejections.clear()
         self.swallowed_errors.clear()
         self.swallowed_error_details.clear()
@@ -91,6 +114,10 @@ class Diagnostics:
             "z3_fallbacks": self.z3_fallbacks,
             "z3_timeouts": self.z3_timeouts,
             "llm_calls": self.llm_calls,
+            "llm_latencies_ms": list(self.llm_latencies_ms),
+            "llm_raw_candidates": self.llm_raw_candidates,
+            "llm_syntax_valid_candidates": self.llm_syntax_valid_candidates,
+            "llm_sandbox_passed_candidates": self.llm_sandbox_passed_candidates,
             "sandbox_rejections": dict(self.sandbox_rejections),
             "swallowed_errors": dict(self.swallowed_errors),
             "swallowed_error_details": {k: dict(v) for k, v in self.swallowed_error_details.items()},
@@ -178,6 +205,7 @@ class CandidateProgram:
         type_signature: Optional[str] = None,
         status: str = CandidateStatus.CANDIDATE,
         created_by: str = "heuristic",  # llm, enumerator, library, heuristic
+        source_detail: str = "",
         parent_candidate_ids: Optional[List[str]] = None,
     ):
         self.code_str = code_str.strip()
@@ -186,6 +214,7 @@ class CandidateProgram:
         self.type_signature = type_signature
         self.status = status
         self.created_by = created_by
+        self.source_detail = source_detail or created_by
         self.parent_candidate_ids = parent_candidate_ids or []
         self.evidence_ids: List[str] = []
         self.counterexample_ids: List[str] = []
@@ -226,6 +255,7 @@ class CandidateProgram:
             "type_signature": self.type_signature,
             "status": self.status,
             "created_by": self.created_by,
+            "source_detail": self.source_detail,
             "parent_candidate_ids": self.parent_candidate_ids,
             "evidence_ids": self.evidence_ids,
             "counterexample_ids": self.counterexample_ids,
