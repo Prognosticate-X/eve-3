@@ -220,5 +220,16 @@ class MetamorphicValidator:
 
             return True, None
 
-        except Exception as e:
+        except (
+            ValueError,
+            TypeError,
+            ZeroDivisionError,
+            IndexError,
+            KeyError,
+            RuntimeError,
+            ArithmeticError,
+            LookupError,
+        ) as e:
+            from eve3.models import GLOBAL_DIAGNOSTICS
+            GLOBAL_DIAGNOSTICS.record_swallowed_error("coverage.validate_program_blindspots", e)
             return False, f"Execution error during metamorphic testing: {str(e)}"

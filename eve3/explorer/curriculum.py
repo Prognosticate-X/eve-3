@@ -14,6 +14,7 @@ Implements Phase 7 Autonomous Discovery (Explorer):
 
 from dataclasses import dataclass, field
 import json
+import logging
 import math
 from pathlib import Path
 import random
@@ -22,9 +23,11 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 import uuid
 
 from eve3.dsl.ast import ASTNode, ApplyNode, ConstNode, LambdaNode, VarNode
-from eve3.dsl.interpreter import DSLInterpreter, SExprParser
-from eve3.models import Task, LearnedAbstraction
+from eve3.dsl.interpreter import DSLInterpreter, DSLParserError, ExecutionTimeoutError, SExprParser
+from eve3.models import Diagnostics, LearnedAbstraction, Task
 from eve3.system3_crystallizer.library import KnowledgeLibrary
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -58,6 +61,7 @@ class Curriculum:
         
         self.rng = random.Random(seed if seed is not None else 42)
         self.interpreter = DSLInterpreter()
+        self.diagnostics = Diagnostics()
         
         # Tracking history for learning progress and redundancy
         self.family_outcomes: Dict[str, List[bool]] = {}
@@ -178,7 +182,9 @@ class Curriculum:
 
             try:
                 ast = SExprParser.parse(code_str)
-            except Exception:
+            except (DSLParserError, ValueError, TypeError, SyntaxError, KeyError, IndexError) as exc:
+                self.diagnostics.record_swallowed_error("curriculum.propose_from_operators.parse", exc)
+                logger.debug("Swallowed parse error in propose_from_operators: %s", exc)
                 continue
 
             # Evaluate ground truth on test inputs using the safe interpreter
@@ -194,7 +200,19 @@ class Curriculum:
                         visible_examples.append(test_pair)
                     else:
                         hidden_tests.append(test_pair)
-                except Exception:
+                except (
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                ) as exc:
+                    self.diagnostics.record_swallowed_error("curriculum.propose_from_operators.eval", exc)
+                    logger.debug("Swallowed eval error in propose_from_operators: %s", exc)
                     eval_success = False
                     break
 
@@ -284,7 +302,19 @@ class Curriculum:
                     source="decomposition",
                 )
                 sub_tasks.append(sub_task)
-            except Exception:
+            except (
+                ExecutionTimeoutError,
+                DSLParserError,
+                ValueError,
+                TypeError,
+                ZeroDivisionError,
+                IndexError,
+                KeyError,
+                RuntimeError,
+                ArithmeticError,
+            ) as exc:
+                self.diagnostics.record_swallowed_error("curriculum.propose_from_decomposition", exc)
+                logger.debug("Swallowed error in propose_from_decomposition: %s", exc)
                 continue
 
         return sub_tasks
@@ -321,7 +351,9 @@ class Curriculum:
                     task = Task.from_dict(raw_task)
                     task.source = "anchor"
                     anchors.append(task)
-            except Exception:
+            except (OSError, json.JSONDecodeError, KeyError, ValueError, TypeError, IndexError) as exc:
+                self.diagnostics.record_swallowed_error("curriculum.propose_from_anchors", exc)
+                logger.debug("Swallowed error in propose_from_anchors: %s", exc)
                 continue
 
         return anchors[:n]
@@ -384,8 +416,9 @@ class Curriculum:
                 ast = SExprParser.parse(task.reference_program)
                 depth = ast.depth
                 nodes = ast.description_length
-            except Exception:
-                pass
+            except (DSLParserError, ValueError, TypeError, SyntaxError, KeyError, IndexError) as exc:
+                self.diagnostics.record_swallowed_error("curriculum.estimate_difficulty", exc)
+                logger.debug("Swallowed error in estimate_difficulty: %s", exc)
 
         # Complexity penalty / bonus
         # Depth 1 is a trivial operation; depth >= 4 is complex; nodes >= 8 is complex
@@ -458,7 +491,9 @@ class Curriculum:
                 return 0.60
             else:
                 return 0.30
-        except Exception:
+        except (DSLParserError, ValueError, TypeError, SyntaxError, KeyError, IndexError) as exc:
+            self.diagnostics.record_swallowed_error("curriculum._compute_compression_gain", exc)
+            logger.debug("Swallowed error in _compute_compression_gain: %s", exc)
             return 0.30
 
     def _compute_redundancy(self, task: Task) -> float:

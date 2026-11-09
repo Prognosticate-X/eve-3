@@ -1,0 +1,6 @@
+mode,regime,regime_name,budget,overall_acc_mean,overall_acc_ci95,train_acc_mean,train_acc_ci95,held_out_acc_mean,held_out_acc_ci95,avg_oracle_queries_mean,avg_z3_time_ms_mean,avg_llm_calls_mean,lib_size_mean
+passive_examples_only,A,A: Full System (Hybrid + IG + Crystallization),0,20.0,3.17,12.5,3.65,35.0,3.27,0.0,0.0,0.0,6.0
+passive_examples_only,D,D: No Crystallization (No Library),0,13.33,2.04,11.67,3.06,16.67,0.0,0.0,0.0,0.0,0.0
+passive_examples_only,E,E: No LLM (Symbolic/Heuristic + IG + Crystallization),0,18.89,2.04,10.83,2.0,35.0,3.27,0.0,0.0,0.0,6.0
+passive_examples_only,F,"F: Passive Proposal (No Active Probing, k=16)",0,13.33,2.04,11.67,3.06,16.67,0.0,0.0,0.0,0.0,0.0
+passive_examples_only,G,G: Bottom-Up Enumerative Search Baseline,0,8.33,0.0,12.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0

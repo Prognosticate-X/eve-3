@@ -23,8 +23,8 @@ smt = [
     "z3-solver>=4.12.0",
 ]
 mlx = [
-    "mlx>=0.16.0",
-    "mlx-lm>=0.18.0",
+    "mlx==0.32.4",
+    "mlx-lm==0.32.2",
 ]
 
 [tool.setuptools.packages.find]

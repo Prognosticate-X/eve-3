@@ -53,7 +53,9 @@ class RobustPerceptionVerifier:
         # 2. Execute program
         try:
             grid_actual_output = transform_fn(grid_input)
-        except Exception as e:
+        except (ValueError, TypeError, ZeroDivisionError, IndexError, KeyError, RuntimeError, ArithmeticError) as e:
+            from eve3.models import GLOBAL_DIAGNOSTICS
+            GLOBAL_DIAGNOSTICS.record_swallowed_error("robust_verifier.verify_grid_transformation", e)
             return PerceivedVerificationResult(
                 success=False,
                 is_corrupted=False,

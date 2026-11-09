@@ -1,0 +1,1269 @@
+{
+  "generator_templates": [
+    {
+      "index": 1,
+      "line": 134,
+      "code": "x",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 2,
+      "line": 135,
+      "code": "(reverse x)",
+      "exact_matches": [
+        "benchmarks/held_out_test.json::list_reverse",
+        "benchmarks/list_functions.json::list_reverse",
+        "benchmarks/families/list_structural.json::list_reverse"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 3,
+      "line": 136,
+      "code": "(tail x)",
+      "exact_matches": [
+        "benchmarks/families/list_structural.json::list_tail_elements"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 4,
+      "line": 138,
+      "code": "(map (lambda (a) (+ a 1)) x)",
+      "exact_matches": [
+        "benchmarks/dev_train.json::list_increment_all",
+        "benchmarks/list_functions.json::list_increment_all",
+        "benchmarks/families/list_mapping.json::list_increment_all"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 5,
+      "line": 139,
+      "code": "(map (lambda (a) (+ a 2)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 6,
+      "line": 140,
+      "code": "(map (lambda (a) (- a 1)) x)",
+      "exact_matches": [
+        "benchmarks/families/list_mapping.json::list_decrement_all"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 7,
+      "line": 141,
+      "code": "(map (lambda (a) (* a 2)) x)",
+      "exact_matches": [
+        "benchmarks/dev_eval.json::list_double_all",
+        "benchmarks/list_functions.json::list_double_all",
+        "benchmarks/families/list_mapping.json::list_double_all"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 8,
+      "line": 142,
+      "code": "(map (lambda (a) (* a a)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 9,
+      "line": 143,
+      "code": "(map (lambda (a) (inc a)) x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/dev_train.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))",
+        "benchmarks/list_functions.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))",
+        "benchmarks/families/list_mapping.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))"
+      ]
+    },
+    {
+      "index": 10,
+      "line": 144,
+      "code": "(map (lambda (a) (dec a)) x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/families/list_mapping.json::list_decrement_all (ref: (map (lambda (a) (- a 1)) x))"
+      ]
+    },
+    {
+      "index": 11,
+      "line": 145,
+      "code": "(map (lambda (a) (neg a)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 12,
+      "line": 147,
+      "code": "(filter (lambda (a) (is_even a)) x)",
+      "exact_matches": [
+        "benchmarks/dev_train.json::filter_evens",
+        "benchmarks/list_functions.json::filter_evens",
+        "benchmarks/families/list_filtering.json::filter_evens"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 13,
+      "line": 148,
+      "code": "(filter (lambda (a) (is_odd a)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 14,
+      "line": 149,
+      "code": "(filter (lambda (a) (gt a 0)) x)",
+      "exact_matches": [
+        "benchmarks/held_out_test.json::filter_positive",
+        "benchmarks/families/list_filtering.json::filter_positive"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 15,
+      "line": 150,
+      "code": "(filter (lambda (a) (gt a 2)) x)",
+      "exact_matches": [
+        "benchmarks/held_out_test.json::filter_greater_than_two",
+        "benchmarks/list_functions.json::filter_greater_than_two",
+        "benchmarks/families/list_filtering.json::filter_greater_than_two"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 16,
+      "line": 151,
+      "code": "(filter (lambda (a) (gt a 3)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 17,
+      "line": 152,
+      "code": "(filter (lambda (a) (lt a 5)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 18,
+      "line": 154,
+      "code": "(sum x)",
+      "exact_matches": [
+        "benchmarks/dev_eval.json::list_sum",
+        "benchmarks/list_functions.json::list_sum",
+        "benchmarks/families/list_reduction.json::list_sum"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 19,
+      "line": 155,
+      "code": "(length x)",
+      "exact_matches": [
+        "benchmarks/families/list_reduction.json::list_length"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 20,
+      "line": 156,
+      "code": "(head x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 21,
+      "line": 157,
+      "code": "(fold (lambda (acc item) (+ acc item)) 0 x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/dev_eval.json::list_sum (ref: (sum x))",
+        "benchmarks/list_functions.json::list_sum (ref: (sum x))",
+        "benchmarks/families/list_reduction.json::list_sum (ref: (sum x))"
+      ]
+    },
+    {
+      "index": 22,
+      "line": 158,
+      "code": "(fold (lambda (acc item) (+ acc 1)) 0 x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/families/list_reduction.json::list_length (ref: (length x))"
+      ]
+    },
+    {
+      "index": 23,
+      "line": 159,
+      "code": "(fold (lambda (acc item) (* acc item)) 1 x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 24,
+      "line": 161,
+      "code": "(reverse (map (lambda (a) (* a 2)) x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 25,
+      "line": 162,
+      "code": "(map (lambda (a) (* a 2)) (reverse x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 26,
+      "line": 163,
+      "code": "(filter (lambda (a) (is_even a)) (map (lambda (a) (+ a 1)) x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 27,
+      "line": 164,
+      "code": "(sum (filter (lambda (a) (is_even a)) x))",
+      "exact_matches": [
+        "benchmarks/families/list_composition.json::filter_evens_and_sum"
+      ],
+      "semantic_matches": []
+    }
+  ],
+  "enumerator_templates": [
+    {
+      "index": 1,
+      "category": "depth=1",
+      "line": 50,
+      "domain": "all",
+      "code": "x",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 2,
+      "category": "depth=2",
+      "line": 54,
+      "domain": "list",
+      "code": "(reverse x)",
+      "exact_matches": [
+        "benchmarks/held_out_test.json::list_reverse",
+        "benchmarks/list_functions.json::list_reverse",
+        "benchmarks/families/list_structural.json::list_reverse"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 3,
+      "category": "depth=2",
+      "line": 55,
+      "domain": "list",
+      "code": "(tail x)",
+      "exact_matches": [
+        "benchmarks/families/list_structural.json::list_tail_elements"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 4,
+      "category": "depth=2",
+      "line": 56,
+      "domain": "list",
+      "code": "(head x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 5,
+      "category": "depth=2",
+      "line": 57,
+      "domain": "list",
+      "code": "(sum x)",
+      "exact_matches": [
+        "benchmarks/dev_eval.json::list_sum",
+        "benchmarks/list_functions.json::list_sum",
+        "benchmarks/families/list_reduction.json::list_sum"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 6,
+      "category": "depth=2",
+      "line": 58,
+      "domain": "list",
+      "code": "(length x)",
+      "exact_matches": [
+        "benchmarks/families/list_reduction.json::list_length"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 7,
+      "category": "depth=2",
+      "line": 60,
+      "domain": "list",
+      "code": "(map (lambda (a) (inc a)) x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/dev_train.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))",
+        "benchmarks/list_functions.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))",
+        "benchmarks/families/list_mapping.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))"
+      ]
+    },
+    {
+      "index": 8,
+      "category": "depth=2",
+      "line": 61,
+      "domain": "list",
+      "code": "(map (lambda (a) (dec a)) x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/families/list_mapping.json::list_decrement_all (ref: (map (lambda (a) (- a 1)) x))"
+      ]
+    },
+    {
+      "index": 9,
+      "category": "depth=2",
+      "line": 62,
+      "domain": "list",
+      "code": "(map (lambda (a) (neg a)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 10,
+      "category": "depth=2",
+      "line": 63,
+      "domain": "list",
+      "code": "(filter (lambda (a) (is_even a)) x)",
+      "exact_matches": [
+        "benchmarks/dev_train.json::filter_evens",
+        "benchmarks/list_functions.json::filter_evens",
+        "benchmarks/families/list_filtering.json::filter_evens"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 11,
+      "category": "depth=2",
+      "line": 64,
+      "domain": "list",
+      "code": "(filter (lambda (a) (is_odd a)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 12,
+      "category": "depth=2 (k-loop)",
+      "line": 68,
+      "domain": "list",
+      "code": "(map (lambda (a) (+ a 0)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 13,
+      "category": "depth=2 (k-loop)",
+      "line": 69,
+      "domain": "list",
+      "code": "(map (lambda (a) (- a 0)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 14,
+      "category": "depth=2 (k-loop)",
+      "line": 70,
+      "domain": "list",
+      "code": "(map (lambda (a) (* a 0)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 15,
+      "category": "depth=2 (k-loop)",
+      "line": 71,
+      "domain": "list",
+      "code": "(filter (lambda (a) (gt a 0)) x)",
+      "exact_matches": [
+        "benchmarks/held_out_test.json::filter_positive",
+        "benchmarks/families/list_filtering.json::filter_positive"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 16,
+      "category": "depth=2 (k-loop)",
+      "line": 72,
+      "domain": "list",
+      "code": "(filter (lambda (a) (lt a 0)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 17,
+      "category": "depth=2 (k-loop)",
+      "line": 73,
+      "domain": "list",
+      "code": "(filter (lambda (a) (eq a 0)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 18,
+      "category": "depth=2 (k-loop)",
+      "line": 68,
+      "domain": "list",
+      "code": "(map (lambda (a) (+ a 1)) x)",
+      "exact_matches": [
+        "benchmarks/dev_train.json::list_increment_all",
+        "benchmarks/list_functions.json::list_increment_all",
+        "benchmarks/families/list_mapping.json::list_increment_all"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 19,
+      "category": "depth=2 (k-loop)",
+      "line": 69,
+      "domain": "list",
+      "code": "(map (lambda (a) (- a 1)) x)",
+      "exact_matches": [
+        "benchmarks/families/list_mapping.json::list_decrement_all"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 20,
+      "category": "depth=2 (k-loop)",
+      "line": 70,
+      "domain": "list",
+      "code": "(map (lambda (a) (* a 1)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 21,
+      "category": "depth=2 (k-loop)",
+      "line": 71,
+      "domain": "list",
+      "code": "(filter (lambda (a) (gt a 1)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 22,
+      "category": "depth=2 (k-loop)",
+      "line": 72,
+      "domain": "list",
+      "code": "(filter (lambda (a) (lt a 1)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 23,
+      "category": "depth=2 (k-loop)",
+      "line": 73,
+      "domain": "list",
+      "code": "(filter (lambda (a) (eq a 1)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 24,
+      "category": "depth=2 (k-loop)",
+      "line": 68,
+      "domain": "list",
+      "code": "(map (lambda (a) (+ a 2)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 25,
+      "category": "depth=2 (k-loop)",
+      "line": 69,
+      "domain": "list",
+      "code": "(map (lambda (a) (- a 2)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 26,
+      "category": "depth=2 (k-loop)",
+      "line": 70,
+      "domain": "list",
+      "code": "(map (lambda (a) (* a 2)) x)",
+      "exact_matches": [
+        "benchmarks/dev_eval.json::list_double_all",
+        "benchmarks/list_functions.json::list_double_all",
+        "benchmarks/families/list_mapping.json::list_double_all"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 27,
+      "category": "depth=2 (k-loop)",
+      "line": 71,
+      "domain": "list",
+      "code": "(filter (lambda (a) (gt a 2)) x)",
+      "exact_matches": [
+        "benchmarks/held_out_test.json::filter_greater_than_two",
+        "benchmarks/list_functions.json::filter_greater_than_two",
+        "benchmarks/families/list_filtering.json::filter_greater_than_two"
+      ],
+      "semantic_matches": []
+    },
+    {
+      "index": 28,
+      "category": "depth=2 (k-loop)",
+      "line": 72,
+      "domain": "list",
+      "code": "(filter (lambda (a) (lt a 2)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 29,
+      "category": "depth=2 (k-loop)",
+      "line": 73,
+      "domain": "list",
+      "code": "(filter (lambda (a) (eq a 2)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 30,
+      "category": "depth=2 (k-loop)",
+      "line": 68,
+      "domain": "list",
+      "code": "(map (lambda (a) (+ a -1)) x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/families/list_mapping.json::list_decrement_all (ref: (map (lambda (a) (- a 1)) x))"
+      ]
+    },
+    {
+      "index": 31,
+      "category": "depth=2 (k-loop)",
+      "line": 69,
+      "domain": "list",
+      "code": "(map (lambda (a) (- a -1)) x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/dev_train.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))",
+        "benchmarks/list_functions.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))",
+        "benchmarks/families/list_mapping.json::list_increment_all (ref: (map (lambda (a) (+ a 1)) x))"
+      ]
+    },
+    {
+      "index": 32,
+      "category": "depth=2 (k-loop)",
+      "line": 70,
+      "domain": "list",
+      "code": "(map (lambda (a) (* a -1)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 33,
+      "category": "depth=2 (k-loop)",
+      "line": 71,
+      "domain": "list",
+      "code": "(filter (lambda (a) (gt a -1)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 34,
+      "category": "depth=2 (k-loop)",
+      "line": 72,
+      "domain": "list",
+      "code": "(filter (lambda (a) (lt a -1)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 35,
+      "category": "depth=2 (k-loop)",
+      "line": 73,
+      "domain": "list",
+      "code": "(filter (lambda (a) (eq a -1)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 36,
+      "category": "depth=2 (k-loop)",
+      "line": 68,
+      "domain": "list",
+      "code": "(map (lambda (a) (+ a 3)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 37,
+      "category": "depth=2 (k-loop)",
+      "line": 69,
+      "domain": "list",
+      "code": "(map (lambda (a) (- a 3)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 38,
+      "category": "depth=2 (k-loop)",
+      "line": 70,
+      "domain": "list",
+      "code": "(map (lambda (a) (* a 3)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 39,
+      "category": "depth=2 (k-loop)",
+      "line": 71,
+      "domain": "list",
+      "code": "(filter (lambda (a) (gt a 3)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 40,
+      "category": "depth=2 (k-loop)",
+      "line": 72,
+      "domain": "list",
+      "code": "(filter (lambda (a) (lt a 3)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 41,
+      "category": "depth=2 (k-loop)",
+      "line": 73,
+      "domain": "list",
+      "code": "(filter (lambda (a) (eq a 3)) x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 42,
+      "category": "depth=2",
+      "line": 76,
+      "domain": "list",
+      "code": "(fold (lambda (acc item) (+ acc item)) 0 x)",
+      "exact_matches": [],
+      "semantic_matches": [
+        "benchmarks/dev_eval.json::list_sum (ref: (sum x))",
+        "benchmarks/list_functions.json::list_sum (ref: (sum x))",
+        "benchmarks/families/list_reduction.json::list_sum (ref: (sum x))"
+      ]
+    },
+    {
+      "index": 43,
+      "category": "depth=2",
+      "line": 77,
+      "domain": "list",
+      "code": "(fold (lambda (acc item) (* acc item)) 1 x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 44,
+      "category": "depth=3 (k-loop)",
+      "line": 82,
+      "domain": "list",
+      "code": "(reverse (map (lambda (a) (+ a 1)) x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 45,
+      "category": "depth=3 (k-loop)",
+      "line": 83,
+      "domain": "list",
+      "code": "(sum (map (lambda (a) (+ a 1)) x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 46,
+      "category": "depth=3 (k-loop)",
+      "line": 84,
+      "domain": "list",
+      "code": "(filter (lambda (a) (is_even a)) (map (lambda (a) (+ a 1)) x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 47,
+      "category": "depth=3 (k-loop)",
+      "line": 82,
+      "domain": "list",
+      "code": "(reverse (map (lambda (a) (+ a 2)) x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 48,
+      "category": "depth=3 (k-loop)",
+      "line": 83,
+      "domain": "list",
+      "code": "(sum (map (lambda (a) (+ a 2)) x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 49,
+      "category": "depth=3 (k-loop)",
+      "line": 84,
+      "domain": "list",
+      "code": "(filter (lambda (a) (is_even a)) (map (lambda (a) (+ a 2)) x))",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 50,
+      "category": "int (k-loop)",
+      "line": 88,
+      "domain": "int",
+      "code": "(+ x 0)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 51,
+      "category": "int (k-loop)",
+      "line": 89,
+      "domain": "int",
+      "code": "(- x 0)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 52,
+      "category": "int (k-loop)",
+      "line": 90,
+      "domain": "int",
+      "code": "(* x 0)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 53,
+      "category": "int (k-loop)",
+      "line": 88,
+      "domain": "int",
+      "code": "(+ x 1)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 54,
+      "category": "int (k-loop)",
+      "line": 89,
+      "domain": "int",
+      "code": "(- x 1)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 55,
+      "category": "int (k-loop)",
+      "line": 90,
+      "domain": "int",
+      "code": "(* x 1)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 56,
+      "category": "int (k-loop)",
+      "line": 88,
+      "domain": "int",
+      "code": "(+ x 2)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 57,
+      "category": "int (k-loop)",
+      "line": 89,
+      "domain": "int",
+      "code": "(- x 2)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 58,
+      "category": "int (k-loop)",
+      "line": 90,
+      "domain": "int",
+      "code": "(* x 2)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 59,
+      "category": "int (k-loop)",
+      "line": 88,
+      "domain": "int",
+      "code": "(+ x -1)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 60,
+      "category": "int (k-loop)",
+      "line": 89,
+      "domain": "int",
+      "code": "(- x -1)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 61,
+      "category": "int (k-loop)",
+      "line": 90,
+      "domain": "int",
+      "code": "(* x -1)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 62,
+      "category": "int (k-loop)",
+      "line": 88,
+      "domain": "int",
+      "code": "(+ x 3)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 63,
+      "category": "int (k-loop)",
+      "line": 89,
+      "domain": "int",
+      "code": "(- x 3)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 64,
+      "category": "int (k-loop)",
+      "line": 90,
+      "domain": "int",
+      "code": "(* x 3)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 65,
+      "category": "int",
+      "line": 91,
+      "domain": "int",
+      "code": "(inc x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 66,
+      "category": "int",
+      "line": 92,
+      "domain": "int",
+      "code": "(dec x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    },
+    {
+      "index": 67,
+      "category": "int",
+      "line": 93,
+      "domain": "int",
+      "code": "(neg x)",
+      "exact_matches": [],
+      "semantic_matches": []
+    }
+  ],
+  "benchmark_task_coverage": [
+    {
+      "file": "benchmarks/dev_train.json",
+      "task_id": "list_increment_all",
+      "reference_program": "(map (lambda (a) (+ a 1)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(map (lambda (a) (+ a 1)) x)",
+        "(map (lambda (a) (inc a)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(map (lambda (a) (inc a)) x)",
+        "(map (lambda (a) (+ a 1)) x)",
+        "(map (lambda (a) (- a -1)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/dev_train.json",
+      "task_id": "filter_evens",
+      "reference_program": "(filter (lambda (a) (is_even a)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(filter (lambda (a) (is_even a)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(filter (lambda (a) (is_even a)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/dev_eval.json",
+      "task_id": "list_double_all",
+      "reference_program": "(map (lambda (a) (* a 2)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(map (lambda (a) (* a 2)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(map (lambda (a) (* a 2)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/dev_eval.json",
+      "task_id": "list_sum",
+      "reference_program": "(sum x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(sum x)",
+        "(fold (lambda (acc item) (+ acc item)) 0 x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(sum x)",
+        "(fold (lambda (acc item) (+ acc item)) 0 x)"
+      ]
+    },
+    {
+      "file": "benchmarks/held_out_test.json",
+      "task_id": "filter_greater_than_two",
+      "reference_program": "(filter (lambda (a) (gt a 2)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(filter (lambda (a) (gt a 2)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(filter (lambda (a) (gt a 2)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/held_out_test.json",
+      "task_id": "list_reverse",
+      "reference_program": "(reverse x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(reverse x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(reverse x)"
+      ]
+    },
+    {
+      "file": "benchmarks/held_out_test.json",
+      "task_id": "filter_positive",
+      "reference_program": "(filter (lambda (a) (gt a 0)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(filter (lambda (a) (gt a 0)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(filter (lambda (a) (gt a 0)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/list_functions.json",
+      "task_id": "list_increment_all",
+      "reference_program": "(map (lambda (a) (+ a 1)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(map (lambda (a) (+ a 1)) x)",
+        "(map (lambda (a) (inc a)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(map (lambda (a) (inc a)) x)",
+        "(map (lambda (a) (+ a 1)) x)",
+        "(map (lambda (a) (- a -1)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/list_functions.json",
+      "task_id": "list_double_all",
+      "reference_program": "(map (lambda (a) (* a 2)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(map (lambda (a) (* a 2)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(map (lambda (a) (* a 2)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/list_functions.json",
+      "task_id": "filter_evens",
+      "reference_program": "(filter (lambda (a) (is_even a)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(filter (lambda (a) (is_even a)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(filter (lambda (a) (is_even a)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/list_functions.json",
+      "task_id": "filter_greater_than_two",
+      "reference_program": "(filter (lambda (a) (gt a 2)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(filter (lambda (a) (gt a 2)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(filter (lambda (a) (gt a 2)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/list_functions.json",
+      "task_id": "list_sum",
+      "reference_program": "(sum x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(sum x)",
+        "(fold (lambda (acc item) (+ acc item)) 0 x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(sum x)",
+        "(fold (lambda (acc item) (+ acc item)) 0 x)"
+      ]
+    },
+    {
+      "file": "benchmarks/list_functions.json",
+      "task_id": "list_reverse",
+      "reference_program": "(reverse x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(reverse x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(reverse x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_mapping.json",
+      "task_id": "list_increment_all",
+      "reference_program": "(map (lambda (a) (+ a 1)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(map (lambda (a) (+ a 1)) x)",
+        "(map (lambda (a) (inc a)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(map (lambda (a) (inc a)) x)",
+        "(map (lambda (a) (+ a 1)) x)",
+        "(map (lambda (a) (- a -1)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_mapping.json",
+      "task_id": "list_double_all",
+      "reference_program": "(map (lambda (a) (* a 2)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(map (lambda (a) (* a 2)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(map (lambda (a) (* a 2)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_mapping.json",
+      "task_id": "list_decrement_all",
+      "reference_program": "(map (lambda (a) (- a 1)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(map (lambda (a) (- a 1)) x)",
+        "(map (lambda (a) (dec a)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(map (lambda (a) (dec a)) x)",
+        "(map (lambda (a) (- a 1)) x)",
+        "(map (lambda (a) (+ a -1)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_filtering.json",
+      "task_id": "filter_evens",
+      "reference_program": "(filter (lambda (a) (is_even a)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(filter (lambda (a) (is_even a)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(filter (lambda (a) (is_even a)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_filtering.json",
+      "task_id": "filter_greater_than_two",
+      "reference_program": "(filter (lambda (a) (gt a 2)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(filter (lambda (a) (gt a 2)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(filter (lambda (a) (gt a 2)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_filtering.json",
+      "task_id": "filter_positive",
+      "reference_program": "(filter (lambda (a) (gt a 0)) x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(filter (lambda (a) (gt a 0)) x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(filter (lambda (a) (gt a 0)) x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_reduction.json",
+      "task_id": "list_sum",
+      "reference_program": "(sum x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(sum x)",
+        "(fold (lambda (acc item) (+ acc item)) 0 x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(sum x)",
+        "(fold (lambda (acc item) (+ acc item)) 0 x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_reduction.json",
+      "task_id": "list_length",
+      "reference_program": "(length x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(length x)",
+        "(fold (lambda (acc item) (+ acc 1)) 0 x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(length x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_structural.json",
+      "task_id": "list_reverse",
+      "reference_program": "(reverse x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(reverse x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(reverse x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_structural.json",
+      "task_id": "list_tail_elements",
+      "reference_program": "(tail x)",
+      "in_generator_exact": true,
+      "in_enumerator_exact": true,
+      "in_enumerator_top32": true,
+      "generator_semantic_matches": [
+        "(tail x)"
+      ],
+      "enumerator_semantic_matches": [
+        "(tail x)"
+      ]
+    },
+    {
+      "file": "benchmarks/families/list_composition.json",
+      "task_id": "filter_evens_and_sum",
+      "reference_program": "(sum (filter (lambda (a) (is_even a)) x))",
+      "in_generator_exact": true,
+      "in_enumerator_exact": false,
+      "in_enumerator_top32": false,
+      "generator_semantic_matches": [
+        "(sum (filter (lambda (a) (is_even a)) x))"
+      ],
+      "enumerator_semantic_matches": []
+    },
+    {
+      "file": "benchmarks/families/list_composition.json",
+      "task_id": "filter_positive_and_sum",
+      "reference_program": "(sum (filter (lambda (a) (gt a 0)) x))",
+      "in_generator_exact": false,
+      "in_enumerator_exact": false,
+      "in_enumerator_top32": false,
+      "generator_semantic_matches": [],
+      "enumerator_semantic_matches": []
+    },
+    {
+      "file": "benchmarks/families/list_composition.json",
+      "task_id": "reverse_and_tail",
+      "reference_program": "(tail (reverse x))",
+      "in_generator_exact": false,
+      "in_enumerator_exact": false,
+      "in_enumerator_top32": false,
+      "generator_semantic_matches": [],
+      "enumerator_semantic_matches": []
+    }
+  ]
+}

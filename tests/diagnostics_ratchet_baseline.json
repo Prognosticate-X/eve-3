@@ -1,0 +1,13 @@
+{
+  "description": "Diagnostics ratchet baseline (S0.1 / S1.1): counts of swallowed_errors may only decrease, never increase.",
+  "max_allowed_swallowed_errors": {
+    "bayesian_prober.group_by_output": 7500,
+    "smt_distinguisher._heuristic_distinguishing": 6000,
+    "sandbox.filter_valid_candidates.exec": 1000,
+    "sandbox.filter_valid_candidates.parse": 50,
+    "value_compressor.extract_candidate_abstractions": 20,
+    "smt_distinguisher.find_distinguishing_input": 20,
+    "cegis_loop.oracle_query": 20,
+    "generator._generate_raw_proposals": 5
+  }
+}

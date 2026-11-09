@@ -27,7 +27,7 @@ class SearchController:
         self.config = config or EveConfig()
         self.knowledge_library = knowledge_library
         self.generator = HypothesisGenerator(self.config)
-        self.enumerator = SymbolicEnumerator(max_depth=3)
+        self.enumerator = SymbolicEnumerator(max_depth=self.config.enumerator_max_depth)
         self.sandbox = ProgramSandbox(timeout_per_exec=self.config.sandbox_timeout_seconds)
 
     def propose_candidates(
@@ -40,11 +40,10 @@ class SearchController:
         if not examples:
             return []
 
-        # Determine domain hint based on input types
         sample_in = examples[0][0]
         domain_hint = "list" if isinstance(sample_in, list) else "int"
+        mode = self.config.proposer_mode
 
-        # Fetch crystallized operators if library is active
         crystallized_ops: List[Dict[str, Any]] = []
         if self.knowledge_library is not None:
             crystallized_ops = self.knowledge_library.get_crystallized_operators()
@@ -58,16 +57,78 @@ class SearchController:
                     seen_codes.add(c.code_str)
                     proposals.append(c)
 
-        # 1. Symbolic Enumerator
+        # C.2: Constant pool de-benchmarking: constants strictly from {0, 1} U values appearing in examples
+        extracted_consts = {0, 1}
+        for inp, out in examples:
+            for val in (inp, out):
+                if isinstance(val, int):
+                    extracted_consts.add(val)
+                elif isinstance(val, (list, tuple)):
+                    for item in val:
+                        if isinstance(item, int):
+                            extracted_consts.add(item)
+        const_pool = sorted(extracted_consts)
+
+        if mode == "llm_only":
+            llm_cands = self.generator.generate_hypotheses(
+                examples=examples,
+                crystallized_operators=crystallized_ops,
+                max_candidates=max_candidates,
+            )
+            add_candidates(llm_cands)
+            return proposals
+
+        if mode == "llm_plus_enumeration":
+            if strategy in ("hybrid", "neural_only"):
+                llm_cands = self.generator.generate_hypotheses(
+                    examples=examples,
+                    crystallized_operators=crystallized_ops,
+                    max_candidates=max_candidates,
+                )
+                add_candidates(llm_cands)
+            if strategy in ("hybrid", "symbolic_only"):
+                enum_cands = self.enumerator.enumerate_candidates(
+                    domain_hint=domain_hint,
+                    constant_pool=const_pool,
+                    max_candidates=max(max_candidates * 10, 160),
+                    mode="generic_enumeration",
+                )
+                filtered = self.sandbox.filter_valid_candidates(
+                    enum_cands, examples, created_by="enumerator"
+                )
+                add_candidates(filtered)
+            if strategy in ("hybrid", "library_only") and crystallized_ops:
+                self._add_library_candidates(crystallized_ops, examples, add_candidates)
+            return proposals
+
+        if mode == "generic_enumeration":
+            if strategy in ("hybrid", "symbolic_only", "neural_only"):
+                enum_cands = self.enumerator.enumerate_candidates(
+                    domain_hint=domain_hint,
+                    constant_pool=const_pool,
+                    max_candidates=max(max_candidates * 10, 160),
+                    mode="generic_enumeration",
+                )
+                filtered = self.sandbox.filter_valid_candidates(
+                    enum_cands, examples, created_by="enumerator"
+                )
+                add_candidates(filtered)
+            if strategy in ("hybrid", "library_only") and crystallized_ops:
+                self._add_library_candidates(crystallized_ops, examples, add_candidates)
+            return proposals
+
+        # mode == "leaky_templates" (baseline control only)
         if strategy in ("hybrid", "symbolic_only"):
             enum_cands = self.enumerator.enumerate_candidates(
-                domain_hint=domain_hint, max_candidates=max_candidates * 2
+                domain_hint=domain_hint,
+                max_candidates=max_candidates * 2,
+                mode="leaky_templates",
             )
-            raw_codes = [c.code_str for c in enum_cands]
-            filtered = self.sandbox.filter_valid_candidates(raw_codes, examples, created_by="enumerator")
+            filtered = self.sandbox.filter_valid_candidates(
+                enum_cands, examples, created_by="enumerator"
+            )
             add_candidates(filtered)
 
-        # 2. Neural / Heuristic Proposal Generator
         if strategy in ("hybrid", "neural_only"):
             neural_cands = self.generator.generate_hypotheses(
                 examples=examples,
@@ -76,18 +137,27 @@ class SearchController:
             )
             add_candidates(neural_cands)
 
-        # 3. Crystallized Library Instantiations
         if strategy in ("hybrid", "library_only") and crystallized_ops:
-            lib_codes = []
-            for op in crystallized_ops:
-                op_name = op["operator_name"]
-                arity = op.get("arity", 1)
-                if arity == 1:
-                    lib_codes.append(f"({op_name} x)")
-                elif arity == 2:
-                    for k in (1, 2, 0, -1):
-                        lib_codes.append(f"({op_name} {k} x)")
-            lib_filtered = self.sandbox.filter_valid_candidates(lib_codes, examples, created_by="library")
-            add_candidates(lib_filtered)
+            self._add_library_candidates(crystallized_ops, examples, add_candidates)
 
         return proposals
+
+    def _add_library_candidates(
+        self,
+        crystallized_ops: List[Dict[str, Any]],
+        examples: List[Tuple[Any, Any]],
+        add_fn: Any,
+    ) -> None:
+        lib_codes: List[Tuple[str, str]] = []
+        for op in crystallized_ops:
+            op_name = op["operator_name"]
+            arity = op.get("arity", 1)
+            if arity == 1:
+                lib_codes.append((f"({op_name} x)", f"library:{op_name}"))
+            elif arity == 2:
+                for k in (1, 2, 0, -1):
+                    lib_codes.append((f"({op_name} {k} x)", f"library:{op_name}"))
+        lib_filtered = self.sandbox.filter_valid_candidates(
+            lib_codes, examples, created_by="library"
+        )
+        add_fn(lib_filtered)

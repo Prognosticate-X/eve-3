@@ -1,0 +1,122 @@
+{
+  "benchmark_name": "high_ambiguity",
+  "description": "High-ambiguity benchmark suite for System 2 Active Falsification (S1.1 Section C.5). Each task provides only 1 minimal visible example, producing high version space ambiguity (>= 5 consistent candidates for >= 50% of tasks). Requires active probing to disambiguate.",
+  "tasks": [
+    {
+      "task_name": "ambiguous_reverse",
+      "family": "list_structural",
+      "description": "Reverse integer list (ambiguous on single-element list)",
+      "visible_examples": [
+        {"input": [1], "output": [1]}
+      ],
+      "hidden_tests": [
+        {"input": [1, 2], "output": [2, 1]},
+        {"input": [1, 2, 3], "output": [3, 2, 1]},
+        {"input": [5, 4, 3, 2, 1], "output": [1, 2, 3, 4, 5]},
+        {"input": [], "output": []}
+      ],
+      "reference_program": "(reverse x)"
+    },
+    {
+      "task_name": "ambiguous_tail",
+      "family": "list_structural",
+      "description": "Tail of list (ambiguous on 2-element list)",
+      "visible_examples": [
+        {"input": [1, 2], "output": [2]}
+      ],
+      "hidden_tests": [
+        {"input": [3, 4, 5], "output": [4, 5]},
+        {"input": [10, 20, 30, 40], "output": [20, 30, 40]},
+        {"input": [1], "output": []}
+      ],
+      "reference_program": "(tail x)"
+    },
+    {
+      "task_name": "ambiguous_filter_evens",
+      "family": "list_filtering",
+      "description": "Filter even integers (ambiguous on single even element)",
+      "visible_examples": [
+        {"input": [2], "output": [2]}
+      ],
+      "hidden_tests": [
+        {"input": [1, 2, 3, 4], "output": [2, 4]},
+        {"input": [7, 9, 11], "output": []},
+        {"input": [0, 1, 2], "output": [0, 2]},
+        {"input": [], "output": []}
+      ],
+      "reference_program": "(filter (lambda (a) (is_even a)) x)"
+    },
+    {
+      "task_name": "ambiguous_filter_positive",
+      "family": "list_filtering",
+      "description": "Filter positive integers (ambiguous on single positive element)",
+      "visible_examples": [
+        {"input": [3], "output": [3]}
+      ],
+      "hidden_tests": [
+        {"input": [-1, 0, 1, 2], "output": [1, 2]},
+        {"input": [-5, -10], "output": []},
+        {"input": [100, -50, 25], "output": [100, 25]},
+        {"input": [], "output": []}
+      ],
+      "reference_program": "(filter (lambda (a) (gt a 0)) x)"
+    },
+    {
+      "task_name": "ambiguous_sum",
+      "family": "list_reduction",
+      "description": "Sum of integer list (ambiguous on single-element list)",
+      "visible_examples": [
+        {"input": [5], "output": 5}
+      ],
+      "hidden_tests": [
+        {"input": [1, 2, 3], "output": 6},
+        {"input": [10, -5, 5], "output": 10},
+        {"input": [-2, -3], "output": -5},
+        {"input": [], "output": 0}
+      ],
+      "reference_program": "(sum x)"
+    },
+    {
+      "task_name": "ambiguous_increment_all",
+      "family": "list_mapping",
+      "description": "Increment all elements (ambiguous on single 1 -> 2)",
+      "visible_examples": [
+        {"input": [1], "output": [2]}
+      ],
+      "hidden_tests": [
+        {"input": [2, 3, 4], "output": [3, 4, 5]},
+        {"input": [0, -1, 5], "output": [1, 0, 6]},
+        {"input": [], "output": []}
+      ],
+      "reference_program": "(map (lambda (a) (inc a)) x)"
+    },
+    {
+      "task_name": "ambiguous_double_all",
+      "family": "list_mapping",
+      "description": "Double all elements (ambiguous on single 2 -> 4)",
+      "visible_examples": [
+        {"input": [2], "output": [4]}
+      ],
+      "hidden_tests": [
+        {"input": [1, 2, 3], "output": [2, 4, 6]},
+        {"input": [0, -3], "output": [0, -6]},
+        {"input": [], "output": []}
+      ],
+      "reference_program": "(map (lambda (a) (* a 2)) x)"
+    },
+    {
+      "task_name": "ambiguous_reverse_and_tail",
+      "family": "list_composition",
+      "description": "Reverse then tail (ambiguous on [1, 2] -> [1])",
+      "visible_examples": [
+        {"input": [1, 2], "output": [1]}
+      ],
+      "hidden_tests": [
+        {"input": [1, 2, 3], "output": [2, 1]},
+        {"input": [10, 20, 30, 40], "output": [30, 20, 10]},
+        {"input": [5], "output": []}
+      ],
+      "reference_program": "(tail (reverse x))"
+    }
+  ]
+}

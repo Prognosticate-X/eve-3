@@ -5,10 +5,15 @@ IG(x) = H(b) - sum_v q_v(x) * H(b | G_v(x))
 """
 
 import itertools
+import logging
 import math
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+from eve3.dsl.interpreter import DSLParserError, ExecutionTimeoutError
+from eve3.models import Diagnostics
 from eve3.system1_proposer.sandbox import CandidateProgram
+
+logger = logging.getLogger(__name__)
 
 
 def entropy(probs: List[float]) -> float:
@@ -35,6 +40,7 @@ class BayesianProber:
     def __init__(self, cost_penalty_lambda: float = 0.05, smoothing_epsilon: float = 1e-6):
         self.cost_penalty_lambda = cost_penalty_lambda
         self.smoothing_epsilon = smoothing_epsilon
+        self.diagnostics = Diagnostics()
 
     def initialize_beliefs(self, hypotheses: List[CandidateProgram]) -> List[float]:
         r"""Compute initial Occam/MDL prior: b_i \propto 2^{-L(P_i)}."""
@@ -61,8 +67,24 @@ class BayesianProber:
                 out = p.evaluate(probe_input, timeout=timeout)
                 # Key by canonical string representation to group unhashable types like lists
                 out_key = repr(out)
-            except Exception:
-                out_key = "__EXEC_ERROR__"
+            except (
+                ExecutionTimeoutError,
+                DSLParserError,
+                NameError,
+                AttributeError,
+                ValueError,
+                TypeError,
+                ZeroDivisionError,
+                IndexError,
+                KeyError,
+                RuntimeError,
+                ArithmeticError,
+                LookupError,
+            ) as exc:
+                self.diagnostics.record_swallowed_error("bayesian_prober.group_by_output", exc)
+                logger.debug("Swallowed error in group_by_output for %s on %r: %s", p.code_str, probe_input, exc)
+                # S1.1: Each failing candidate gets its own unique error partition so errors are never lumped together
+                out_key = f"__ERROR_{type(exc).__name__}_{idx}__"
 
             if out_key not in groups:
                 groups[out_key] = []
@@ -133,7 +155,20 @@ class BayesianProber:
                     likelihoods.append(1.0 - self.smoothing_epsilon)
                 else:
                     likelihoods.append(self.smoothing_epsilon)
-            except Exception:
+            except (
+                ExecutionTimeoutError,
+                DSLParserError,
+                ValueError,
+                TypeError,
+                ZeroDivisionError,
+                IndexError,
+                KeyError,
+                RuntimeError,
+                ArithmeticError,
+                LookupError,
+            ) as exc:
+                self.diagnostics.record_swallowed_error("bayesian_prober.update_beliefs", exc)
+                logger.debug("Swallowed error in update_beliefs for %s on %r: %s", p.code_str, probe_input, exc)
                 likelihoods.append(self.smoothing_epsilon)
 
         new_beliefs = [b * l for b, l in zip(beliefs, likelihoods)]

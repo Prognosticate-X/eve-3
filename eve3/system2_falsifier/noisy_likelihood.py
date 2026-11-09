@@ -9,8 +9,14 @@ Implements Phase 9 Active Falsification under Sensor/Simulation Noise:
 """
 
 from dataclasses import dataclass, field
+import logging
 import math
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
+from eve3.dsl.interpreter import DSLParserError, ExecutionTimeoutError
+from eve3.models import Diagnostics
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -37,6 +43,7 @@ class NoisyLikelihoodEngine:
         self.default_sigma = default_sigma
         self.null_likelihood = null_diffuse_likelihood
         self.alpha = alpha_significance
+        self.diagnostics = Diagnostics()
         # SPRT rejection threshold: log(alpha / (1 - alpha))
         self.sprt_reject_threshold = math.log(self.alpha / (1.0 - self.alpha))
 
@@ -62,7 +69,20 @@ class NoisyLikelihoodEngine:
 
         try:
             pred = hyp.predictor_fn(x)
-        except Exception:
+        except (
+            ExecutionTimeoutError,
+            DSLParserError,
+            ValueError,
+            TypeError,
+            ZeroDivisionError,
+            IndexError,
+            KeyError,
+            RuntimeError,
+            ArithmeticError,
+            LookupError,
+        ) as exc:
+            self.diagnostics.record_swallowed_error("noisy_likelihood.compute_likelihood", exc)
+            logger.debug("Swallowed error in compute_likelihood for %s: %s", hyp.hypothesis_id, exc)
             return 1e-6  # Execution failure penalized
 
         # 1. Scalar continuous observation: Gaussian likelihood
@@ -167,7 +187,20 @@ class NoisyLikelihoodEngine:
                         out = "null_output"
                     else:
                         out = repr(h.predictor_fn(x))
-                except Exception:
+                except (
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                    LookupError,
+                ) as exc:
+                    self.diagnostics.record_swallowed_error("noisy_likelihood.compute_noisy_information_gain", exc)
+                    logger.debug("Swallowed error in compute_noisy_information_gain: %s", exc)
                     out = "error"
                 pred_outputs[out] = pred_outputs.get(out, 0.0) + b
 

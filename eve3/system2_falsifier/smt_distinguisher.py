@@ -6,9 +6,13 @@ downgrades or false claims of formal verification on unsupported operations.
 
 from enum import Enum
 import itertools
+import logging
 from typing import Any, List, Optional, Set, Tuple
 
-from eve3.models import CandidateProgram
+from eve3.dsl.interpreter import DSLParserError, ExecutionTimeoutError
+from eve3.models import CandidateProgram, Diagnostics
+
+logger = logging.getLogger(__name__)
 
 
 class SMTSupportLevel(str, Enum):
@@ -41,6 +45,7 @@ class SMTDistinguisher:
     """Finds distinguishing inputs x such that P_i(x) != P_j(x) with explicit support matrix."""
 
     def __init__(self):
+        self.diagnostics = Diagnostics()
         self._z3_available = self._check_z3()
 
     def _check_z3(self) -> bool:
@@ -91,15 +96,27 @@ class SMTDistinguisher:
         p1: CandidateProgram,
         p2: CandidateProgram,
         timeout_ms: int = 500,
+        domain_hint: str = "generic",
     ) -> Optional[ProbeCandidate]:
         """Attempt to find input x where p1(x) != p2(x), logging support status."""
         supp1, r1 = self.check_ast_support(p1.ast)
         supp2, r2 = self.check_ast_support(p2.ast)
 
+        # Detect domain if generic
+        effective_domain = domain_hint
+        if effective_domain == "generic":
+            list_ops = {"reverse", "tail", "head", "sum", "length", "map", "filter", "fold", "cons", "concat"}
+            code_tokens = set(p1.code_str.replace("(", " ").replace(")", " ").split())
+            if list_ops.intersection(code_tokens):
+                effective_domain = "list"
+            else:
+                effective_domain = "int"
+
         # If either is unsupported in SMT, explicitly fallback to boundary testing with audit note
         if supp1 == SMTSupportLevel.UNSUPPORTED or supp2 == SMTSupportLevel.UNSUPPORTED:
+            self.diagnostics.record_z3_fallback()
             reason = r1 or r2
-            diff_val = self._heuristic_distinguishing(p1, p2)
+            diff_val = self._heuristic_distinguishing(p1, p2, domain_hint=effective_domain)
             if diff_val is not None:
                 return ProbeCandidate(
                     diff_val,
@@ -112,18 +129,30 @@ class SMTDistinguisher:
         # SMT supported or bounded support: invoke Z3 solver
         if self._z3_available:
             try:
-                res_int = self._z3_solve_integer_distinguishing(p1, p2, timeout_ms)
-                if res_int is not None:
-                    return ProbeCandidate(res_int, source="smt_symbolic", support_level=SMTSupportLevel.SUPPORTED)
+                if effective_domain != "list":
+                    res_int = self._z3_solve_integer_distinguishing(p1, p2, timeout_ms)
+                    if res_int is not None:
+                        return ProbeCandidate(res_int, source="smt_symbolic", support_level=SMTSupportLevel.SUPPORTED)
 
-                res_list = self._z3_solve_list_distinguishing(p1, p2, timeout_ms)
-                if res_list is not None:
-                    return ProbeCandidate(res_list, source="smt_symbolic", support_level=SMTSupportLevel.BOUNDED_SUPPORT)
-            except Exception:
-                pass
+                if effective_domain != "int":
+                    res_list = self._z3_solve_list_distinguishing(p1, p2, timeout_ms)
+                    if res_list is not None:
+                        return ProbeCandidate(res_list, source="smt_symbolic", support_level=SMTSupportLevel.BOUNDED_SUPPORT)
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                RuntimeError,
+                KeyError,
+                IndexError,
+                ArithmeticError,
+            ) as exc:
+                self.diagnostics.record_swallowed_error("smt_distinguisher.find_distinguishing_input", exc)
+                logger.warning("Z3 distinguishing solve raised %s: %s", type(exc).__name__, exc)
 
         # Fallback to boundary heuristic sampling
-        diff_val = self._heuristic_distinguishing(p1, p2)
+        self.diagnostics.record_z3_fallback()
+        diff_val = self._heuristic_distinguishing(p1, p2, domain_hint=effective_domain)
         if diff_val is not None:
             return ProbeCandidate(
                 diff_val,
@@ -151,14 +180,31 @@ class SMTDistinguisher:
 
         if expr1 is not None and expr2 is not None:
             s.add(expr1 != expr2)
-            if s.check() == z3.sat:
+            self.diagnostics.record_z3_call()
+            check_res = s.check()
+            if check_res == z3.unknown:
+                self.diagnostics.record_z3_timeout()
+            elif check_res == z3.sat:
                 m = s.model()
                 val = m[x].as_long()
                 try:
                     if p1.evaluate(val) != p2.evaluate(val):
                         return val
-                except Exception:
-                    pass
+                except (
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                ) as exc:
+                    self.diagnostics.record_swallowed_error(
+                        "smt_distinguisher._z3_solve_integer_distinguishing", exc
+                    )
+                    logger.debug("Integer witness evaluation error: %s", exc)
 
         return None
 
@@ -185,7 +231,11 @@ class SMTDistinguisher:
 
         if expr1 is not None and expr2 is not None:
             s.add(expr1 != expr2)
-            if s.check() == z3.sat:
+            self.diagnostics.record_z3_call()
+            check_res = s.check()
+            if check_res == z3.unknown:
+                self.diagnostics.record_z3_timeout()
+            elif check_res == z3.sat:
                 m = s.model()
                 extracted_seq = []
                 seq_val = m.eval(x)
@@ -196,8 +246,22 @@ class SMTDistinguisher:
                         extracted_seq.append(elem)
                     if p1.evaluate(extracted_seq) != p2.evaluate(extracted_seq):
                         return extracted_seq
-                except Exception:
-                    pass
+                except (
+                    AttributeError,
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                ) as exc:
+                    self.diagnostics.record_swallowed_error(
+                        "smt_distinguisher._z3_solve_list_distinguishing", exc
+                    )
+                    logger.debug("List witness extraction/evaluation error: %s", exc)
 
         return None
 
@@ -253,25 +317,50 @@ class SMTDistinguisher:
         self,
         p1: CandidateProgram,
         p2: CandidateProgram,
+        domain_hint: str = "generic",
     ) -> Optional[Any]:
         """Sample from boundary values and structural test cases."""
-        probes = self.generate_default_probes()
+        probes = self.generate_default_probes(domain_hint=domain_hint)
         for x in probes:
             try:
                 out1 = p1.evaluate(x)
                 out2 = p2.evaluate(x)
                 if out1 != out2:
                     return x
-            except Exception:
+            except (
+                ExecutionTimeoutError,
+                DSLParserError,
+                NameError,
+                AttributeError,
+                ValueError,
+                TypeError,
+                ZeroDivisionError,
+                IndexError,
+                KeyError,
+                RuntimeError,
+                ArithmeticError,
+                LookupError,
+            ) as exc:
+                self.diagnostics.record_swallowed_error("smt_distinguisher._heuristic_distinguishing", exc)
                 continue
         return None
 
     def generate_candidate_probe_pool(
         self,
         hypotheses: List[CandidateProgram],
+        domain_hint: str = "generic",
         max_pool_size: int = 32,
     ) -> List[ProbeCandidate]:
         """Generate candidate probes across hypotheses pairs and boundary seeds."""
+        effective_domain = domain_hint
+        if effective_domain == "generic" and hypotheses:
+            list_ops = {"reverse", "tail", "head", "sum", "length", "map", "filter", "fold", "cons", "concat"}
+            code_tokens = set(hypotheses[0].code_str.replace("(", " ").replace(")", " ").split())
+            if list_ops.intersection(code_tokens):
+                effective_domain = "list"
+            else:
+                effective_domain = "int"
+
         probes: List[ProbeCandidate] = []
         seen = set()
 
@@ -282,13 +371,13 @@ class SMTDistinguisher:
                 probes.append(probe_cand)
 
         for p1, p2 in itertools.combinations(hypotheses, 2):
-            diff = self.find_distinguishing_input(p1, p2)
+            diff = self.find_distinguishing_input(p1, p2, domain_hint=effective_domain)
             if diff is not None:
                 add_probe(diff)
             if len(probes) >= max_pool_size:
                 break
 
-        for default_p in self.generate_default_probes():
+        for default_p in self.generate_default_probes(domain_hint=effective_domain):
             if len(probes) >= max_pool_size:
                 break
             add_probe(
@@ -302,9 +391,9 @@ class SMTDistinguisher:
         return probes
 
     @staticmethod
-    def generate_default_probes() -> List[Any]:
+    def generate_default_probes(domain_hint: str = "generic") -> List[Any]:
         """Domain boundary probes for list and integer transformations."""
-        return [
+        list_probes = [
             [],
             [0],
             [1],
@@ -318,6 +407,8 @@ class SMTDistinguisher:
             [2, 4, 6, 8],
             [1, 3, 5, 7],
             [100, -100],
+        ]
+        int_probes = [
             0,
             1,
             -1,
@@ -327,3 +418,8 @@ class SMTDistinguisher:
             -10,
             100,
         ]
+        if domain_hint == "list":
+            return list_probes
+        if domain_hint == "int":
+            return int_probes
+        return list_probes + int_probes

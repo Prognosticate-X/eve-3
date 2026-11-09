@@ -1,0 +1,230 @@
+{
+  "unit_test_suite": {
+    "tests_run": 86,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "diagnostics": {
+      "oracle_queries": 357,
+      "z3_calls": 2,
+      "z3_fallbacks": 926,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {
+        "NameError": 648,
+        "DSLParserError": 1,
+        "TypeError": 1
+      },
+      "swallowed_errors": {
+        "smt_distinguisher._heuristic_distinguishing": 5602,
+        "bayesian_prober.group_by_output": 7232,
+        "sandbox.filter_valid_candidates.exec": 649,
+        "value_compressor.extract_candidate_abstractions": 5,
+        "smt_distinguisher.find_distinguishing_input": 2,
+        "cegis_loop.oracle_query": 1,
+        "sandbox.filter_valid_candidates.parse": 1
+      },
+      "swallowed_error_details": {
+        "smt_distinguisher._heuristic_distinguishing": {
+          "TypeError": 5602
+        },
+        "bayesian_prober.group_by_output": {
+          "TypeError": 7232
+        },
+        "sandbox.filter_valid_candidates.exec": {
+          "NameError": 648,
+          "TypeError": 1
+        },
+        "value_compressor.extract_candidate_abstractions": {
+          "NameError": 4,
+          "DSLParserError": 1
+        },
+        "smt_distinguisher.find_distinguishing_input": {
+          "AttributeError": 2
+        },
+        "cegis_loop.oracle_query": {
+          "ValueError": 1
+        },
+        "sandbox.filter_valid_candidates.parse": {
+          "DSLParserError": 1
+        }
+      }
+    }
+  },
+  "experiments": {
+    "experiments/run_autonomous_agi_loop.py": {
+      "oracle_queries": 25,
+      "z3_calls": 0,
+      "z3_fallbacks": 35,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {},
+      "swallowed_errors": {
+        "smt_distinguisher._heuristic_distinguishing": 280,
+        "bayesian_prober.group_by_output": 440
+      },
+      "swallowed_error_details": {
+        "smt_distinguisher._heuristic_distinguishing": {
+          "TypeError": 280
+        },
+        "bayesian_prober.group_by_output": {
+          "TypeError": 440
+        }
+      }
+    },
+    "experiments/run_autonomous_curriculum.py": {
+      "oracle_queries": 66,
+      "z3_calls": 0,
+      "z3_fallbacks": 126,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {
+        "NameError": 368
+      },
+      "swallowed_errors": {
+        "smt_distinguisher._heuristic_distinguishing": 1008,
+        "bayesian_prober.group_by_output": 1296,
+        "sandbox.filter_valid_candidates.exec": 368
+      },
+      "swallowed_error_details": {
+        "smt_distinguisher._heuristic_distinguishing": {
+          "TypeError": 1008
+        },
+        "bayesian_prober.group_by_output": {
+          "TypeError": 1296
+        },
+        "sandbox.filter_valid_candidates.exec": {
+          "NameError": 368
+        }
+      }
+    },
+    "experiments/run_continual_learning.py": {
+      "oracle_queries": 128,
+      "z3_calls": 0,
+      "z3_fallbacks": 288,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {},
+      "swallowed_errors": {
+        "smt_distinguisher._heuristic_distinguishing": 2304,
+        "bayesian_prober.group_by_output": 2688
+      },
+      "swallowed_error_details": {
+        "smt_distinguisher._heuristic_distinguishing": {
+          "TypeError": 2304
+        },
+        "bayesian_prober.group_by_output": {
+          "TypeError": 2688
+        }
+      }
+    },
+    "experiments/run_env_simulation.py": {
+      "oracle_queries": 0,
+      "z3_calls": 0,
+      "z3_fallbacks": 0,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {},
+      "swallowed_errors": {},
+      "swallowed_error_details": {}
+    },
+    "experiments/run_full_ablation.py": {
+      "oracle_queries": 32,
+      "z3_calls": 0,
+      "z3_fallbacks": 48,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {
+        "NameError": 80
+      },
+      "swallowed_errors": {
+        "smt_distinguisher._heuristic_distinguishing": 384,
+        "bayesian_prober.group_by_output": 576,
+        "sandbox.filter_valid_candidates.exec": 80
+      },
+      "swallowed_error_details": {
+        "smt_distinguisher._heuristic_distinguishing": {
+          "TypeError": 384
+        },
+        "bayesian_prober.group_by_output": {
+          "TypeError": 576
+        },
+        "sandbox.filter_valid_candidates.exec": {
+          "NameError": 80
+        }
+      }
+    },
+    "experiments/run_library_ablation.py": {
+      "oracle_queries": 24,
+      "z3_calls": 0,
+      "z3_fallbacks": 40,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {
+        "NameError": 16
+      },
+      "swallowed_errors": {
+        "smt_distinguisher._heuristic_distinguishing": 320,
+        "bayesian_prober.group_by_output": 448,
+        "sandbox.filter_valid_candidates.exec": 16
+      },
+      "swallowed_error_details": {
+        "smt_distinguisher._heuristic_distinguishing": {
+          "TypeError": 320
+        },
+        "bayesian_prober.group_by_output": {
+          "TypeError": 448
+        },
+        "sandbox.filter_valid_candidates.exec": {
+          "NameError": 16
+        }
+      }
+    },
+    "experiments/run_memory_consolidation.py": {
+      "oracle_queries": 50,
+      "z3_calls": 0,
+      "z3_fallbacks": 70,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {
+        "NameError": 200
+      },
+      "swallowed_errors": {
+        "sandbox.filter_valid_candidates.exec": 200,
+        "smt_distinguisher._heuristic_distinguishing": 560,
+        "bayesian_prober.group_by_output": 880
+      },
+      "swallowed_error_details": {
+        "sandbox.filter_valid_candidates.exec": {
+          "NameError": 200
+        },
+        "smt_distinguisher._heuristic_distinguishing": {
+          "TypeError": 560
+        },
+        "bayesian_prober.group_by_output": {
+          "TypeError": 880
+        }
+      }
+    },
+    "experiments/run_perception_frontend.py": {
+      "oracle_queries": 0,
+      "z3_calls": 0,
+      "z3_fallbacks": 0,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {},
+      "swallowed_errors": {},
+      "swallowed_error_details": {}
+    },
+    "experiments/run_policy_evolution.py": {
+      "oracle_queries": 0,
+      "z3_calls": 0,
+      "z3_fallbacks": 0,
+      "z3_timeouts": 0,
+      "llm_calls": 0,
+      "sandbox_rejections": {},
+      "swallowed_errors": {},
+      "swallowed_error_details": {}
+    }
+  }
+}
