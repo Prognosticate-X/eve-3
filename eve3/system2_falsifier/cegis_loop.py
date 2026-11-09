@@ -81,6 +81,7 @@ class CEGISLoop:
         self.prober = BayesianProber(
             cost_penalty_lambda=self.config.probe_cost_penalty_lambda,
             smoothing_epsilon=self.config.laplace_smoothing_epsilon,
+            noise_model=self.config.noise_model,
         )
         self.distinguisher = SMTDistinguisher()
 

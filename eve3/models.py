@@ -218,6 +218,7 @@ class CandidateProgram:
         self.parent_candidate_ids = parent_candidate_ids or []
         self.evidence_ids: List[str] = []
         self.counterexample_ids: List[str] = []
+        self.falsified: bool = False
 
     @property
     def description_length(self) -> int:

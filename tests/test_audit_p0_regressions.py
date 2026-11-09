@@ -23,10 +23,6 @@ from eve3.system3_crystallizer.value_compressor import ValueCompressor
 class TestAuditP0Regressions(unittest.TestCase):
     """Rigorous regression tests for audit P0 issues (H3, H4, H5, H11, H12)."""
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H3 (audit.md:143-159): Laplace smoothing (eps=1e-6) elevates falsified program back to top-1 in deterministic setting (Pending Stage S2)",
-    )
     def test_h3_laplace_smoothing_must_not_promote_falsified_program(self):
         """H3: When a candidate deterministic program is falsified by an active probe,
         its posterior probability must become strictly 0.0 and it must never remain in top-1."""

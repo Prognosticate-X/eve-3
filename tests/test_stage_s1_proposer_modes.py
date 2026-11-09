@@ -10,6 +10,7 @@ Covers H9 & H10 from reports/audit.md and Stage S1 requirements:
 5. Real MLX-LM smoke test verifying sampler API compatibility (llm_calls > 0, zero TypeError on temp).
 """
 
+from typing import Tuple
 import unittest
 from unittest.mock import patch
 import pytest
@@ -36,7 +37,6 @@ def _mlx_and_model_available() -> Tuple[bool, str]:
     return True, ""
 
 
-from typing import Tuple
 _MLX_OK, _MLX_REASON = _mlx_and_model_available()
 
 

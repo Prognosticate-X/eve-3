@@ -11,6 +11,12 @@ VALID_PROPOSER_MODES = (
     "llm_plus_enumeration",
 )
 
+VALID_PROBE_STRATEGIES = (
+    "bayesian_ig",
+    "random",
+    "none",
+)
+
 
 @dataclass
 class EveConfig:
@@ -28,6 +34,8 @@ class EveConfig:
     max_ast_depth: int = 8
     
     # System 2: Bayesian Active Falsification
+    noise_model: str = "deterministic"
+    probe_strategy: str = "bayesian_ig"
     probe_cost_penalty_lambda: float = 0.05
     laplace_smoothing_epsilon: float = 1e-6
     max_falsification_rounds: int = 15
@@ -42,4 +50,12 @@ class EveConfig:
         if self.proposer_mode not in VALID_PROPOSER_MODES:
             raise ValueError(
                 f"Invalid proposer_mode {self.proposer_mode!r}; must be one of {VALID_PROPOSER_MODES}"
+            )
+        if self.probe_strategy not in VALID_PROBE_STRATEGIES:
+            raise ValueError(
+                f"Invalid probe_strategy {self.probe_strategy!r}; must be one of {VALID_PROBE_STRATEGIES}"
+            )
+        if self.noise_model != "deterministic" and not self.noise_model.startswith("noisy"):
+            raise ValueError(
+                f"Invalid noise_model {self.noise_model!r}; must be 'deterministic' or 'noisy(eps)'"
             )
