@@ -1,0 +1,75 @@
+{
+  "description": "Clean, non-benchmark few-shot prompt definitions for local LLM (Prompt S1.1 Section D.1). Contains full DSL syntax specification and 4 strictly non-overlapping task examples.",
+  "valid_identifiers": [
+    "x",
+    "map",
+    "filter",
+    "fold",
+    "reverse",
+    "tail",
+    "head",
+    "cons",
+    "concat",
+    "sum",
+    "length",
+    "inc",
+    "dec",
+    "neg",
+    "is_even",
+    "is_odd",
+    "+",
+    "-",
+    "*",
+    "gt",
+    "lt",
+    "eq"
+  ],
+  "syntax_rules": [
+    "Expressions must be valid Lisp S-expressions: (operator arg1 arg2 ...)",
+    "Input variable is always named 'x' (or 'input')",
+    "Higher-order map syntax: (map (lambda (a) body) x)",
+    "Higher-order filter syntax: (filter (lambda (a) predicate) x)",
+    "Higher-order fold syntax: (fold (lambda (acc item) body) init x)",
+    "Do NOT use Haskell currying like (map + 1 x); use (map (lambda (a) (+ a 1)) x)",
+    "Do NOT substitute literal numbers or lists in place of variable x",
+    "Return only raw candidate expressions, one per line"
+  ],
+  "fewshot_tasks": [
+    {
+      "task_name": "fewshot_drop_first_two",
+      "description": "Drop the first two elements from list",
+      "examples": [
+        {"input": [1, 2, 3, 4], "output": [3, 4]},
+        {"input": [5, 6, 7], "output": [7]}
+      ],
+      "reference_program": "(tail (tail x))"
+    },
+    {
+      "task_name": "fewshot_prepend_zero",
+      "description": "Prepend zero to the beginning of list",
+      "examples": [
+        {"input": [1, 2], "output": [0, 1, 2]},
+        {"input": [], "output": [0]}
+      ],
+      "reference_program": "(cons 0 x)"
+    },
+    {
+      "task_name": "fewshot_multiply_by_five",
+      "description": "Multiply every element in list by 5",
+      "examples": [
+        {"input": [1, 2], "output": [5, 10]},
+        {"input": [0, -1], "output": [0, -5]}
+      ],
+      "reference_program": "(map (lambda (a) (* a 5)) x)"
+    },
+    {
+      "task_name": "fewshot_filter_greater_than_four",
+      "description": "Keep only elements strictly greater than 4",
+      "examples": [
+        {"input": [2, 5, 1, 6], "output": [5, 6]},
+        {"input": [0, 3], "output": []}
+      ],
+      "reference_program": "(filter (lambda (a) (gt a 4)) x)"
+    }
+  ]
+}

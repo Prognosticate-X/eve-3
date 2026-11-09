@@ -234,7 +234,18 @@ class BottomUpOEEnumerator:
                     if actual != expected or type(actual) is not type(expected):
                         passed_held_out = False
                         break
-            except Exception:
+            except (
+                DSLParserError,
+                DSLExecutionError,
+                ExecutionTimeoutError,
+                TypeError,
+                ZeroDivisionError,
+                IndexError,
+                ValueError,
+                KeyError,
+                AttributeError,
+                RecursionError,
+            ):
                 passed_held_out = False
 
         return {
