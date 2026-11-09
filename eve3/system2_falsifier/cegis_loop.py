@@ -161,9 +161,9 @@ class CEGISLoop:
                         diagnostics=run_diag,
                     )
 
-                # Select probe maximizing Information Gain
-                best_x, score = self.prober.select_best_probe(hypotheses, beliefs, novel_probes)
-                if best_x is None:
+                # Select probe based on configured probe_strategy
+                if self.config.probe_strategy == "none":
+                    # Baseline_A: No active probe falsification
                     best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
                     return self._finalize_result(
                         candidate=hypotheses[best_idx],
@@ -175,6 +175,25 @@ class CEGISLoop:
                         task_family=task_family,
                         diagnostics=run_diag,
                     )
+                elif self.config.probe_strategy == "random":
+                    # Baseline_Random: Random novel probe selection without IG maximization
+                    import random
+                    best_x = random.Random(42 + round_idx).choice(novel_probes)
+                else:
+                    # Default: "bayesian_ig"
+                    best_x, score = self.prober.select_best_probe(hypotheses, beliefs, novel_probes)
+                    if best_x is None:
+                        best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
+                        return self._finalize_result(
+                            candidate=hypotheses[best_idx],
+                            rounds=round_idx,
+                            probes=probes_used,
+                            beliefs=beliefs,
+                            survivors=hypotheses,
+                            held_out_tests=held_out_tests,
+                            task_family=task_family,
+                            diagnostics=run_diag,
+                        )
 
                 # Query Oracle (count all invocations, including failed ones)
                 self.diagnostics.record_oracle_query()
