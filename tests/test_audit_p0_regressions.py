@@ -91,10 +91,6 @@ class TestAuditP0Regressions(unittest.TestCase):
         )
         self.assertIsNone(res.verified_program)
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H5 (audit.md:213-232): SMTDistinguisher._ast_to_z3_seq lacks support for map/filter/reverse (Pending Stage S3)",
-    )
     def test_h5_z3_distinguisher_must_symbolically_differentiate_map_programs(self):
         """H5: SMTDistinguisher must symbolically prove distinguishability for map/filter programs
         using Z3 rather than falling back 100% to boundary testing."""
