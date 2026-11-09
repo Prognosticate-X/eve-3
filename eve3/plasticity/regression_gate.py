@@ -244,7 +244,18 @@ class RegressionGate:
                     if actual != expected:
                         probe_passed = False
                         break
-                except Exception:
+                except (
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                    LookupError,
+                ) as exc:
+                    from eve3.models import GLOBAL_DIAGNOSTICS
+                    GLOBAL_DIAGNOSTICS.record_swallowed_error("regression_gate.evaluate_general_capability", exc)
                     probe_passed = False
                     break
             if probe_passed:

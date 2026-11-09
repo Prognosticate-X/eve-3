@@ -1,10 +1,13 @@
 """System 1 Sandbox: candidate program validation against visible I/O pairs."""
 
+import logging
 import time
 from typing import Any, List, Optional, Tuple
 
 from eve3.dsl.interpreter import DSLInterpreter, DSLParserError, ExecutionTimeoutError
-from eve3.models import CandidateProgram, CandidateStatus, VerificationEvidence
+from eve3.models import CandidateProgram, CandidateStatus, Diagnostics, VerificationEvidence
+
+logger = logging.getLogger(__name__)
 
 
 class ProgramSandbox:
@@ -13,6 +16,7 @@ class ProgramSandbox:
     def __init__(self, timeout_per_exec: float = 0.5):
         self.timeout = timeout_per_exec
         self.interpreter = DSLInterpreter()
+        self.diagnostics = Diagnostics()
 
     def filter_valid_candidates(
         self,
@@ -26,7 +30,10 @@ class ProgramSandbox:
         for code in raw_candidates:
             try:
                 candidate = CandidateProgram(code, created_by=created_by)
-            except (DSLParserError, Exception):
+            except (DSLParserError, ValueError, TypeError, SyntaxError, KeyError, IndexError) as exc:
+                self.diagnostics.record_sandbox_rejection(exc)
+                self.diagnostics.record_swallowed_error("sandbox.filter_valid_candidates.parse", exc)
+                logger.debug("Sandbox rejected invalid syntax %r: %s", code, exc)
                 continue
 
             matches_all = True
@@ -37,7 +44,25 @@ class ProgramSandbox:
                     if actual_out != expected_out:
                         matches_all = False
                         break
-                except (ExecutionTimeoutError, Exception):
+                except (
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    NameError,
+                    AttributeError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    RecursionError,
+                    ArithmeticError,
+                    LookupError,
+                    MemoryError,
+                ) as exc:
+                    self.diagnostics.record_sandbox_rejection(exc)
+                    self.diagnostics.record_swallowed_error("sandbox.filter_valid_candidates.exec", exc)
+                    logger.debug("Sandbox rejected candidate %r on %r: %s", code, inp, exc)
                     matches_all = False
                     break
             runtime_ms = (time.perf_counter() - t0) * 1000.0

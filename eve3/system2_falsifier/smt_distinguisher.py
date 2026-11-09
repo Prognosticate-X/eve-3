@@ -6,9 +6,13 @@ downgrades or false claims of formal verification on unsupported operations.
 
 from enum import Enum
 import itertools
+import logging
 from typing import Any, List, Optional, Set, Tuple
 
-from eve3.models import CandidateProgram
+from eve3.dsl.interpreter import DSLParserError, ExecutionTimeoutError
+from eve3.models import CandidateProgram, Diagnostics
+
+logger = logging.getLogger(__name__)
 
 
 class SMTSupportLevel(str, Enum):
@@ -41,6 +45,7 @@ class SMTDistinguisher:
     """Finds distinguishing inputs x such that P_i(x) != P_j(x) with explicit support matrix."""
 
     def __init__(self):
+        self.diagnostics = Diagnostics()
         self._z3_available = self._check_z3()
 
     def _check_z3(self) -> bool:
@@ -98,6 +103,7 @@ class SMTDistinguisher:
 
         # If either is unsupported in SMT, explicitly fallback to boundary testing with audit note
         if supp1 == SMTSupportLevel.UNSUPPORTED or supp2 == SMTSupportLevel.UNSUPPORTED:
+            self.diagnostics.record_z3_fallback()
             reason = r1 or r2
             diff_val = self._heuristic_distinguishing(p1, p2)
             if diff_val is not None:
@@ -119,10 +125,20 @@ class SMTDistinguisher:
                 res_list = self._z3_solve_list_distinguishing(p1, p2, timeout_ms)
                 if res_list is not None:
                     return ProbeCandidate(res_list, source="smt_symbolic", support_level=SMTSupportLevel.BOUNDED_SUPPORT)
-            except Exception:
-                pass
+            except (
+                AttributeError,
+                TypeError,
+                ValueError,
+                RuntimeError,
+                KeyError,
+                IndexError,
+                ArithmeticError,
+            ) as exc:
+                self.diagnostics.record_swallowed_error("smt_distinguisher.find_distinguishing_input", exc)
+                logger.warning("Z3 distinguishing solve raised %s: %s", type(exc).__name__, exc)
 
         # Fallback to boundary heuristic sampling
+        self.diagnostics.record_z3_fallback()
         diff_val = self._heuristic_distinguishing(p1, p2)
         if diff_val is not None:
             return ProbeCandidate(
@@ -151,14 +167,31 @@ class SMTDistinguisher:
 
         if expr1 is not None and expr2 is not None:
             s.add(expr1 != expr2)
-            if s.check() == z3.sat:
+            self.diagnostics.record_z3_call()
+            check_res = s.check()
+            if check_res == z3.unknown:
+                self.diagnostics.record_z3_timeout()
+            elif check_res == z3.sat:
                 m = s.model()
                 val = m[x].as_long()
                 try:
                     if p1.evaluate(val) != p2.evaluate(val):
                         return val
-                except Exception:
-                    pass
+                except (
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                ) as exc:
+                    self.diagnostics.record_swallowed_error(
+                        "smt_distinguisher._z3_solve_integer_distinguishing", exc
+                    )
+                    logger.debug("Integer witness evaluation error: %s", exc)
 
         return None
 
@@ -185,7 +218,11 @@ class SMTDistinguisher:
 
         if expr1 is not None and expr2 is not None:
             s.add(expr1 != expr2)
-            if s.check() == z3.sat:
+            self.diagnostics.record_z3_call()
+            check_res = s.check()
+            if check_res == z3.unknown:
+                self.diagnostics.record_z3_timeout()
+            elif check_res == z3.sat:
                 m = s.model()
                 extracted_seq = []
                 seq_val = m.eval(x)
@@ -196,8 +233,22 @@ class SMTDistinguisher:
                         extracted_seq.append(elem)
                     if p1.evaluate(extracted_seq) != p2.evaluate(extracted_seq):
                         return extracted_seq
-                except Exception:
-                    pass
+                except (
+                    AttributeError,
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                ) as exc:
+                    self.diagnostics.record_swallowed_error(
+                        "smt_distinguisher._z3_solve_list_distinguishing", exc
+                    )
+                    logger.debug("List witness extraction/evaluation error: %s", exc)
 
         return None
 
@@ -262,7 +313,21 @@ class SMTDistinguisher:
                 out2 = p2.evaluate(x)
                 if out1 != out2:
                     return x
-            except Exception:
+            except (
+                ExecutionTimeoutError,
+                DSLParserError,
+                NameError,
+                AttributeError,
+                ValueError,
+                TypeError,
+                ZeroDivisionError,
+                IndexError,
+                KeyError,
+                RuntimeError,
+                ArithmeticError,
+                LookupError,
+            ) as exc:
+                self.diagnostics.record_swallowed_error("smt_distinguisher._heuristic_distinguishing", exc)
                 continue
         return None
 

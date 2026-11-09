@@ -87,8 +87,9 @@ class AdapterBank:
             try:
                 self._conn.close()
                 self._conn = None
-            except Exception:
-                pass
+            except sqlite3.Error as exc:
+                from eve3.models import GLOBAL_DIAGNOSTICS
+                GLOBAL_DIAGNOSTICS.record_swallowed_error("adapter_bank.close", exc)
 
     def __del__(self):
         self.close()

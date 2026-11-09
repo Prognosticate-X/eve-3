@@ -5,13 +5,18 @@ and updates Bayesian posterior distributions with explicit verification statuses
 """
 
 from enum import Enum
+import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from eve3.config import EveConfig
+from eve3.dsl.interpreter import DSLParserError, ExecutionTimeoutError
+from eve3.models import Diagnostics, active_diagnostics_scope
 from eve3.system1_proposer.generator import HypothesisGenerator
 from eve3.system1_proposer.sandbox import CandidateProgram
 from eve3.system2_falsifier.bayesian_prober import BayesianProber
 from eve3.system2_falsifier.smt_distinguisher import SMTDistinguisher
+
+logger = logging.getLogger(__name__)
 
 
 class VerificationStatus(str, Enum):
@@ -36,6 +41,7 @@ class CEGISResult:
         final_beliefs: List[float],
         surviving_candidates: List[CandidateProgram],
         held_out_accuracy: Optional[float] = None,
+        diagnostics: Optional[Diagnostics] = None,
     ):
         self.status = status
         self.verified_program = verified_program
@@ -44,6 +50,7 @@ class CEGISResult:
         self.final_beliefs = final_beliefs
         self.surviving_candidates = surviving_candidates
         self.held_out_accuracy = held_out_accuracy
+        self.diagnostics = diagnostics if diagnostics is not None else Diagnostics()
 
     @property
     def converged(self) -> bool:
@@ -69,6 +76,7 @@ class CEGISLoop:
         from eve3.search.controller import SearchController
         self.config = config or EveConfig()
         self.knowledge_library = knowledge_library
+        self.diagnostics = Diagnostics()
         self.search_controller = SearchController(self.config, self.knowledge_library)
         self.prober = BayesianProber(
             cost_penalty_lambda=self.config.probe_cost_penalty_lambda,
@@ -86,131 +94,154 @@ class CEGISLoop:
         search_strategy: str = "hybrid",
     ) -> CEGISResult:
         """Run active falsification loop and validate against held-out tests."""
-        current_examples = list(initial_examples)
-        probes_used: List[Tuple[Any, Any]] = []
+        run_diag = Diagnostics()
+        with active_diagnostics_scope(run_diag):
+            current_examples = list(initial_examples)
+            probes_used: List[Tuple[Any, Any]] = []
 
-        # 1. Generate initial hypotheses via unified search controller
-        hypotheses = self.search_controller.propose_candidates(
-            examples=current_examples,
-            strategy=search_strategy,
-            max_candidates=self.config.max_hypotheses_per_round,
-        )
-
-        if not hypotheses:
-            return CEGISResult(
-                status=VerificationStatus.COLLAPSED,
-                verified_program=None,
-                rounds_executed=0,
-                probes_used=[],
-                final_beliefs=[],
-                surviving_candidates=[],
+            # 1. Generate initial hypotheses via unified search controller
+            hypotheses = self.search_controller.propose_candidates(
+                examples=current_examples,
+                strategy=search_strategy,
+                max_candidates=self.config.max_hypotheses_per_round,
             )
 
-
-        beliefs = self.prober.initialize_beliefs(hypotheses)
-
-        for round_idx in range(1, self.config.max_falsification_rounds + 1):
-            # Check high-confidence single hypothesis
-            if len(hypotheses) == 1 and beliefs[0] > 0.95:
-                return self._finalize_result(
-                    candidate=hypotheses[0],
-                    rounds=round_idx,
-                    probes=probes_used,
-                    beliefs=beliefs,
-                    survivors=hypotheses,
-                    held_out_tests=held_out_tests,
-                    task_family=task_family,
+            if not hypotheses:
+                return CEGISResult(
+                    status=VerificationStatus.COLLAPSED,
+                    verified_program=None,
+                    rounds_executed=0,
+                    probes_used=[],
+                    final_beliefs=[],
+                    surviving_candidates=[],
+                    diagnostics=run_diag,
                 )
 
-            # Generate candidate probes across all hypothesis pairs
-            probe_candidates = self.distinguisher.generate_candidate_probe_pool(
-                hypotheses, max_pool_size=self.config.falsification_probe_pool_size
-            )
+            beliefs = self.prober.initialize_beliefs(hypotheses)
 
-            # Filter out inputs already evaluated in current_examples
-            seen_inputs = {repr(x) for x, _ in current_examples}
-            novel_probes = [p.value for p in probe_candidates if repr(p.value) not in seen_inputs]
-
-            if not novel_probes:
-                # No more distinguishing probes found
-                best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
-                return self._finalize_result(
-                    candidate=hypotheses[best_idx],
-                    rounds=round_idx,
-                    probes=probes_used,
-                    beliefs=beliefs,
-                    survivors=hypotheses,
-                    held_out_tests=held_out_tests,
-                    task_family=task_family,
-                )
-
-            # Select probe maximizing Information Gain
-            best_x, score = self.prober.select_best_probe(hypotheses, beliefs, novel_probes)
-            if best_x is None:
-                best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
-                return self._finalize_result(
-                    candidate=hypotheses[best_idx],
-                    rounds=round_idx,
-                    probes=probes_used,
-                    beliefs=beliefs,
-                    survivors=hypotheses,
-                    held_out_tests=held_out_tests,
-                    task_family=task_family,
-                )
-
-            # Query Oracle
-            try:
-                oracle_y = oracle_fn(best_x)
-            except Exception:
-                continue
-
-            current_examples.append((best_x, oracle_y))
-            probes_used.append((best_x, oracle_y))
-
-            # Update Bayesian posterior
-            beliefs = self.prober.update_beliefs(hypotheses, beliefs, best_x, oracle_y)
-
-            # Prune hypotheses with negligible belief (falsified)
-            survivors = []
-            survivor_beliefs = []
-            for h, b in zip(hypotheses, beliefs):
-                if b > 1e-4:
-                    survivors.append(h)
-                    survivor_beliefs.append(b)
-
-            if not survivors:
-                # Version space collapse: re-generate hypotheses with updated examples
-                hypotheses = self.search_controller.propose_candidates(
-                    examples=current_examples,
-                    strategy=search_strategy,
-                    max_candidates=self.config.max_hypotheses_per_round,
-                )
-                if not hypotheses:
-                    return CEGISResult(
-                        status=VerificationStatus.COLLAPSED,
-                        verified_program=None,
-                        rounds_executed=round_idx,
-                        probes_used=probes_used,
-                        final_beliefs=[],
-                        surviving_candidates=[],
+            for round_idx in range(1, self.config.max_falsification_rounds + 1):
+                # Check high-confidence single hypothesis
+                if len(hypotheses) == 1 and beliefs[0] > 0.95:
+                    return self._finalize_result(
+                        candidate=hypotheses[0],
+                        rounds=round_idx,
+                        probes=probes_used,
+                        beliefs=beliefs,
+                        survivors=hypotheses,
+                        held_out_tests=held_out_tests,
+                        task_family=task_family,
+                        diagnostics=run_diag,
                     )
-                beliefs = self.prober.initialize_beliefs(hypotheses)
-            else:
-                hypotheses = survivors
-                b_total = sum(survivor_beliefs)
-                beliefs = [b / b_total for b in survivor_beliefs]
 
-        # Max rounds reached
-        best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
-        return self._finalize_result(
-            candidate=hypotheses[best_idx],
-            rounds=self.config.max_falsification_rounds,
-            probes=probes_used,
-            beliefs=beliefs,
-            survivors=hypotheses,
-            held_out_tests=held_out_tests,
-            task_family=task_family,
-        )
+                # Generate candidate probes across all hypothesis pairs
+                probe_candidates = self.distinguisher.generate_candidate_probe_pool(
+                    hypotheses, max_pool_size=self.config.falsification_probe_pool_size
+                )
+
+                # Filter out inputs already evaluated in current_examples
+                seen_inputs = {repr(x) for x, _ in current_examples}
+                novel_probes = [p.value for p in probe_candidates if repr(p.value) not in seen_inputs]
+
+                if not novel_probes:
+                    # No more distinguishing probes found
+                    best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
+                    return self._finalize_result(
+                        candidate=hypotheses[best_idx],
+                        rounds=round_idx,
+                        probes=probes_used,
+                        beliefs=beliefs,
+                        survivors=hypotheses,
+                        held_out_tests=held_out_tests,
+                        task_family=task_family,
+                        diagnostics=run_diag,
+                    )
+
+                # Select probe maximizing Information Gain
+                best_x, score = self.prober.select_best_probe(hypotheses, beliefs, novel_probes)
+                if best_x is None:
+                    best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
+                    return self._finalize_result(
+                        candidate=hypotheses[best_idx],
+                        rounds=round_idx,
+                        probes=probes_used,
+                        beliefs=beliefs,
+                        survivors=hypotheses,
+                        held_out_tests=held_out_tests,
+                        task_family=task_family,
+                        diagnostics=run_diag,
+                    )
+
+                # Query Oracle (count all invocations, including failed ones)
+                self.diagnostics.record_oracle_query()
+                try:
+                    oracle_y = oracle_fn(best_x)
+                except (
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    NameError,
+                    AttributeError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                    LookupError,
+                ) as exc:
+                    self.diagnostics.record_swallowed_error("cegis_loop.oracle_query", exc)
+                    logger.warning("Oracle query failed on probe %r: %s", best_x, exc)
+                    continue
+
+                current_examples.append((best_x, oracle_y))
+                probes_used.append((best_x, oracle_y))
+
+                # Update Bayesian posterior
+                beliefs = self.prober.update_beliefs(hypotheses, beliefs, best_x, oracle_y)
+
+                # Prune hypotheses with negligible belief (falsified)
+                survivors = []
+                survivor_beliefs = []
+                for h, b in zip(hypotheses, beliefs):
+                    if b > 1e-4:
+                        survivors.append(h)
+                        survivor_beliefs.append(b)
+
+                if not survivors:
+                    # Version space collapse: re-generate hypotheses with updated examples
+                    hypotheses = self.search_controller.propose_candidates(
+                        examples=current_examples,
+                        strategy=search_strategy,
+                        max_candidates=self.config.max_hypotheses_per_round,
+                    )
+                    if not hypotheses:
+                        return CEGISResult(
+                            status=VerificationStatus.COLLAPSED,
+                            verified_program=None,
+                            rounds_executed=round_idx,
+                            probes_used=probes_used,
+                            final_beliefs=[],
+                            surviving_candidates=[],
+                            diagnostics=run_diag,
+                        )
+                    beliefs = self.prober.initialize_beliefs(hypotheses)
+                else:
+                    hypotheses = survivors
+                    b_total = sum(survivor_beliefs)
+                    beliefs = [b / b_total for b in survivor_beliefs]
+
+            # Max rounds reached
+            best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
+            return self._finalize_result(
+                candidate=hypotheses[best_idx],
+                rounds=self.config.max_falsification_rounds,
+                probes=probes_used,
+                beliefs=beliefs,
+                survivors=hypotheses,
+                held_out_tests=held_out_tests,
+                task_family=task_family,
+                diagnostics=run_diag,
+            )
 
     def _finalize_result(
         self,
@@ -221,6 +252,7 @@ class CEGISLoop:
         survivors: List[CandidateProgram],
         held_out_tests: Optional[List[Tuple[Any, Any]]],
         task_family: str,
+        diagnostics: Optional[Diagnostics] = None,
     ) -> CEGISResult:
         """Evaluate candidate on held-out tests and assign honest verification status."""
         import time
@@ -233,8 +265,22 @@ class CEGISLoop:
                 try:
                     if candidate.evaluate(test_x) == expected_y:
                         passed += 1
-                except Exception:
-                    pass
+                except (
+                    ExecutionTimeoutError,
+                    DSLParserError,
+                    NameError,
+                    AttributeError,
+                    ValueError,
+                    TypeError,
+                    ZeroDivisionError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    ArithmeticError,
+                    LookupError,
+                ) as exc:
+                    self.diagnostics.record_swallowed_error("cegis_loop.held_out_eval", exc)
+                    logger.debug("Held-out test evaluation error on %r: %s", test_x, exc)
             runtime_ms = (time.perf_counter() - t0) * 1000.0
 
             accuracy = passed / len(held_out_tests)
@@ -261,6 +307,7 @@ class CEGISLoop:
                     final_beliefs=beliefs,
                     surviving_candidates=survivors,
                     held_out_accuracy=1.0,
+                    diagnostics=diagnostics,
                 )
             else:
                 return CEGISResult(
@@ -271,6 +318,7 @@ class CEGISLoop:
                     final_beliefs=beliefs,
                     surviving_candidates=survivors,
                     held_out_accuracy=accuracy,
+                    diagnostics=diagnostics,
                 )
 
         # No held-out tests provided
@@ -288,5 +336,6 @@ class CEGISLoop:
             final_beliefs=beliefs,
             surviving_candidates=survivors,
             held_out_accuracy=None,
+            diagnostics=diagnostics,
         )
 

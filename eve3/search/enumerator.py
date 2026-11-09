@@ -4,10 +4,14 @@ Provides deterministic bottom-up / top-down enumerative search for small depth
 ASTs, ensuring guaranteed convergence on micro-tasks without LLM dependencies.
 """
 
+import logging
 from typing import Any, List, Optional, Set, Tuple
 
 from eve3.dsl.ast import ApplyNode, ConstNode, LambdaNode, VarNode
-from eve3.models import CandidateProgram, CandidateStatus
+from eve3.dsl.interpreter import DSLParserError
+from eve3.models import CandidateProgram, CandidateStatus, Diagnostics
+
+logger = logging.getLogger(__name__)
 
 
 class SymbolicEnumerator:
@@ -15,6 +19,7 @@ class SymbolicEnumerator:
 
     def __init__(self, max_depth: int = 3):
         self.max_depth = max_depth
+        self.diagnostics = Diagnostics()
 
     def enumerate_candidates(
         self,
@@ -37,8 +42,9 @@ class SymbolicEnumerator:
                         created_by="enumerator",
                     )
                     candidates.append(cand)
-                except Exception:
-                    pass
+                except (DSLParserError, ValueError, TypeError, SyntaxError, KeyError, IndexError) as exc:
+                    self.diagnostics.record_swallowed_error("enumerator.enumerate_candidates", exc)
+                    logger.debug("Enumerator failed to parse %r: %s", code, exc)
 
         # Depth 1: identity
         add_code("x")

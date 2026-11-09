@@ -72,7 +72,9 @@ class SafetyAuditProtocol:
 
             expected_sig = hmac.new(self.secret_key, f"{op}:{expiry_str}".encode("utf-8"), hashlib.sha256).hexdigest()
             return hmac.compare_digest(signature, expected_sig)
-        except Exception:
+        except (ValueError, TypeError, IndexError, KeyError, AttributeError) as exc:
+            from eve3.models import GLOBAL_DIAGNOSTICS
+            GLOBAL_DIAGNOSTICS.record_swallowed_error("audit_protocol.verify_authorization_token", exc)
             return False
 
     def append_audit_record(

@@ -6,29 +6,36 @@ L* = argmax_{L} [ Benefit_w(L) - gamma * |L| ]
 """
 
 from collections import Counter
+import logging
 import math
 import re
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from eve3.dsl.ast import ASTNode, ApplyNode, ConstNode, VarNode
-from eve3.dsl.interpreter import SExprParser
+from eve3.dsl.interpreter import DSLParserError, SExprParser
+from eve3.models import Diagnostics
+
+logger = logging.getLogger(__name__)
 
 
 class CandidateAbstraction:
     """Represents a potential library operator extracted from verified programs."""
 
-    def __init__(self, name: str, pattern: str, arity: int, cost: int):
+    def __init__(self, name: str, pattern: str, arity: int, cost: int, diagnostics: Optional[Diagnostics] = None):
         self.name = name
         self.pattern = pattern  # e.g. "(map (lambda (a) (+ a $k)) x)"
         self.arity = arity
         self.cost = cost
+        self.diagnostics = diagnostics if diagnostics is not None else Diagnostics()
 
     def apply_compression(self, code_str: str) -> Tuple[str, int]:
         """Attempt to replace occurrences of pattern in code_str and calculate size savings in AST DL."""
         try:
             original_ast = SExprParser.parse(code_str)
             orig_dl = original_ast.description_length
-        except Exception:
+        except (DSLParserError, ValueError, TypeError, SyntaxError, KeyError, IndexError) as exc:
+            self.diagnostics.record_swallowed_error("value_compressor.apply_compression.parse_orig", exc)
+            logger.debug("Failed to parse original code in apply_compression: %s", exc)
             return code_str, 0
 
         compressed_code = code_str
@@ -45,7 +52,7 @@ class CandidateAbstraction:
             m = re.search(r"\(filter \(lambda \(a\) \(gt a (\d+)\)\) x\)", code_str)
             if m:
                 k_val = m.group(1)
-                replacement = f"({self.name} {k_val} x)"
+                replacement = f"({self.name} {self.name and k_val} x)"
                 compressed_code = code_str.replace(m.group(0), replacement)
 
         elif self.pattern == "(map (lambda (a) (* a $k)) x)":
@@ -68,8 +75,9 @@ class CandidateAbstraction:
                 # Compute compression savings strictly in AST description length (node count)
                 savings = max(0, orig_dl - new_ast.description_length)
                 return compressed_code, savings
-            except Exception:
-                pass
+            except (DSLParserError, ValueError, TypeError, SyntaxError, KeyError, IndexError) as exc:
+                self.diagnostics.record_swallowed_error("value_compressor.apply_compression.parse_new", exc)
+                logger.debug("Failed to parse compressed code in apply_compression: %s", exc)
 
         return code_str, 0
 
@@ -82,6 +90,7 @@ class ValueCompressor:
 
     def __init__(self, gamma: float = 1.2):
         self.gamma = gamma
+        self.diagnostics = Diagnostics()
 
     def calculate_program_weight(self, prog_meta: Dict[str, Any]) -> float:
         """Compute value weight: w_i = |{task_family}| * (1 + log(1 + reuse_count))."""
@@ -111,7 +120,18 @@ class ValueCompressor:
                 sub_patterns = self._extract_generalized_subpatterns(ast)
                 for sp in sub_patterns:
                     pattern_counter[sp] += 1
-            except Exception:
+            except (
+                DSLParserError,
+                AttributeError,
+                NameError,
+                ValueError,
+                TypeError,
+                SyntaxError,
+                KeyError,
+                IndexError,
+            ) as exc:
+                self.diagnostics.record_swallowed_error("value_compressor.extract_candidate_abstractions", exc)
+                logger.warning("Swallowed %s in extract_candidate_abstractions: %s", type(exc).__name__, exc)
                 continue
 
         candidates: List[CandidateAbstraction] = []
@@ -123,11 +143,17 @@ class ValueCompressor:
                 try:
                     pat_ast = SExprParser.parse(pat.replace("$k", "1"))
                     cost = pat_ast.description_length
-                except Exception:
+                except (DSLParserError, ValueError, TypeError, SyntaxError, KeyError, IndexError) as exc:
+                    self.diagnostics.record_swallowed_error(
+                        "value_compressor.extract_candidate_abstractions.cost", exc
+                    )
+                    logger.debug("Swallowed error parsing pattern cost: %s", exc)
                     cost = 3
                 name = f"op_dyn_{op_idx}"
                 candidates.append(
-                    CandidateAbstraction(name=name, pattern=pat, arity=arity, cost=cost)
+                    CandidateAbstraction(
+                        name=name, pattern=pat, arity=arity, cost=cost, diagnostics=self.diagnostics
+                    )
                 )
                 op_idx += 1
 

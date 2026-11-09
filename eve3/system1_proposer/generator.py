@@ -4,10 +4,14 @@ Combines local LLM generation (via Apple Silicon MLX) with an enumerative
 grammar fallback for zero-dependency local testing.
 """
 
+import logging
 from typing import Any, Dict, List, Optional, Tuple
 
 from eve3.config import EveConfig
+from eve3.models import Diagnostics
 from eve3.system1_proposer.sandbox import CandidateProgram, ProgramSandbox
+
+logger = logging.getLogger(__name__)
 
 
 class HypothesisGenerator:
@@ -16,6 +20,7 @@ class HypothesisGenerator:
     def __init__(self, config: Optional[EveConfig] = None):
         self.config = config or EveConfig()
         self.sandbox = ProgramSandbox(timeout_per_exec=self.config.sandbox_timeout_seconds)
+        self.diagnostics = Diagnostics()
         self._mlx_model = None
         self._mlx_tokenizer = None
 
@@ -73,8 +78,9 @@ class HypothesisGenerator:
                 return self._generate_with_mlx(
                     examples, library_primitives, crystallized_operators, max_candidates
                 )
-            except Exception:
-                pass  # Fall back to heuristic synthesizer
+            except (RuntimeError, ValueError, TypeError, AttributeError, OSError, KeyError, ImportError) as exc:
+                self.diagnostics.record_swallowed_error("generator._generate_raw_proposals", exc)
+                logger.warning("MLX generation failed (%s: %s); falling back to heuristic synthesizer", type(exc).__name__, exc)
 
         return self._heuristic_synthesizer(
             examples, library_primitives, crystallized_operators, max_candidates
@@ -101,6 +107,7 @@ class HypothesisGenerator:
             self._mlx_model, self._mlx_tokenizer = mlx_lm.load(self.config.model_name)
 
         prompt = self.build_prompt(examples, library_primitives, crystallized_operators)
+        self.diagnostics.record_llm_call()
         response = mlx_lm.generate(
             self._mlx_model,
             self._mlx_tokenizer,

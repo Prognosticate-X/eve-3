@@ -4,14 +4,128 @@ Defines rigorous metadata tracking for candidates, verification evidence,
 and audit trails, preventing false claims of verification.
 """
 
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 import datetime
+import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
 import uuid
 
 from eve3.dsl.ast import ASTNode
 from eve3.dsl.interpreter import SExprParser
+
+logger = logging.getLogger("eve3.diagnostics")
+
+_ACTIVE_DIAGNOSTICS_SINKS: List["Diagnostics"] = []
+
+
+@dataclass
+class Diagnostics:
+    """Unified diagnostic counters for oracle, Z3, LLM, sandbox, and swallowed exceptions (S0)."""
+    oracle_queries: int = 0
+    z3_calls: int = 0
+    z3_fallbacks: int = 0
+    z3_timeouts: int = 0
+    llm_calls: int = 0
+    sandbox_rejections: Dict[str, int] = field(default_factory=dict)
+    swallowed_errors: Dict[str, int] = field(default_factory=dict)
+    swallowed_error_details: Dict[str, Dict[str, int]] = field(default_factory=dict)
+
+    def _targets(self) -> List["Diagnostics"]:
+        targets = [self]
+        if self is not GLOBAL_DIAGNOSTICS:
+            targets.append(GLOBAL_DIAGNOSTICS)
+        for sink in _ACTIVE_DIAGNOSTICS_SINKS:
+            if sink is not self and sink is not GLOBAL_DIAGNOSTICS:
+                targets.append(sink)
+        return targets
+
+    def record_oracle_query(self) -> None:
+        for t in self._targets():
+            t.oracle_queries += 1
+
+    def record_z3_call(self) -> None:
+        for t in self._targets():
+            t.z3_calls += 1
+
+    def record_z3_fallback(self) -> None:
+        for t in self._targets():
+            t.z3_fallbacks += 1
+
+    def record_z3_timeout(self) -> None:
+        for t in self._targets():
+            t.z3_timeouts += 1
+
+    def record_llm_call(self) -> None:
+        for t in self._targets():
+            t.llm_calls += 1
+
+    def record_sandbox_rejection(self, exc: BaseException) -> None:
+        exc_type = type(exc).__name__
+        for t in self._targets():
+            t.sandbox_rejections[exc_type] = t.sandbox_rejections.get(exc_type, 0) + 1
+
+    def record_swallowed_error(self, location: str, exc: BaseException) -> None:
+        exc_type = type(exc).__name__
+        logger.debug("Swallowed %s at %s: %s", exc_type, location, exc)
+        for t in self._targets():
+            t.swallowed_errors[location] = t.swallowed_errors.get(location, 0) + 1
+            loc_map = t.swallowed_error_details.setdefault(location, {})
+            loc_map[exc_type] = loc_map.get(exc_type, 0) + 1
+
+    def reset(self) -> None:
+        self.oracle_queries = 0
+        self.z3_calls = 0
+        self.z3_fallbacks = 0
+        self.z3_timeouts = 0
+        self.llm_calls = 0
+        self.sandbox_rejections.clear()
+        self.swallowed_errors.clear()
+        self.swallowed_error_details.clear()
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "oracle_queries": self.oracle_queries,
+            "z3_calls": self.z3_calls,
+            "z3_fallbacks": self.z3_fallbacks,
+            "z3_timeouts": self.z3_timeouts,
+            "llm_calls": self.llm_calls,
+            "sandbox_rejections": dict(self.sandbox_rejections),
+            "swallowed_errors": dict(self.swallowed_errors),
+            "swallowed_error_details": {k: dict(v) for k, v in self.swallowed_error_details.items()},
+        }
+
+    def __getitem__(self, key: str) -> Any:
+        return self.to_dict()[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.to_dict()
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return self.to_dict().get(key, default)
+
+
+GLOBAL_DIAGNOSTICS = Diagnostics()
+
+
+def get_global_diagnostics() -> Diagnostics:
+    return GLOBAL_DIAGNOSTICS
+
+
+def reset_global_diagnostics() -> None:
+    GLOBAL_DIAGNOSTICS.reset()
+
+
+@contextmanager
+def active_diagnostics_scope(diag: Optional[Diagnostics] = None) -> Iterator[Diagnostics]:
+    target = diag if diag is not None else Diagnostics()
+    _ACTIVE_DIAGNOSTICS_SINKS.append(target)
+    try:
+        yield target
+    finally:
+        if target in _ACTIVE_DIAGNOSTICS_SINKS:
+            _ACTIVE_DIAGNOSTICS_SINKS.remove(target)
 
 
 class CandidateStatus:
