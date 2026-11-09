@@ -23,6 +23,7 @@ from eve3.system3_crystallizer.value_compressor import ValueCompressor
 class TestAuditP0Regressions(unittest.TestCase):
     """Rigorous regression tests for audit P0 issues (H3, H4, H5, H11, H12)."""
 
+    @unittest.expectedFailure
     @pytest.mark.xfail(
         strict=True,
         reason="H3 (audit.md:143-159): Laplace smoothing (eps=1e-6) elevates falsified program back to top-1 in deterministic setting (Pending Stage S2)",
@@ -60,6 +61,7 @@ class TestAuditP0Regressions(unittest.TestCase):
             "Falsified program must not remain top-1 after being falsified by observation",
         )
 
+    @unittest.expectedFailure
     @pytest.mark.xfail(
         strict=True,
         reason="H4 (audit.md:179-196): total <= 1e-12 collapse condition never fires when all candidates receive eps=1e-6 (Pending Stage S2)",
@@ -92,6 +94,7 @@ class TestAuditP0Regressions(unittest.TestCase):
             f"Expected status COLLAPSED when candidates fail, got {res.status.value}",
         )
 
+    @unittest.expectedFailure
     @pytest.mark.xfail(
         strict=True,
         reason="H5 (audit.md:213-232): SMTDistinguisher._ast_to_z3_seq lacks support for map/filter/reverse (Pending Stage S3)",
@@ -113,6 +116,7 @@ class TestAuditP0Regressions(unittest.TestCase):
         )
         self.assertGreater(dist.diagnostics.z3_calls, 0, "Z3 solver must be invoked for map candidates")
 
+    @unittest.expectedFailure
     @pytest.mark.xfail(
         strict=True,
         reason="H11 (audit.md:374-382): Crystallized operators are not registered in DSLInterpreter.env and raise NameError in sandbox (Pending Stage S4)",
@@ -138,6 +142,7 @@ class TestAuditP0Regressions(unittest.TestCase):
             "Sandbox must not reject crystallized operator with NameError",
         )
 
+    @unittest.expectedFailure
     @pytest.mark.xfail(
         strict=True,
         reason="H12 (audit.md:395-410): ValueCompressor crashes on LambdaNode and lacks submodular greedy guarantee (Pending Stage S4)",
