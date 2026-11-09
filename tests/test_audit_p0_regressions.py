@@ -8,6 +8,7 @@ Each test is marked with @pytest.mark.xfail(strict=True) to enforce that:
 """
 
 from typing import Any
+from unittest.mock import patch
 import pytest
 import unittest
 
@@ -56,10 +57,6 @@ class TestAuditP0Regressions(unittest.TestCase):
             "Falsified program must not remain top-1 after being falsified by observation",
         )
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H4 (audit.md:179-196): total <= 1e-12 collapse condition never fires when all candidates receive eps=1e-6 (Pending Stage S2)",
-    )
     def test_h4_hypothesis_collapse_must_report_collapsed_when_all_falsified(self):
         """H4: When all proposed candidates are falsified (true program is not in candidate set),
         the CEGIS loop must detect hypothesis space collapse and report COLLAPSED."""
@@ -74,11 +71,16 @@ class TestAuditP0Regressions(unittest.TestCase):
         held_out = [([5, 6], [6, 7])]
 
         # Restrict loop to candidates that are guaranteed to be falsified
-        res = loop.run_synthesis(
-            initial_examples=initial_examples,
-            oracle_fn=oracle_fn,
-            held_out_tests=held_out,
-        )
+        wrong_candidates = [
+            CandidateProgram("[2, 3]"),
+            CandidateProgram("(reverse [3, 2])"),
+        ]
+        with patch.object(loop.search_controller, "propose_candidates", side_effect=[wrong_candidates, []]):
+            res = loop.run_synthesis(
+                initial_examples=initial_examples,
+                oracle_fn=oracle_fn,
+                held_out_tests=held_out,
+            )
 
         # If all candidates fail observations, status must be COLLAPSED, never HELD_OUT_TESTS_PASSED
         # or EXHAUSTED_UNVERIFIED with a falsified top-1 program
@@ -87,6 +89,7 @@ class TestAuditP0Regressions(unittest.TestCase):
             VerificationStatus.COLLAPSED,
             f"Expected status COLLAPSED when candidates fail, got {res.status.value}",
         )
+        self.assertIsNone(res.verified_program)
 
     @pytest.mark.xfail(
         strict=True,

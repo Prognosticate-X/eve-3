@@ -39,6 +39,7 @@ class EveConfig:
     probe_cost_penalty_lambda: float = 0.05
     laplace_smoothing_epsilon: float = 1e-6
     max_falsification_rounds: int = 15
+    max_repropose_rounds: int = 3
     falsification_probe_pool_size: int = 32
     
     # System 3: Knowledge Crystallization & Compression
