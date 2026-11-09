@@ -57,6 +57,18 @@ class SearchController:
                     seen_codes.add(c.code_str)
                     proposals.append(c)
 
+        # C.2: Constant pool de-benchmarking: constants strictly from {0, 1} U values appearing in examples
+        extracted_consts = {0, 1}
+        for inp, out in examples:
+            for val in (inp, out):
+                if isinstance(val, int):
+                    extracted_consts.add(val)
+                elif isinstance(val, (list, tuple)):
+                    for item in val:
+                        if isinstance(item, int):
+                            extracted_consts.add(item)
+        const_pool = sorted(extracted_consts)
+
         if mode == "llm_only":
             llm_cands = self.generator.generate_hypotheses(
                 examples=examples,
@@ -77,7 +89,8 @@ class SearchController:
             if strategy in ("hybrid", "symbolic_only"):
                 enum_cands = self.enumerator.enumerate_candidates(
                     domain_hint=domain_hint,
-                    max_candidates=max(max_candidates * 5, 80),
+                    constant_pool=const_pool,
+                    max_candidates=max(max_candidates * 10, 160),
                     mode="generic_enumeration",
                 )
                 filtered = self.sandbox.filter_valid_candidates(
@@ -92,7 +105,8 @@ class SearchController:
             if strategy in ("hybrid", "symbolic_only", "neural_only"):
                 enum_cands = self.enumerator.enumerate_candidates(
                     domain_hint=domain_hint,
-                    max_candidates=max(max_candidates * 5, 80),
+                    constant_pool=const_pool,
+                    max_candidates=max(max_candidates * 10, 160),
                     mode="generic_enumeration",
                 )
                 filtered = self.sandbox.filter_valid_candidates(

@@ -47,8 +47,8 @@ class SymbolicEnumerator:
         constant_pool: Optional[List[int]] = None,
         max_candidates: int = 30,
     ) -> List[CandidateProgram]:
-        """True bottom-up grammar enumeration ordered strictly by AST depth (d = 1..max_depth)."""
-        consts = constant_pool or [0, 1, 2, -1, 3]
+        # C.2: Constant pool de-benchmarking: strictly {0, 1} unless explicitly passed from examples
+        consts = sorted(set(constant_pool if constant_pool is not None else [0, 1]))
         candidates: List[CandidateProgram] = []
         seen: Set[str] = set()
 
