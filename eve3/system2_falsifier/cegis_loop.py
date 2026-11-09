@@ -134,8 +134,11 @@ class CEGISLoop:
                     )
 
                 # Generate candidate probes across all hypothesis pairs
+                domain_hint = "list" if (current_examples and isinstance(current_examples[0][0], list)) else "int"
                 probe_candidates = self.distinguisher.generate_candidate_probe_pool(
-                    hypotheses, max_pool_size=self.config.falsification_probe_pool_size
+                    hypotheses,
+                    domain_hint=domain_hint,
+                    max_pool_size=self.config.falsification_probe_pool_size,
                 )
 
                 # Filter out inputs already evaluated in current_examples

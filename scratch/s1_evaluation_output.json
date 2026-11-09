@@ -16,7 +16,7 @@
       "pass_count": 11,
       "total_tasks": 13,
       "pass_rate": 0.8462,
-      "total_elapsed_ms": 367.43,
+      "total_elapsed_ms": 295.58,
       "diagnostics_summary": {
         "oracle_queries": 20,
         "z3_calls": 0,
@@ -28,18 +28,8 @@
         "llm_syntax_valid_candidates": 0,
         "llm_sandbox_passed_candidates": 0,
         "sandbox_rejections": {},
-        "swallowed_errors": {
-          "smt_distinguisher._heuristic_distinguishing": 320,
-          "bayesian_prober.group_by_output": 400
-        },
-        "swallowed_error_details": {
-          "smt_distinguisher._heuristic_distinguishing": {
-            "TypeError": 320
-          },
-          "bayesian_prober.group_by_output": {
-            "TypeError": 400
-          }
-        }
+        "swallowed_errors": {},
+        "swallowed_error_details": {}
       },
       "tasks": [
         {
@@ -70,7 +60,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 95.43,
+          "elapsed_ms": 70.2,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -82,18 +72,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -114,7 +94,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 7.64,
+          "elapsed_ms": 8.32,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -148,7 +128,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 7.17,
+          "elapsed_ms": 8.13,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -187,7 +167,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 41.02,
+          "elapsed_ms": 30.17,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -199,18 +179,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 40,
-              "bayesian_prober.group_by_output": 80
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 40
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 80
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -231,7 +201,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 8.05,
+          "elapsed_ms": 7.71,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -265,7 +235,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 9.21,
+          "elapsed_ms": 7.86,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -299,7 +269,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 7.98,
+          "elapsed_ms": 8.32,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -343,7 +313,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 90.28,
+          "elapsed_ms": 64.24,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -355,18 +325,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -392,7 +352,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 41.73,
+          "elapsed_ms": 28.75,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -404,18 +364,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 40,
-              "bayesian_prober.group_by_output": 80
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 40
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 80
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -436,7 +386,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 7.45,
+          "elapsed_ms": 8.07,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -470,7 +420,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 7.75,
+          "elapsed_ms": 7.55,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -498,7 +448,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 6.59,
+          "elapsed_ms": 6.94,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -526,7 +476,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 7.15,
+          "elapsed_ms": 7.42,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -552,7 +502,7 @@
       "pass_count": 5,
       "total_tasks": 13,
       "pass_rate": 0.3846,
-      "total_elapsed_ms": 169.96,
+      "total_elapsed_ms": 137.52,
       "diagnostics_summary": {
         "oracle_queries": 10,
         "z3_calls": 0,
@@ -564,18 +514,8 @@
         "llm_syntax_valid_candidates": 0,
         "llm_sandbox_passed_candidates": 0,
         "sandbox_rejections": {},
-        "swallowed_errors": {
-          "smt_distinguisher._heuristic_distinguishing": 160,
-          "bayesian_prober.group_by_output": 200
-        },
-        "swallowed_error_details": {
-          "smt_distinguisher._heuristic_distinguishing": {
-            "TypeError": 160
-          },
-          "bayesian_prober.group_by_output": {
-            "TypeError": 200
-          }
-        }
+        "swallowed_errors": {},
+        "swallowed_error_details": {}
       },
       "tasks": [
         {
@@ -590,7 +530,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 5.09,
+          "elapsed_ms": 5.07,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -618,7 +558,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 4.56,
+          "elapsed_ms": 5.37,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -646,7 +586,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 4.59,
+          "elapsed_ms": 4.92,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -690,7 +630,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 74.56,
+          "elapsed_ms": 51.67,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -702,18 +642,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -728,7 +658,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 5.4,
+          "elapsed_ms": 5.37,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -762,7 +692,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 5.41,
+          "elapsed_ms": 5.53,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -796,7 +726,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 4.88,
+          "elapsed_ms": 4.99,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -824,7 +754,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 4.23,
+          "elapsed_ms": 5.04,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -863,7 +793,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 40.91,
+          "elapsed_ms": 28.12,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -875,18 +805,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 40,
-              "bayesian_prober.group_by_output": 80
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 40
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 80
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -907,7 +827,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 5.38,
+          "elapsed_ms": 5.21,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -935,7 +855,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 4.25,
+          "elapsed_ms": 4.65,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -963,7 +883,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 4.71,
+          "elapsed_ms": 5.02,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -997,7 +917,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 4.85,
+          "elapsed_ms": 5.46,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1023,7 +943,7 @@
       "pass_count": 11,
       "total_tasks": 13,
       "pass_rate": 0.8462,
-      "total_elapsed_ms": 408.42,
+      "total_elapsed_ms": 319.83,
       "diagnostics_summary": {
         "oracle_queries": 21,
         "z3_calls": 0,
@@ -1035,18 +955,8 @@
         "llm_syntax_valid_candidates": 0,
         "llm_sandbox_passed_candidates": 0,
         "sandbox_rejections": {},
-        "swallowed_errors": {
-          "smt_distinguisher._heuristic_distinguishing": 400,
-          "bayesian_prober.group_by_output": 455
-        },
-        "swallowed_error_details": {
-          "smt_distinguisher._heuristic_distinguishing": {
-            "TypeError": 400
-          },
-          "bayesian_prober.group_by_output": {
-            "TypeError": 455
-          }
-        }
+        "swallowed_errors": {},
+        "swallowed_error_details": {}
       },
       "tasks": [
         {
@@ -1077,7 +987,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 87.86,
+          "elapsed_ms": 65.8,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -1089,18 +999,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -1121,7 +1021,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 10.07,
+          "elapsed_ms": 10.58,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1155,7 +1055,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 9.56,
+          "elapsed_ms": 9.08,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1199,7 +1099,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 81.86,
+          "elapsed_ms": 56.72,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -1211,18 +1111,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -1243,7 +1133,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 11.65,
+          "elapsed_ms": 10.17,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1277,7 +1167,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 9.72,
+          "elapsed_ms": 10.29,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1311,7 +1201,7 @@
             }
           ],
           "rounds_used": 2,
-          "elapsed_ms": 17.72,
+          "elapsed_ms": 14.19,
           "diagnostics": {
             "oracle_queries": 1,
             "z3_calls": 0,
@@ -1323,14 +1213,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "bayesian_prober.group_by_output": 15
-            },
-            "swallowed_error_details": {
-              "bayesian_prober.group_by_output": {
-                "TypeError": 15
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -1361,7 +1245,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 89.36,
+          "elapsed_ms": 65.93,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -1373,18 +1257,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -1410,7 +1284,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 46.47,
+          "elapsed_ms": 33.84,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -1422,18 +1296,8 @@
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {},
-            "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 40,
-              "bayesian_prober.group_by_output": 80
-            },
-            "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 40
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 80
-              }
-            }
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -1454,7 +1318,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 12.44,
+          "elapsed_ms": 10.98,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1482,7 +1346,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 9.67,
+          "elapsed_ms": 10.47,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1510,7 +1374,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 10.31,
+          "elapsed_ms": 10.24,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1544,7 +1408,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 10.45,
+          "elapsed_ms": 10.34,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1567,10 +1431,10 @@
       "note": "仅本地 MLX LLM (Qwen2.5-Coder-3B-Instruct-4bit, max_falsification_rounds=5)",
       "proposer_mode": "llm_only",
       "enumerator_max_depth": 4,
-      "pass_count": 0,
+      "pass_count": 1,
       "total_tasks": 13,
-      "pass_rate": 0.0,
-      "total_elapsed_ms": 20293.1,
+      "pass_rate": 0.0769,
+      "total_elapsed_ms": 17503.43,
       "diagnostics_summary": {
         "oracle_queries": 0,
         "z3_calls": 0,
@@ -1578,39 +1442,39 @@
         "z3_timeouts": 0,
         "llm_calls": 13,
         "llm_latencies_ms": [
-          1858.1934999674559,
-          1293.6553331092,
-          2015.1041250210255,
-          862.461875192821,
-          1980.0061248242855,
-          469.252249924466,
-          1321.728500071913,
-          1825.9468749165535,
-          1180.7002078276128,
-          1214.3174579832703,
-          2224.390666000545,
-          790.3782080393285,
-          1160.687041003257
+          1514.3238340970129,
+          1103.654250036925,
+          1172.5232498720288,
+          435.3365420829505,
+          1374.4042080361396,
+          909.2726660892367,
+          674.7894168365747,
+          748.5171251464635,
+          1321.3189579546452,
+          1149.1394999902695,
+          2443.902082974091,
+          1089.7549581713974,
+          976.795791881159
         ],
-        "llm_raw_candidates": 61,
-        "llm_syntax_valid_candidates": 48,
-        "llm_sandbox_passed_candidates": 0,
+        "llm_raw_candidates": 62,
+        "llm_syntax_valid_candidates": 51,
+        "llm_sandbox_passed_candidates": 1,
         "sandbox_rejections": {
-          "TypeError": 10,
-          "DSLParserError": 13,
-          "NameError": 14
+          "TypeError": 8,
+          "NameError": 12,
+          "DSLParserError": 11
         },
         "swallowed_errors": {
-          "sandbox.filter_valid_candidates.exec": 24,
-          "sandbox.filter_valid_candidates.parse": 13
+          "sandbox.filter_valid_candidates.exec": 20,
+          "sandbox.filter_valid_candidates.parse": 11
         },
         "swallowed_error_details": {
           "sandbox.filter_valid_candidates.exec": {
-            "TypeError": 10,
-            "NameError": 14
+            "TypeError": 8,
+            "NameError": 12
           },
           "sandbox.filter_valid_candidates.parse": {
-            "DSLParserError": 13
+            "DSLParserError": 11
           }
         }
       },
@@ -1627,7 +1491,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 3941.47,
+          "elapsed_ms": 4090.2,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1635,27 +1499,14 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1858.1934999674559
+              1514.3238340970129
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 2,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "TypeError": 2,
-              "DSLParserError": 3
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 2,
-              "sandbox.filter_valid_candidates.parse": 3
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 2
-              },
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 3
-              }
-            }
+            "sandbox_rejections": {},
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -1670,7 +1521,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1294.92,
+          "elapsed_ms": 1105.12,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1678,22 +1529,14 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1293.6553331092
+              1103.654250036925
             ],
             "llm_raw_candidates": 5,
             "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "NameError": 4
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 4
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "NameError": 4
-              }
-            }
+            "sandbox_rejections": {},
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -1708,7 +1551,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 2015.86,
+          "elapsed_ms": 1173.65,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1716,25 +1559,22 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              2015.1041250210255
+              1172.5232498720288
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 2,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "NameError": 2,
-              "DSLParserError": 3
+              "TypeError": 2,
+              "NameError": 1
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 2,
-              "sandbox.filter_valid_candidates.parse": 3
+              "sandbox.filter_valid_candidates.exec": 3
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.exec": {
-                "NameError": 2
-              },
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 3
+                "TypeError": 2,
+                "NameError": 1
               }
             }
           }
@@ -1751,7 +1591,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 863.45,
+          "elapsed_ms": 435.52,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -1759,294 +1599,7 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              862.461875192821
-            ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
-            "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "TypeError": 3,
-              "NameError": 1
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 4
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 3,
-                "NameError": 1
-              }
-            }
-          }
-        },
-        {
-          "task_name": "filter_greater_than_two",
-          "family": "general",
-          "reference_program": "(filter (lambda (a) (gt a 2)) x)",
-          "status": "collapsed",
-          "passed": false,
-          "held_out_accuracy": null,
-          "verified_program": null,
-          "first_hit_created_by": null,
-          "first_hit_source_detail": null,
-          "surviving_candidates": [],
-          "rounds_used": 0,
-          "elapsed_ms": 1981.34,
-          "diagnostics": {
-            "oracle_queries": 0,
-            "z3_calls": 0,
-            "z3_fallbacks": 0,
-            "z3_timeouts": 0,
-            "llm_calls": 1,
-            "llm_latencies_ms": [
-              1980.0061248242855
-            ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
-            "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {},
-            "swallowed_errors": {},
-            "swallowed_error_details": {}
-          }
-        },
-        {
-          "task_name": "list_reverse",
-          "family": "general",
-          "reference_program": "(reverse x)",
-          "status": "collapsed",
-          "passed": false,
-          "held_out_accuracy": null,
-          "verified_program": null,
-          "first_hit_created_by": null,
-          "first_hit_source_detail": null,
-          "surviving_candidates": [],
-          "rounds_used": 0,
-          "elapsed_ms": 470.23,
-          "diagnostics": {
-            "oracle_queries": 0,
-            "z3_calls": 0,
-            "z3_fallbacks": 0,
-            "z3_timeouts": 0,
-            "llm_calls": 1,
-            "llm_latencies_ms": [
-              469.252249924466
-            ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
-            "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "NameError": 5
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 5
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "NameError": 5
-              }
-            }
-          }
-        },
-        {
-          "task_name": "filter_positive",
-          "family": "general",
-          "reference_program": "(filter (lambda (a) (gt a 0)) x)",
-          "status": "collapsed",
-          "passed": false,
-          "held_out_accuracy": null,
-          "verified_program": null,
-          "first_hit_created_by": null,
-          "first_hit_source_detail": null,
-          "surviving_candidates": [],
-          "rounds_used": 0,
-          "elapsed_ms": 1322.73,
-          "diagnostics": {
-            "oracle_queries": 0,
-            "z3_calls": 0,
-            "z3_fallbacks": 0,
-            "z3_timeouts": 0,
-            "llm_calls": 1,
-            "llm_latencies_ms": [
-              1321.728500071913
-            ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
-            "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {},
-            "swallowed_errors": {},
-            "swallowed_error_details": {}
-          }
-        },
-        {
-          "task_name": "list_decrement_all",
-          "family": "general",
-          "reference_program": "(map (lambda (a) (- a 1)) x)",
-          "status": "collapsed",
-          "passed": false,
-          "held_out_accuracy": null,
-          "verified_program": null,
-          "first_hit_created_by": null,
-          "first_hit_source_detail": null,
-          "surviving_candidates": [],
-          "rounds_used": 0,
-          "elapsed_ms": 1827.0,
-          "diagnostics": {
-            "oracle_queries": 0,
-            "z3_calls": 0,
-            "z3_fallbacks": 0,
-            "z3_timeouts": 0,
-            "llm_calls": 1,
-            "llm_latencies_ms": [
-              1825.9468749165535
-            ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
-            "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "TypeError": 4
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 4
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 4
-              }
-            }
-          }
-        },
-        {
-          "task_name": "list_length",
-          "family": "general",
-          "reference_program": "(length x)",
-          "status": "collapsed",
-          "passed": false,
-          "held_out_accuracy": null,
-          "verified_program": null,
-          "first_hit_created_by": null,
-          "first_hit_source_detail": null,
-          "surviving_candidates": [],
-          "rounds_used": 0,
-          "elapsed_ms": 1181.75,
-          "diagnostics": {
-            "oracle_queries": 0,
-            "z3_calls": 0,
-            "z3_fallbacks": 0,
-            "z3_timeouts": 0,
-            "llm_calls": 1,
-            "llm_latencies_ms": [
-              1180.7002078276128
-            ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
-            "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "NameError": 2
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 2
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "NameError": 2
-              }
-            }
-          }
-        },
-        {
-          "task_name": "list_tail_elements",
-          "family": "general",
-          "reference_program": "(tail x)",
-          "status": "collapsed",
-          "passed": false,
-          "held_out_accuracy": null,
-          "verified_program": null,
-          "first_hit_created_by": null,
-          "first_hit_source_detail": null,
-          "surviving_candidates": [],
-          "rounds_used": 0,
-          "elapsed_ms": 1215.34,
-          "diagnostics": {
-            "oracle_queries": 0,
-            "z3_calls": 0,
-            "z3_fallbacks": 0,
-            "z3_timeouts": 0,
-            "llm_calls": 1,
-            "llm_latencies_ms": [
-              1214.3174579832703
-            ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
-            "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {},
-            "swallowed_errors": {},
-            "swallowed_error_details": {}
-          }
-        },
-        {
-          "task_name": "filter_evens_and_sum",
-          "family": "general",
-          "reference_program": "(sum (filter (lambda (a) (is_even a)) x))",
-          "status": "collapsed",
-          "passed": false,
-          "held_out_accuracy": null,
-          "verified_program": null,
-          "first_hit_created_by": null,
-          "first_hit_source_detail": null,
-          "surviving_candidates": [],
-          "rounds_used": 0,
-          "elapsed_ms": 2224.93,
-          "diagnostics": {
-            "oracle_queries": 0,
-            "z3_calls": 0,
-            "z3_fallbacks": 0,
-            "z3_timeouts": 0,
-            "llm_calls": 1,
-            "llm_latencies_ms": [
-              2224.390666000545
-            ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 1,
-            "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "TypeError": 1,
-              "DSLParserError": 4
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 1,
-              "sandbox.filter_valid_candidates.parse": 4
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 1
-              },
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 4
-              }
-            }
-          }
-        },
-        {
-          "task_name": "filter_positive_and_sum",
-          "family": "general",
-          "reference_program": "(sum (filter (lambda (a) (gt a 0)) x))",
-          "status": "collapsed",
-          "passed": false,
-          "held_out_accuracy": null,
-          "verified_program": null,
-          "first_hit_created_by": null,
-          "first_hit_source_detail": null,
-          "surviving_candidates": [],
-          "rounds_used": 0,
-          "elapsed_ms": 790.58,
-          "diagnostics": {
-            "oracle_queries": 0,
-            "z3_calls": 0,
-            "z3_fallbacks": 0,
-            "z3_timeouts": 0,
-            "llm_calls": 1,
-            "llm_latencies_ms": [
-              790.3782080393285
+              435.3365420829505
             ],
             "llm_raw_candidates": 1,
             "llm_syntax_valid_candidates": 0,
@@ -2065,9 +1618,9 @@
           }
         },
         {
-          "task_name": "reverse_and_tail",
+          "task_name": "filter_greater_than_two",
           "family": "general",
-          "reference_program": "(tail (reverse x))",
+          "reference_program": "(filter (lambda (a) (gt a 2)) x)",
           "status": "collapsed",
           "passed": false,
           "held_out_accuracy": null,
@@ -2076,7 +1629,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1161.63,
+          "elapsed_ms": 1375.49,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2084,91 +1637,28 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1160.687041003257
+              1374.4042080361396
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 3,
+            "llm_syntax_valid_candidates": 4,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "DSLParserError": 2
+              "DSLParserError": 1
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 2
+              "sandbox.filter_valid_candidates.parse": 1
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 2
+                "DSLParserError": 1
               }
             }
           }
-        }
-      ]
-    },
-    "llm_plus_enumeration_d3": {
-      "mode_key": "llm_plus_enumeration_d3",
-      "note": "LLM + 通用自底向上枚举 (max_depth=3)",
-      "proposer_mode": "llm_plus_enumeration",
-      "enumerator_max_depth": 3,
-      "pass_count": 5,
-      "total_tasks": 13,
-      "pass_rate": 0.3846,
-      "total_elapsed_ms": 18237.49,
-      "diagnostics_summary": {
-        "oracle_queries": 10,
-        "z3_calls": 0,
-        "z3_fallbacks": 20,
-        "z3_timeouts": 0,
-        "llm_calls": 13,
-        "llm_latencies_ms": [
-          1150.008958997205,
-          1342.7543749567121,
-          1389.1790420748293,
-          580.8495841920376,
-          1382.4734159279615,
-          1157.596082892269,
-          1234.9123330786824,
-          1271.3174170348793,
-          1130.6082918308675,
-          2538.8865421991795,
-          1704.7427499201149,
-          1801.7575000412762,
-          1353.7153748329729
-        ],
-        "llm_raw_candidates": 78,
-        "llm_syntax_valid_candidates": 68,
-        "llm_sandbox_passed_candidates": 0,
-        "sandbox_rejections": {
-          "NameError": 17,
-          "DSLParserError": 10,
-          "TypeError": 11
         },
-        "swallowed_errors": {
-          "sandbox.filter_valid_candidates.exec": 28,
-          "sandbox.filter_valid_candidates.parse": 10,
-          "smt_distinguisher._heuristic_distinguishing": 160,
-          "bayesian_prober.group_by_output": 200
-        },
-        "swallowed_error_details": {
-          "sandbox.filter_valid_candidates.exec": {
-            "NameError": 17,
-            "TypeError": 11
-          },
-          "sandbox.filter_valid_candidates.parse": {
-            "DSLParserError": 10
-          },
-          "smt_distinguisher._heuristic_distinguishing": {
-            "TypeError": 160
-          },
-          "bayesian_prober.group_by_output": {
-            "TypeError": 200
-          }
-        }
-      },
-      "tasks": [
         {
-          "task_name": "list_increment_all",
+          "task_name": "list_reverse",
           "family": "general",
-          "reference_program": "(map (lambda (a) (+ a 1)) x)",
+          "reference_program": "(reverse x)",
           "status": "collapsed",
           "passed": false,
           "held_out_accuracy": null,
@@ -2177,7 +1667,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1156.23,
+          "elapsed_ms": 910.15,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2185,7 +1675,167 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1150.008958997205
+              909.2726660892367
+            ],
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 4,
+            "llm_sandbox_passed_candidates": 0,
+            "sandbox_rejections": {
+              "TypeError": 2,
+              "DSLParserError": 1
+            },
+            "swallowed_errors": {
+              "sandbox.filter_valid_candidates.exec": 2,
+              "sandbox.filter_valid_candidates.parse": 1
+            },
+            "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.exec": {
+                "TypeError": 2
+              },
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 1
+              }
+            }
+          }
+        },
+        {
+          "task_name": "filter_positive",
+          "family": "general",
+          "reference_program": "(filter (lambda (a) (gt a 0)) x)",
+          "status": "held_out_tests_passed",
+          "passed": true,
+          "held_out_accuracy": 1.0,
+          "verified_program": "(filter (lambda (x) (> x 0)) input)",
+          "first_hit_created_by": "llm",
+          "first_hit_source_detail": "llm:call=1:line=5",
+          "surviving_candidates": [
+            {
+              "code": "(filter (lambda (x) (> x 0)) input)",
+              "created_by": "llm",
+              "source_detail": "llm:call=1:line=5"
+            }
+          ],
+          "rounds_used": 1,
+          "elapsed_ms": 676.22,
+          "diagnostics": {
+            "oracle_queries": 0,
+            "z3_calls": 0,
+            "z3_fallbacks": 0,
+            "z3_timeouts": 0,
+            "llm_calls": 1,
+            "llm_latencies_ms": [
+              674.7894168365747
+            ],
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 5,
+            "llm_sandbox_passed_candidates": 1,
+            "sandbox_rejections": {
+              "NameError": 4
+            },
+            "swallowed_errors": {
+              "sandbox.filter_valid_candidates.exec": 4
+            },
+            "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.exec": {
+                "NameError": 4
+              }
+            }
+          }
+        },
+        {
+          "task_name": "list_decrement_all",
+          "family": "general",
+          "reference_program": "(map (lambda (a) (- a 1)) x)",
+          "status": "collapsed",
+          "passed": false,
+          "held_out_accuracy": null,
+          "verified_program": null,
+          "first_hit_created_by": null,
+          "first_hit_source_detail": null,
+          "surviving_candidates": [],
+          "rounds_used": 0,
+          "elapsed_ms": 749.61,
+          "diagnostics": {
+            "oracle_queries": 0,
+            "z3_calls": 0,
+            "z3_fallbacks": 0,
+            "z3_timeouts": 0,
+            "llm_calls": 1,
+            "llm_latencies_ms": [
+              748.5171251464635
+            ],
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 4,
+            "llm_sandbox_passed_candidates": 0,
+            "sandbox_rejections": {
+              "NameError": 4,
+              "DSLParserError": 1
+            },
+            "swallowed_errors": {
+              "sandbox.filter_valid_candidates.exec": 4,
+              "sandbox.filter_valid_candidates.parse": 1
+            },
+            "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.exec": {
+                "NameError": 4
+              },
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 1
+              }
+            }
+          }
+        },
+        {
+          "task_name": "list_length",
+          "family": "general",
+          "reference_program": "(length x)",
+          "status": "collapsed",
+          "passed": false,
+          "held_out_accuracy": null,
+          "verified_program": null,
+          "first_hit_created_by": null,
+          "first_hit_source_detail": null,
+          "surviving_candidates": [],
+          "rounds_used": 0,
+          "elapsed_ms": 1322.59,
+          "diagnostics": {
+            "oracle_queries": 0,
+            "z3_calls": 0,
+            "z3_fallbacks": 0,
+            "z3_timeouts": 0,
+            "llm_calls": 1,
+            "llm_latencies_ms": [
+              1321.3189579546452
+            ],
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 5,
+            "llm_sandbox_passed_candidates": 0,
+            "sandbox_rejections": {},
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
+          }
+        },
+        {
+          "task_name": "list_tail_elements",
+          "family": "general",
+          "reference_program": "(tail x)",
+          "status": "collapsed",
+          "passed": false,
+          "held_out_accuracy": null,
+          "verified_program": null,
+          "first_hit_created_by": null,
+          "first_hit_source_detail": null,
+          "surviving_candidates": [],
+          "rounds_used": 0,
+          "elapsed_ms": 1150.15,
+          "diagnostics": {
+            "oracle_queries": 0,
+            "z3_calls": 0,
+            "z3_fallbacks": 0,
+            "z3_timeouts": 0,
+            "llm_calls": 1,
+            "llm_latencies_ms": [
+              1149.1394999902695
             ],
             "llm_raw_candidates": 5,
             "llm_syntax_valid_candidates": 5,
@@ -2204,6 +1854,210 @@
           }
         },
         {
+          "task_name": "filter_evens_and_sum",
+          "family": "general",
+          "reference_program": "(sum (filter (lambda (a) (is_even a)) x))",
+          "status": "collapsed",
+          "passed": false,
+          "held_out_accuracy": null,
+          "verified_program": null,
+          "first_hit_created_by": null,
+          "first_hit_source_detail": null,
+          "surviving_candidates": [],
+          "rounds_used": 0,
+          "elapsed_ms": 2444.36,
+          "diagnostics": {
+            "oracle_queries": 0,
+            "z3_calls": 0,
+            "z3_fallbacks": 0,
+            "z3_timeouts": 0,
+            "llm_calls": 1,
+            "llm_latencies_ms": [
+              2443.902082974091
+            ],
+            "llm_raw_candidates": 6,
+            "llm_syntax_valid_candidates": 0,
+            "llm_sandbox_passed_candidates": 0,
+            "sandbox_rejections": {
+              "DSLParserError": 6
+            },
+            "swallowed_errors": {
+              "sandbox.filter_valid_candidates.parse": 6
+            },
+            "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 6
+              }
+            }
+          }
+        },
+        {
+          "task_name": "filter_positive_and_sum",
+          "family": "general",
+          "reference_program": "(sum (filter (lambda (a) (gt a 0)) x))",
+          "status": "collapsed",
+          "passed": false,
+          "held_out_accuracy": null,
+          "verified_program": null,
+          "first_hit_created_by": null,
+          "first_hit_source_detail": null,
+          "surviving_candidates": [],
+          "rounds_used": 0,
+          "elapsed_ms": 1090.76,
+          "diagnostics": {
+            "oracle_queries": 0,
+            "z3_calls": 0,
+            "z3_fallbacks": 0,
+            "z3_timeouts": 0,
+            "llm_calls": 1,
+            "llm_latencies_ms": [
+              1089.7549581713974
+            ],
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 4,
+            "llm_sandbox_passed_candidates": 0,
+            "sandbox_rejections": {
+              "TypeError": 4,
+              "DSLParserError": 1
+            },
+            "swallowed_errors": {
+              "sandbox.filter_valid_candidates.exec": 4,
+              "sandbox.filter_valid_candidates.parse": 1
+            },
+            "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.exec": {
+                "TypeError": 4
+              },
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 1
+              }
+            }
+          }
+        },
+        {
+          "task_name": "reverse_and_tail",
+          "family": "general",
+          "reference_program": "(tail (reverse x))",
+          "status": "collapsed",
+          "passed": false,
+          "held_out_accuracy": null,
+          "verified_program": null,
+          "first_hit_created_by": null,
+          "first_hit_source_detail": null,
+          "surviving_candidates": [],
+          "rounds_used": 0,
+          "elapsed_ms": 977.9,
+          "diagnostics": {
+            "oracle_queries": 0,
+            "z3_calls": 0,
+            "z3_fallbacks": 0,
+            "z3_timeouts": 0,
+            "llm_calls": 1,
+            "llm_latencies_ms": [
+              976.795791881159
+            ],
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 5,
+            "llm_sandbox_passed_candidates": 0,
+            "sandbox_rejections": {},
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
+          }
+        }
+      ]
+    },
+    "llm_plus_enumeration_d3": {
+      "mode_key": "llm_plus_enumeration_d3",
+      "note": "LLM + 通用自底向上枚举 (max_depth=3)",
+      "proposer_mode": "llm_plus_enumeration",
+      "enumerator_max_depth": 3,
+      "pass_count": 5,
+      "total_tasks": 13,
+      "pass_rate": 0.3846,
+      "total_elapsed_ms": 17880.0,
+      "diagnostics_summary": {
+        "oracle_queries": 10,
+        "z3_calls": 0,
+        "z3_fallbacks": 20,
+        "z3_timeouts": 0,
+        "llm_calls": 13,
+        "llm_latencies_ms": [
+          2204.426374984905,
+          1307.9361671116203,
+          1143.7180829234421,
+          934.3011248856783,
+          1301.0676249396056,
+          849.6003749314696,
+          1212.6407499890774,
+          1895.1097500976175,
+          994.9336249846965,
+          1618.1989579927176,
+          1265.4402500484139,
+          1944.2717919591814,
+          1049.7862498741597
+        ],
+        "llm_raw_candidates": 66,
+        "llm_syntax_valid_candidates": 53,
+        "llm_sandbox_passed_candidates": 0,
+        "sandbox_rejections": {
+          "DSLParserError": 13,
+          "NameError": 11,
+          "TypeError": 7
+        },
+        "swallowed_errors": {
+          "sandbox.filter_valid_candidates.parse": 13,
+          "sandbox.filter_valid_candidates.exec": 18
+        },
+        "swallowed_error_details": {
+          "sandbox.filter_valid_candidates.parse": {
+            "DSLParserError": 13
+          },
+          "sandbox.filter_valid_candidates.exec": {
+            "NameError": 11,
+            "TypeError": 7
+          }
+        }
+      },
+      "tasks": [
+        {
+          "task_name": "list_increment_all",
+          "family": "general",
+          "reference_program": "(map (lambda (a) (+ a 1)) x)",
+          "status": "collapsed",
+          "passed": false,
+          "held_out_accuracy": null,
+          "verified_program": null,
+          "first_hit_created_by": null,
+          "first_hit_source_detail": null,
+          "surviving_candidates": [],
+          "rounds_used": 0,
+          "elapsed_ms": 2211.08,
+          "diagnostics": {
+            "oracle_queries": 0,
+            "z3_calls": 0,
+            "z3_fallbacks": 0,
+            "z3_timeouts": 0,
+            "llm_calls": 1,
+            "llm_latencies_ms": [
+              2204.426374984905
+            ],
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 2,
+            "llm_sandbox_passed_candidates": 0,
+            "sandbox_rejections": {
+              "DSLParserError": 3
+            },
+            "swallowed_errors": {
+              "sandbox.filter_valid_candidates.parse": 3
+            },
+            "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 3
+              }
+            }
+          }
+        },
+        {
           "task_name": "filter_evens",
           "family": "general",
           "reference_program": "(filter (lambda (a) (is_even a)) x)",
@@ -2215,7 +2069,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1348.65,
+          "elapsed_ms": 1314.93,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2223,20 +2077,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1342.7543749567121
+              1307.9361671116203
             ],
-            "llm_raw_candidates": 4,
-            "llm_syntax_valid_candidates": 3,
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "DSLParserError": 1
+              "NameError": 5
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 1
+              "sandbox.filter_valid_candidates.exec": 5
             },
             "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 1
+              "sandbox.filter_valid_candidates.exec": {
+                "NameError": 5
               }
             }
           }
@@ -2253,7 +2107,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1395.36,
+          "elapsed_ms": 1150.32,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2261,22 +2115,25 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1389.1790420748293
+              1143.7180829234421
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
+            "llm_syntax_valid_candidates": 3,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "TypeError": 1,
-              "NameError": 4
+              "NameError": 2,
+              "DSLParserError": 2
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 5
+              "sandbox.filter_valid_candidates.exec": 2,
+              "sandbox.filter_valid_candidates.parse": 2
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 1,
-                "NameError": 4
+                "NameError": 2
+              },
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 2
               }
             }
           }
@@ -2309,7 +2166,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 664.95,
+          "elapsed_ms": 987.47,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -2317,7 +2174,7 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              580.8495841920376
+              934.3011248856783
             ],
             "llm_raw_candidates": 5,
             "llm_syntax_valid_candidates": 5,
@@ -2326,19 +2183,11 @@
               "TypeError": 2
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 2,
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
+              "sandbox.filter_valid_candidates.exec": 2
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.exec": {
                 "TypeError": 2
-              },
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
               }
             }
           }
@@ -2355,7 +2204,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1389.38,
+          "elapsed_ms": 1307.97,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2363,14 +2212,22 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1382.4734159279615
+              1301.0676249396056
             ],
-            "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
+            "llm_raw_candidates": 6,
+            "llm_syntax_valid_candidates": 6,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {},
-            "swallowed_errors": {},
-            "swallowed_error_details": {}
+            "sandbox_rejections": {
+              "TypeError": 1
+            },
+            "swallowed_errors": {
+              "sandbox.filter_valid_candidates.exec": 1
+            },
+            "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.exec": {
+                "TypeError": 1
+              }
+            }
           }
         },
         {
@@ -2391,7 +2248,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1164.84,
+          "elapsed_ms": 856.55,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2399,20 +2256,22 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1157.596082892269
+              849.6003749314696
             ],
-            "llm_raw_candidates": 9,
-            "llm_syntax_valid_candidates": 9,
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "TypeError": 5
+              "NameError": 2,
+              "TypeError": 1
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 5
+              "sandbox.filter_valid_candidates.exec": 3
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 5
+                "NameError": 2,
+                "TypeError": 1
               }
             }
           }
@@ -2435,7 +2294,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1241.49,
+          "elapsed_ms": 1219.74,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2443,7 +2302,7 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1234.9123330786824
+              1212.6407499890774
             ],
             "llm_raw_candidates": 5,
             "llm_syntax_valid_candidates": 5,
@@ -2465,7 +2324,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1277.57,
+          "elapsed_ms": 1901.28,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2473,20 +2332,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1271.3174170348793
+              1895.1097500976175
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
+            "llm_syntax_valid_candidates": 1,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "NameError": 5
+              "DSLParserError": 4
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 5
+              "sandbox.filter_valid_candidates.parse": 4
             },
             "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "NameError": 5
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 4
               }
             }
           }
@@ -2514,7 +2373,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 1173.02,
+          "elapsed_ms": 1024.09,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -2522,35 +2381,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1130.6082918308675
+              994.9336249846965
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 4,
+            "llm_syntax_valid_candidates": 3,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "TypeError": 2,
-              "DSLParserError": 1,
-              "NameError": 1
+              "DSLParserError": 2
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 3,
-              "sandbox.filter_valid_candidates.parse": 1,
-              "smt_distinguisher._heuristic_distinguishing": 40,
-              "bayesian_prober.group_by_output": 80
+              "sandbox.filter_valid_candidates.parse": 2
             },
             "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 2,
-                "NameError": 1
-              },
               "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 1
-              },
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 40
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 80
+                "DSLParserError": 2
               }
             }
           }
@@ -2573,7 +2417,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 2545.87,
+          "elapsed_ms": 1624.78,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2581,20 +2425,25 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              2538.8865421991795
+              1618.1989579927176
             ],
-            "llm_raw_candidates": 14,
-            "llm_syntax_valid_candidates": 13,
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 3,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "DSLParserError": 1
+              "TypeError": 1,
+              "DSLParserError": 2
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 1
+              "sandbox.filter_valid_candidates.exec": 1,
+              "sandbox.filter_valid_candidates.parse": 2
             },
             "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.exec": {
+                "TypeError": 1
+              },
               "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 1
+                "DSLParserError": 2
               }
             }
           }
@@ -2611,7 +2460,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1710.2,
+          "elapsed_ms": 1272.61,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2619,25 +2468,22 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1704.7427499201149
+              1265.4402500484139
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 1,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "TypeError": 1,
-              "DSLParserError": 4
+              "NameError": 2,
+              "TypeError": 2
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 1,
-              "sandbox.filter_valid_candidates.parse": 4
+              "sandbox.filter_valid_candidates.exec": 4
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 1
-              },
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 4
+                "NameError": 2,
+                "TypeError": 2
               }
             }
           }
@@ -2654,7 +2500,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1808.26,
+          "elapsed_ms": 1950.93,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2662,27 +2508,14 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1801.7575000412762
+              1944.2717919591814
             ],
-            "llm_raw_candidates": 6,
-            "llm_syntax_valid_candidates": 4,
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "DSLParserError": 2,
-              "NameError": 4
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 2,
-              "sandbox.filter_valid_candidates.exec": 4
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 2
-              },
-              "sandbox.filter_valid_candidates.exec": {
-                "NameError": 4
-              }
-            }
+            "sandbox_rejections": {},
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -2703,7 +2536,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1360.29,
+          "elapsed_ms": 1056.8,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2711,22 +2544,14 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1353.7153748329729
+              1049.7862498741597
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 4,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "DSLParserError": 1
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 1
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 1
-              }
-            }
+            "sandbox_rejections": {},
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         }
       ]
@@ -2739,7 +2564,7 @@
       "pass_count": 11,
       "total_tasks": 13,
       "pass_rate": 0.8462,
-      "total_elapsed_ms": 19185.43,
+      "total_elapsed_ms": 14877.54,
       "diagnostics_summary": {
         "oracle_queries": 21,
         "z3_calls": 0,
@@ -2747,47 +2572,39 @@
         "z3_timeouts": 0,
         "llm_calls": 13,
         "llm_latencies_ms": [
-          1233.0148329492658,
-          1985.5989578645676,
-          1350.7907500024885,
-          1053.9658751804382,
-          1589.3772500567138,
-          1158.1212079618126,
-          2545.6393340136856,
-          1178.8528750184923,
-          1525.9517079684883,
-          1292.6344580482692,
-          1054.9069580156356,
-          1775.8106249384582,
-          1039.9787921924144
+          1206.6163329873234,
+          1358.335915952921,
+          1447.798040928319,
+          849.9057909939438,
+          888.8026671484113,
+          973.743167007342,
+          1184.1103748884052,
+          1361.87925003469,
+          614.0657081268728,
+          1176.4204159844667,
+          990.7383751124144,
+          1561.080666957423,
+          926.8465829081833
         ],
-        "llm_raw_candidates": 56,
-        "llm_syntax_valid_candidates": 34,
+        "llm_raw_candidates": 61,
+        "llm_syntax_valid_candidates": 51,
         "llm_sandbox_passed_candidates": 0,
         "sandbox_rejections": {
-          "TypeError": 8,
-          "DSLParserError": 22,
-          "NameError": 7
+          "NameError": 12,
+          "TypeError": 9,
+          "DSLParserError": 10
         },
         "swallowed_errors": {
-          "sandbox.filter_valid_candidates.exec": 15,
-          "sandbox.filter_valid_candidates.parse": 22,
-          "smt_distinguisher._heuristic_distinguishing": 400,
-          "bayesian_prober.group_by_output": 455
+          "sandbox.filter_valid_candidates.exec": 21,
+          "sandbox.filter_valid_candidates.parse": 10
         },
         "swallowed_error_details": {
           "sandbox.filter_valid_candidates.exec": {
-            "TypeError": 8,
-            "NameError": 7
+            "NameError": 12,
+            "TypeError": 9
           },
           "sandbox.filter_valid_candidates.parse": {
-            "DSLParserError": 22
-          },
-          "smt_distinguisher._heuristic_distinguishing": {
-            "TypeError": 400
-          },
-          "bayesian_prober.group_by_output": {
-            "TypeError": 455
+            "DSLParserError": 10
           }
         }
       },
@@ -2820,7 +2637,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 1322.87,
+          "elapsed_ms": 1275.02,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -2828,33 +2645,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1233.0148329492658
+              1206.6163329873234
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 4,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "TypeError": 3,
-              "DSLParserError": 1
+              "NameError": 1
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 3,
-              "sandbox.filter_valid_candidates.parse": 1,
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
+              "sandbox.filter_valid_candidates.exec": 1
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 3
-              },
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 1
-              },
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
+                "NameError": 1
               }
             }
           }
@@ -2877,7 +2681,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1996.66,
+          "elapsed_ms": 1369.96,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2885,20 +2689,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1985.5989578645676
+              1358.335915952921
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 2,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "DSLParserError": 3
+              "NameError": 1
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 3
+              "sandbox.filter_valid_candidates.exec": 1
             },
             "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 3
+              "sandbox.filter_valid_candidates.exec": {
+                "NameError": 1
               }
             }
           }
@@ -2921,7 +2725,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1362.79,
+          "elapsed_ms": 1459.71,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -2929,20 +2733,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1350.7907500024885
+              1447.798040928319
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 3,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "DSLParserError": 2
+              "NameError": 1
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 2
+              "sandbox.filter_valid_candidates.exec": 1
             },
             "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 2
+              "sandbox.filter_valid_candidates.exec": {
+                "NameError": 1
               }
             }
           }
@@ -2975,7 +2779,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 1126.89,
+          "elapsed_ms": 905.75,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -2983,22 +2787,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1053.9658751804382
+              849.9057909939438
             ],
             "llm_raw_candidates": 5,
             "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {},
+            "sandbox_rejections": {
+              "TypeError": 3
+            },
             "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
+              "sandbox.filter_valid_candidates.exec": 3
             },
             "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
+              "sandbox.filter_valid_candidates.exec": {
+                "TypeError": 3
               }
             }
           }
@@ -3021,7 +2823,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1600.18,
+          "elapsed_ms": 900.84,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -3029,20 +2831,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1589.3772500567138
+              888.8026671484113
             ],
             "llm_raw_candidates": 5,
             "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "NameError": 1
+              "NameError": 5
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 1
+              "sandbox.filter_valid_candidates.exec": 5
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.exec": {
-                "NameError": 1
+                "NameError": 5
               }
             }
           }
@@ -3065,7 +2867,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1168.41,
+          "elapsed_ms": 985.36,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -3073,22 +2875,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1158.1212079618126
+              973.743167007342
             ],
             "llm_raw_candidates": 5,
             "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "TypeError": 4,
-              "NameError": 1
+              "TypeError": 5
             },
             "swallowed_errors": {
               "sandbox.filter_valid_candidates.exec": 5
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 4,
-                "NameError": 1
+                "TypeError": 5
               }
             }
           }
@@ -3111,7 +2911,7 @@
             }
           ],
           "rounds_used": 2,
-          "elapsed_ms": 2562.19,
+          "elapsed_ms": 1201.34,
           "diagnostics": {
             "oracle_queries": 1,
             "z3_calls": 0,
@@ -3119,26 +2919,14 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              2545.6393340136856
+              1184.1103748884052
             ],
-            "llm_raw_candidates": 1,
-            "llm_syntax_valid_candidates": 0,
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "DSLParserError": 1
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 1,
-              "bayesian_prober.group_by_output": 15
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 1
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 15
-              }
-            }
+            "sandbox_rejections": {},
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         },
         {
@@ -3169,7 +2957,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 1265.41,
+          "elapsed_ms": 1428.96,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -3177,22 +2965,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1178.8528750184923
+              1361.87925003469
             ],
-            "llm_raw_candidates": 0,
-            "llm_syntax_valid_candidates": 0,
+            "llm_raw_candidates": 5,
+            "llm_syntax_valid_candidates": 4,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {},
+            "sandbox_rejections": {
+              "DSLParserError": 1
+            },
             "swallowed_errors": {
-              "smt_distinguisher._heuristic_distinguishing": 120,
-              "bayesian_prober.group_by_output": 120
+              "sandbox.filter_valid_candidates.parse": 1
             },
             "swallowed_error_details": {
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 120
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 120
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 1
               }
             }
           }
@@ -3220,7 +3006,7 @@
             }
           ],
           "rounds_used": 5,
-          "elapsed_ms": 1571.84,
+          "elapsed_ms": 647.98,
           "diagnostics": {
             "oracle_queries": 5,
             "z3_calls": 0,
@@ -3228,28 +3014,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1525.9517079684883
+              614.0657081268728
             ],
-            "llm_raw_candidates": 5,
+            "llm_raw_candidates": 1,
             "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "DSLParserError": 5
+              "DSLParserError": 1
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 5,
-              "smt_distinguisher._heuristic_distinguishing": 40,
-              "bayesian_prober.group_by_output": 80
+              "sandbox.filter_valid_candidates.parse": 1
             },
             "swallowed_error_details": {
               "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 5
-              },
-              "smt_distinguisher._heuristic_distinguishing": {
-                "TypeError": 40
-              },
-              "bayesian_prober.group_by_output": {
-                "TypeError": 80
+                "DSLParserError": 1
               }
             }
           }
@@ -3272,7 +3050,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1304.11,
+          "elapsed_ms": 1187.79,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -3280,20 +3058,20 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1292.6344580482692
+              1176.4204159844667
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 5,
+            "llm_syntax_valid_candidates": 0,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "NameError": 5
+              "DSLParserError": 5
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 5
+              "sandbox.filter_valid_candidates.parse": 5
             },
             "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "NameError": 5
+              "sandbox.filter_valid_candidates.parse": {
+                "DSLParserError": 5
               }
             }
           }
@@ -3310,7 +3088,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1065.11,
+          "elapsed_ms": 1001.85,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -3318,20 +3096,25 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1054.9069580156356
+              990.7383751124144
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 0,
+            "llm_syntax_valid_candidates": 4,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "DSLParserError": 5
+              "NameError": 4,
+              "DSLParserError": 1
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 5
+              "sandbox.filter_valid_candidates.exec": 4,
+              "sandbox.filter_valid_candidates.parse": 1
             },
             "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.exec": {
+                "NameError": 4
+              },
               "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 5
+                "DSLParserError": 1
               }
             }
           }
@@ -3348,7 +3131,7 @@
           "first_hit_source_detail": null,
           "surviving_candidates": [],
           "rounds_used": 0,
-          "elapsed_ms": 1785.87,
+          "elapsed_ms": 1573.0,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -3356,20 +3139,25 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1775.8106249384582
+              1561.080666957423
             ],
             "llm_raw_candidates": 5,
-            "llm_syntax_valid_candidates": 0,
+            "llm_syntax_valid_candidates": 3,
             "llm_sandbox_passed_candidates": 0,
             "sandbox_rejections": {
-              "DSLParserError": 5
+              "TypeError": 1,
+              "DSLParserError": 2
             },
             "swallowed_errors": {
-              "sandbox.filter_valid_candidates.parse": 5
+              "sandbox.filter_valid_candidates.exec": 1,
+              "sandbox.filter_valid_candidates.parse": 2
             },
             "swallowed_error_details": {
+              "sandbox.filter_valid_candidates.exec": {
+                "TypeError": 1
+              },
               "sandbox.filter_valid_candidates.parse": {
-                "DSLParserError": 5
+                "DSLParserError": 2
               }
             }
           }
@@ -3392,7 +3180,7 @@
             }
           ],
           "rounds_used": 1,
-          "elapsed_ms": 1051.51,
+          "elapsed_ms": 938.59,
           "diagnostics": {
             "oracle_queries": 0,
             "z3_calls": 0,
@@ -3400,22 +3188,14 @@
             "z3_timeouts": 0,
             "llm_calls": 1,
             "llm_latencies_ms": [
-              1039.9787921924144
+              926.8465829081833
             ],
             "llm_raw_candidates": 5,
             "llm_syntax_valid_candidates": 5,
             "llm_sandbox_passed_candidates": 0,
-            "sandbox_rejections": {
-              "TypeError": 1
-            },
-            "swallowed_errors": {
-              "sandbox.filter_valid_candidates.exec": 1
-            },
-            "swallowed_error_details": {
-              "sandbox.filter_valid_candidates.exec": {
-                "TypeError": 1
-              }
-            }
+            "sandbox_rejections": {},
+            "swallowed_errors": {},
+            "swallowed_error_details": {}
           }
         }
       ]
@@ -3524,9 +3304,9 @@
           "pass_rate": 1.0
         },
         "llm_only": {
-          "passed": 0,
+          "passed": 1,
           "total": 3,
-          "pass_rate": 0.0
+          "pass_rate": 0.3333
         },
         "llm_plus_enumeration_d3": {
           "passed": 1,
@@ -3647,9 +3427,9 @@
           "pass_rate": 1.0
         },
         "llm_only": {
-          "passed": 0,
+          "passed": 1,
           "total": 3,
-          "pass_rate": 0.0
+          "pass_rate": 0.3333
         },
         "llm_plus_enumeration_d3": {
           "passed": 0,
@@ -3875,36 +3655,36 @@
     "mlx_version": "0.32.4",
     "total_llm_calls": 13,
     "latencies_ms": [
-      1858.19,
-      1293.66,
-      2015.1,
-      862.46,
-      1980.01,
-      469.25,
-      1321.73,
-      1825.95,
-      1180.7,
-      1214.32,
-      2224.39,
-      790.38,
-      1160.69
+      1514.32,
+      1103.65,
+      1172.52,
+      435.34,
+      1374.4,
+      909.27,
+      674.79,
+      748.52,
+      1321.32,
+      1149.14,
+      2443.9,
+      1089.75,
+      976.8
     ],
-    "mean_latency_ms": 1399.76,
-    "min_latency_ms": 469.25,
-    "max_latency_ms": 2224.39,
-    "raw_candidates": 61,
-    "syntax_valid_candidates": 48,
-    "syntax_valid_rate": 0.7869,
-    "sandbox_passed_candidates": 0,
-    "sandbox_pass_rate_of_raw": 0.0,
-    "sandbox_pass_rate_of_syntax_valid": 0.0
+    "mean_latency_ms": 1147.21,
+    "min_latency_ms": 435.34,
+    "max_latency_ms": 2443.9,
+    "raw_candidates": 62,
+    "syntax_valid_candidates": 51,
+    "syntax_valid_rate": 0.8226,
+    "sandbox_passed_candidates": 1,
+    "sandbox_pass_rate_of_raw": 0.0161,
+    "sandbox_pass_rate_of_syntax_valid": 0.0196
   },
   "experiments_comparison": {
     "experiments/run_autonomous_agi_loop.py": {
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 367.19,
+        "elapsed_ms": 254.14,
         "diagnostics": {
           "oracle_queries": 25,
           "z3_calls": 0,
@@ -3916,18 +3696,8 @@
           "llm_syntax_valid_candidates": 0,
           "llm_sandbox_passed_candidates": 0,
           "sandbox_rejections": {},
-          "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 280,
-            "bayesian_prober.group_by_output": 440
-          },
-          "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 280
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 440
-            }
-          }
+          "swallowed_errors": {},
+          "swallowed_error_details": {}
         },
         "key_lines": [
           "Cycle 1: Proposed=4, Solved=3, Crystallized=3, HotTier=3, ColdTier=0, SleepStatus='Consolidation committed successfully.', GatePassed=True, AuditLength=5, FVR=0.00%",
@@ -3941,7 +3711,7 @@
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 309.22,
+        "elapsed_ms": 231.27,
         "diagnostics": {
           "oracle_queries": 20,
           "z3_calls": 0,
@@ -3953,18 +3723,8 @@
           "llm_syntax_valid_candidates": 0,
           "llm_sandbox_passed_candidates": 0,
           "sandbox_rejections": {},
-          "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 400,
-            "bayesian_prober.group_by_output": 440
-          },
-          "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 400
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 440
-            }
-          }
+          "swallowed_errors": {},
+          "swallowed_error_details": {}
         },
         "key_lines": [
           "Cycle 1: Proposed=4, Solved=1, Crystallized=1, HotTier=1, ColdTier=0, SleepStatus='Consolidation committed successfully.', GatePassed=True, AuditLength=3, FVR=0.00%",
@@ -3978,7 +3738,7 @@
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 495.84,
+        "elapsed_ms": 339.18,
         "diagnostics": {
           "oracle_queries": 26,
           "z3_calls": 0,
@@ -3990,18 +3750,8 @@
           "llm_syntax_valid_candidates": 0,
           "llm_sandbox_passed_candidates": 0,
           "sandbox_rejections": {},
-          "swallowed_errors": {
-            "bayesian_prober.group_by_output": 575,
-            "smt_distinguisher._heuristic_distinguishing": 520
-          },
-          "swallowed_error_details": {
-            "bayesian_prober.group_by_output": {
-              "TypeError": 575
-            },
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 520
-            }
-          }
+          "swallowed_errors": {},
+          "swallowed_error_details": {}
         },
         "key_lines": [
           "Cycle 1: Proposed=4, Solved=3, Crystallized=3, HotTier=3, ColdTier=0, SleepStatus='Consolidation committed successfully.', GatePassed=True, AuditLength=5, FVR=0.00%",
@@ -4017,7 +3767,7 @@
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 1146.06,
+        "elapsed_ms": 770.74,
         "diagnostics": {
           "oracle_queries": 66,
           "z3_calls": 0,
@@ -4032,17 +3782,9 @@
             "NameError": 368
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 1008,
-            "bayesian_prober.group_by_output": 1296,
             "sandbox.filter_valid_candidates.exec": 368
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 1008
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 1296
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 368
             }
@@ -4062,7 +3804,7 @@
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 698.18,
+        "elapsed_ms": 528.81,
         "diagnostics": {
           "oracle_queries": 42,
           "z3_calls": 0,
@@ -4077,17 +3819,9 @@
             "NameError": 40
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 912,
-            "bayesian_prober.group_by_output": 960,
             "sandbox.filter_valid_candidates.exec": 40
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 912
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 960
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 40
             }
@@ -4107,7 +3841,7 @@
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 1316.34,
+        "elapsed_ms": 967.75,
         "diagnostics": {
           "oracle_queries": 68,
           "z3_calls": 0,
@@ -4122,17 +3856,9 @@
             "NameError": 184
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 1488,
-            "bayesian_prober.group_by_output": 1566,
             "sandbox.filter_valid_candidates.exec": 184
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 1488
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 1566
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 184
             }
@@ -4154,7 +3880,7 @@
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 1955.8,
+        "elapsed_ms": 1308.8,
         "diagnostics": {
           "oracle_queries": 128,
           "z3_calls": 0,
@@ -4166,18 +3892,8 @@
           "llm_syntax_valid_candidates": 0,
           "llm_sandbox_passed_candidates": 0,
           "sandbox_rejections": {},
-          "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 2304,
-            "bayesian_prober.group_by_output": 2688
-          },
-          "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 2304
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 2688
-            }
-          }
+          "swallowed_errors": {},
+          "swallowed_error_details": {}
         },
         "key_lines": [
           "Cold-Start list_composition Pass Rate: 0.0% (0/3)",
@@ -4194,12 +3910,12 @@
           "General Coding Retention Drop     |         0.00% | <= 3.00%         | PASS",
           "Forward Transfer (FWT) Delta      |       +33.33% | >= +10.00%       | PASS"
         ],
-        "stdout": "=====================================================================\n  EVE-3 PHASE 6: CONTINUAL LEARNING, RETENTION & TRANSFER EXPERIMENT  \n=====================================================================\n\n--- Evaluating Cold-Start Baseline on Held-Out Family (list_composition) ---\nCold-Start list_composition Pass Rate: 0.0% (0/3)\n\n>>> Stage 1/4: Learning Family 'list_mapping'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_mapping_df637a)\n    Retention on list_mapping: 100.0%, General Probe: 100.0%\n\n>>> Stage 2/4: Learning Family 'list_filtering'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_filtering_9791b5)\n    Retention on list_filtering: 100.0%, General Probe: 100.0%\n\n>>> Stage 3/4: Learning Family 'list_reduction'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_reduction_48101b)\n    Retention on list_reduction: 100.0%, General Probe: 100.0%\n\n>>> Stage 4/4: Learning Family 'list_structural'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_structural_5b4a5b)\n    Retention on list_structural: 100.0%, General Probe: 100.0%\n\n--- Evaluating Accumulated System on Held-Out Family (list_composition) ---\n\n=====================================================================\n                 ACCURACY RETENTION MATRIX R_{i, j}                  \n=====================================================================\nStage              | list_mapping   | list_filtering | list_reduction | list_structural\n---------------------------------------------------------------------------------------\nStage 1 (list_mapping): |         100.0% |            --- |            --- |            ---\nStage 2 (list_filtering): |         100.0% |         100.0% |            --- |            ---\nStage 3 (list_reduction): |         100.0% |         100.0% |         100.0% |            ---\nStage 4 (list_structural): |         100.0% |         100.0% |         100.0% |         100.0%\n=======================================================================================\n\n=====================================================================\n             CONTINUAL LEARNING PREREGISTERED METRICS               \n=====================================================================\nMetric                            | Measured Value | Target Threshold | Status\n---------------------------------------------------------------------------\nBackward Forgetting (BWT)         |         0.00% | <= 2.00%         | PASS\nGeneral Coding Retention Drop     |         0.00% | <= 3.00%         | PASS\nForward Transfer (FWT) Delta      |       +33.33% | >= +10.00%       | PASS\nFalse Verification Rate           |         0.00% | == 0.00%         | PASS\n=====================================================================\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE 6: CONTINUAL LEARNING, RETENTION & TRANSFER EXPERIMENT  \n=====================================================================\n\n--- Evaluating Cold-Start Baseline on Held-Out Family (list_composition) ---\nCold-Start list_composition Pass Rate: 0.0% (0/3)\n\n>>> Stage 1/4: Learning Family 'list_mapping'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_mapping_15c064)\n    Retention on list_mapping: 100.0%, General Probe: 100.0%\n\n>>> Stage 2/4: Learning Family 'list_filtering'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_filtering_2834f1)\n    Retention on list_filtering: 100.0%, General Probe: 100.0%\n\n>>> Stage 3/4: Learning Family 'list_reduction'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_reduction_cf8acf)\n    Retention on list_reduction: 100.0%, General Probe: 100.0%\n\n>>> Stage 4/4: Learning Family 'list_structural'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_structural_851307)\n    Retention on list_structural: 100.0%, General Probe: 100.0%\n\n--- Evaluating Accumulated System on Held-Out Family (list_composition) ---\n\n=====================================================================\n                 ACCURACY RETENTION MATRIX R_{i, j}                  \n=====================================================================\nStage              | list_mapping   | list_filtering | list_reduction | list_structural\n---------------------------------------------------------------------------------------\nStage 1 (list_mapping): |         100.0% |            --- |            --- |            ---\nStage 2 (list_filtering): |         100.0% |         100.0% |            --- |            ---\nStage 3 (list_reduction): |         100.0% |         100.0% |         100.0% |            ---\nStage 4 (list_structural): |         100.0% |         100.0% |         100.0% |         100.0%\n=======================================================================================\n\n=====================================================================\n             CONTINUAL LEARNING PREREGISTERED METRICS               \n=====================================================================\nMetric                            | Measured Value | Target Threshold | Status\n---------------------------------------------------------------------------\nBackward Forgetting (BWT)         |         0.00% | <= 2.00%         | PASS\nGeneral Coding Retention Drop     |         0.00% | <= 3.00%         | PASS\nForward Transfer (FWT) Delta      |       +33.33% | >= +10.00%       | PASS\nFalse Verification Rate           |         0.00% | == 0.00%         | PASS\n=====================================================================\n"
       },
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 689.97,
+        "elapsed_ms": 518.65,
         "diagnostics": {
           "oracle_queries": 48,
           "z3_calls": 0,
@@ -4211,18 +3927,8 @@
           "llm_syntax_valid_candidates": 0,
           "llm_sandbox_passed_candidates": 0,
           "sandbox_rejections": {},
-          "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 768,
-            "bayesian_prober.group_by_output": 960
-          },
-          "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 768
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 960
-            }
-          }
+          "swallowed_errors": {},
+          "swallowed_error_details": {}
         },
         "key_lines": [
           "Cold-Start list_composition Pass Rate: 33.3% (1/3)",
@@ -4239,12 +3945,12 @@
           "General Coding Retention Drop     |         0.00% | <= 3.00%         | PASS",
           "Forward Transfer (FWT) Delta      |        +0.00% | >= +10.00%       | PASS*"
         ],
-        "stdout": "=====================================================================\n  EVE-3 PHASE 6: CONTINUAL LEARNING, RETENTION & TRANSFER EXPERIMENT  \n=====================================================================\n\n--- Evaluating Cold-Start Baseline on Held-Out Family (list_composition) ---\nCold-Start list_composition Pass Rate: 33.3% (1/3)\n\n>>> Stage 1/4: Learning Family 'list_mapping'\n    Consolidation Result: Insufficient verified samples (0 < 2) (Adapter: )\n    Retention on list_mapping: 0.0%, General Probe: 100.0%\n\n>>> Stage 2/4: Learning Family 'list_filtering'\n    Consolidation Result: Insufficient verified samples (0 < 2) (Adapter: )\n    Retention on list_filtering: 0.0%, General Probe: 100.0%\n\n>>> Stage 3/4: Learning Family 'list_reduction'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_reduction_76cda0)\n    Retention on list_reduction: 100.0%, General Probe: 100.0%\n\n>>> Stage 4/4: Learning Family 'list_structural'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_structural_882b90)\n    Retention on list_structural: 100.0%, General Probe: 100.0%\n\n--- Evaluating Accumulated System on Held-Out Family (list_composition) ---\n\n=====================================================================\n                 ACCURACY RETENTION MATRIX R_{i, j}                  \n=====================================================================\nStage              | list_mapping   | list_filtering | list_reduction | list_structural\n---------------------------------------------------------------------------------------\nStage 1 (list_mapping): |            --- |            --- |            --- |            ---\nStage 2 (list_filtering): |            --- |            --- |            --- |            ---\nStage 3 (list_reduction): |            --- |            --- |         100.0% |            ---\nStage 4 (list_structural): |            --- |            --- |         100.0% |         100.0%\n=======================================================================================\n\n=====================================================================\n             CONTINUAL LEARNING PREREGISTERED METRICS               \n=====================================================================\nMetric                            | Measured Value | Target Threshold | Status\n---------------------------------------------------------------------------\nBackward Forgetting (BWT)         |         0.00% | <= 2.00%         | PASS\nGeneral Coding Retention Drop     |         0.00% | <= 3.00%         | PASS\nForward Transfer (FWT) Delta      |        +0.00% | >= +10.00%       | PASS*\nFalse Verification Rate           |         0.00% | == 0.00%         | PASS\n=====================================================================\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE 6: CONTINUAL LEARNING, RETENTION & TRANSFER EXPERIMENT  \n=====================================================================\n\n--- Evaluating Cold-Start Baseline on Held-Out Family (list_composition) ---\nCold-Start list_composition Pass Rate: 33.3% (1/3)\n\n>>> Stage 1/4: Learning Family 'list_mapping'\n    Consolidation Result: Insufficient verified samples (0 < 2) (Adapter: )\n    Retention on list_mapping: 0.0%, General Probe: 100.0%\n\n>>> Stage 2/4: Learning Family 'list_filtering'\n    Consolidation Result: Insufficient verified samples (0 < 2) (Adapter: )\n    Retention on list_filtering: 0.0%, General Probe: 100.0%\n\n>>> Stage 3/4: Learning Family 'list_reduction'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_reduction_668cc1)\n    Retention on list_reduction: 100.0%, General Probe: 100.0%\n\n>>> Stage 4/4: Learning Family 'list_structural'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_structural_bd75a7)\n    Retention on list_structural: 100.0%, General Probe: 100.0%\n\n--- Evaluating Accumulated System on Held-Out Family (list_composition) ---\n\n=====================================================================\n                 ACCURACY RETENTION MATRIX R_{i, j}                  \n=====================================================================\nStage              | list_mapping   | list_filtering | list_reduction | list_structural\n---------------------------------------------------------------------------------------\nStage 1 (list_mapping): |            --- |            --- |            --- |            ---\nStage 2 (list_filtering): |            --- |            --- |            --- |            ---\nStage 3 (list_reduction): |            --- |            --- |         100.0% |            ---\nStage 4 (list_structural): |            --- |            --- |         100.0% |         100.0%\n=======================================================================================\n\n=====================================================================\n             CONTINUAL LEARNING PREREGISTERED METRICS               \n=====================================================================\nMetric                            | Measured Value | Target Threshold | Status\n---------------------------------------------------------------------------\nBackward Forgetting (BWT)         |         0.00% | <= 2.00%         | PASS\nGeneral Coding Retention Drop     |         0.00% | <= 3.00%         | PASS\nForward Transfer (FWT) Delta      |        +0.00% | >= +10.00%       | PASS*\nFalse Verification Rate           |         0.00% | == 0.00%         | PASS\n=====================================================================\n"
       },
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 2211.33,
+        "elapsed_ms": 1564.2,
         "diagnostics": {
           "oracle_queries": 132,
           "z3_calls": 0,
@@ -4256,18 +3962,8 @@
           "llm_syntax_valid_candidates": 0,
           "llm_sandbox_passed_candidates": 0,
           "sandbox_rejections": {},
-          "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 2688,
-            "bayesian_prober.group_by_output": 2940
-          },
-          "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 2688
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 2940
-            }
-          }
+          "swallowed_errors": {},
+          "swallowed_error_details": {}
         },
         "key_lines": [
           "Cold-Start list_composition Pass Rate: 33.3% (1/3)",
@@ -4284,14 +3980,14 @@
           "General Coding Retention Drop     |         0.00% | <= 3.00%         | PASS",
           "Forward Transfer (FWT) Delta      |        +0.00% | >= +10.00%       | PASS*"
         ],
-        "stdout": "=====================================================================\n  EVE-3 PHASE 6: CONTINUAL LEARNING, RETENTION & TRANSFER EXPERIMENT  \n=====================================================================\n\n--- Evaluating Cold-Start Baseline on Held-Out Family (list_composition) ---\nCold-Start list_composition Pass Rate: 33.3% (1/3)\n\n>>> Stage 1/4: Learning Family 'list_mapping'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_mapping_11693b)\n    Retention on list_mapping: 100.0%, General Probe: 100.0%\n\n>>> Stage 2/4: Learning Family 'list_filtering'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_filtering_92d397)\n    Retention on list_filtering: 100.0%, General Probe: 100.0%\n\n>>> Stage 3/4: Learning Family 'list_reduction'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_reduction_9558e4)\n    Retention on list_reduction: 100.0%, General Probe: 100.0%\n\n>>> Stage 4/4: Learning Family 'list_structural'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_structural_863fe9)\n    Retention on list_structural: 100.0%, General Probe: 100.0%\n\n--- Evaluating Accumulated System on Held-Out Family (list_composition) ---\n\n=====================================================================\n                 ACCURACY RETENTION MATRIX R_{i, j}                  \n=====================================================================\nStage              | list_mapping   | list_filtering | list_reduction | list_structural\n---------------------------------------------------------------------------------------\nStage 1 (list_mapping): |         100.0% |            --- |            --- |            ---\nStage 2 (list_filtering): |         100.0% |         100.0% |            --- |            ---\nStage 3 (list_reduction): |         100.0% |         100.0% |         100.0% |            ---\nStage 4 (list_structural): |         100.0% |         100.0% |         100.0% |         100.0%\n=======================================================================================\n\n=====================================================================\n             CONTINUAL LEARNING PREREGISTERED METRICS               \n=====================================================================\nMetric                            | Measured Value | Target Threshold | Status\n---------------------------------------------------------------------------\nBackward Forgetting (BWT)         |         0.00% | <= 2.00%         | PASS\nGeneral Coding Retention Drop     |         0.00% | <= 3.00%         | PASS\nForward Transfer (FWT) Delta      |        +0.00% | >= +10.00%       | PASS*\nFalse Verification Rate           |         0.00% | == 0.00%         | PASS\n=====================================================================\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE 6: CONTINUAL LEARNING, RETENTION & TRANSFER EXPERIMENT  \n=====================================================================\n\n--- Evaluating Cold-Start Baseline on Held-Out Family (list_composition) ---\nCold-Start list_composition Pass Rate: 33.3% (1/3)\n\n>>> Stage 1/4: Learning Family 'list_mapping'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_mapping_d8b6ff)\n    Retention on list_mapping: 100.0%, General Probe: 100.0%\n\n>>> Stage 2/4: Learning Family 'list_filtering'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_filtering_76630b)\n    Retention on list_filtering: 100.0%, General Probe: 100.0%\n\n>>> Stage 3/4: Learning Family 'list_reduction'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_reduction_27b31b)\n    Retention on list_reduction: 100.0%, General Probe: 100.0%\n\n>>> Stage 4/4: Learning Family 'list_structural'\n    Consolidation Result: Consolidation committed successfully. (Adapter: lora_list_structural_08db84)\n    Retention on list_structural: 100.0%, General Probe: 100.0%\n\n--- Evaluating Accumulated System on Held-Out Family (list_composition) ---\n\n=====================================================================\n                 ACCURACY RETENTION MATRIX R_{i, j}                  \n=====================================================================\nStage              | list_mapping   | list_filtering | list_reduction | list_structural\n---------------------------------------------------------------------------------------\nStage 1 (list_mapping): |         100.0% |            --- |            --- |            ---\nStage 2 (list_filtering): |         100.0% |         100.0% |            --- |            ---\nStage 3 (list_reduction): |         100.0% |         100.0% |         100.0% |            ---\nStage 4 (list_structural): |         100.0% |         100.0% |         100.0% |         100.0%\n=======================================================================================\n\n=====================================================================\n             CONTINUAL LEARNING PREREGISTERED METRICS               \n=====================================================================\nMetric                            | Measured Value | Target Threshold | Status\n---------------------------------------------------------------------------\nBackward Forgetting (BWT)         |         0.00% | <= 2.00%         | PASS\nGeneral Coding Retention Drop     |         0.00% | <= 3.00%         | PASS\nForward Transfer (FWT) Delta      |        +0.00% | >= +10.00%       | PASS*\nFalse Verification Rate           |         0.00% | == 0.00%         | PASS\n=====================================================================\n"
       }
     },
     "experiments/run_env_simulation.py": {
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 5.28,
+        "elapsed_ms": 4.83,
         "diagnostics": {
           "oracle_queries": 0,
           "z3_calls": 0,
@@ -4314,7 +4010,7 @@
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 4.62,
+        "elapsed_ms": 4.29,
         "diagnostics": {
           "oracle_queries": 0,
           "z3_calls": 0,
@@ -4337,7 +4033,7 @@
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 4.8,
+        "elapsed_ms": 4.97,
         "diagnostics": {
           "oracle_queries": 0,
           "z3_calls": 0,
@@ -4362,7 +4058,7 @@
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 473.77,
+        "elapsed_ms": 332.44,
         "diagnostics": {
           "oracle_queries": 32,
           "z3_calls": 0,
@@ -4377,17 +4073,9 @@
             "NameError": 80
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 384,
-            "bayesian_prober.group_by_output": 576,
             "sandbox.filter_valid_candidates.exec": 80
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 384
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 576
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 80
             }
@@ -4395,14 +4083,14 @@
         },
         "key_lines": [
           "Regime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)",
-          "Full_System                  |    100.0% |        0.0% |       1.60 |        22.73"
+          "Full_System                  |    100.0% |        0.0% |       1.60 |        13.59"
         ],
-        "stdout": "=====================================================================\n  EVE-3 PHASE P3/P5: FULL 4-REGIME ABLATION BENCHMARK (SEEDS: [42])\n=====================================================================\n\n--- Running Baseline A: Naive Proposal (No Active Falsification) ---\n\n--- Running Baseline B: Active Falsifier Only (No Library) ---\n\n--- Running Baseline C: Active Falsifier + Library Reuse ---\n\n--- Running Full System: Active Falsifier + Library + Optimized Policy ---\n\n=====================================================================\n                   FINAL METRICS SUMMARY TABLE                       \n=====================================================================\nRegime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)\n--------------------------------------------------------------------------------\nBaseline_A_Naive             |    100.0% |        0.0% |       0.00 |         4.31\nBaseline_B_FalsifyOnly       |    100.0% |        0.0% |       1.60 |        15.59\nBaseline_C_Library           |    100.0% |        0.0% |       1.60 |        23.32\nFull_System                  |    100.0% |        0.0% |       1.60 |        22.73\n================================================================================\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE P3/P5: FULL 4-REGIME ABLATION BENCHMARK (SEEDS: [42])\n=====================================================================\n\n--- Running Baseline A: Naive Proposal (No Active Falsification) ---\n\n--- Running Baseline B: Active Falsifier Only (No Library) ---\n\n--- Running Baseline C: Active Falsifier + Library Reuse ---\n\n--- Running Full System: Active Falsifier + Library + Optimized Policy ---\n\n=====================================================================\n                   FINAL METRICS SUMMARY TABLE                       \n=====================================================================\nRegime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)\n--------------------------------------------------------------------------------\nBaseline_A_Naive             |    100.0% |        0.0% |       0.00 |         4.14\nBaseline_B_FalsifyOnly       |    100.0% |        0.0% |       1.60 |        13.75\nBaseline_C_Library           |    100.0% |        0.0% |       1.60 |        14.34\nFull_System                  |    100.0% |        0.0% |       1.60 |        13.59\n================================================================================\n"
       },
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 417.32,
+        "elapsed_ms": 323.05,
         "diagnostics": {
           "oracle_queries": 24,
           "z3_calls": 0,
@@ -4417,17 +4105,9 @@
             "NameError": 40
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 576,
-            "bayesian_prober.group_by_output": 576,
             "sandbox.filter_valid_candidates.exec": 40
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 576
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 576
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 40
             }
@@ -4435,14 +4115,14 @@
         },
         "key_lines": [
           "Regime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)",
-          "Full_System                  |     40.0% |        0.0% |       1.60 |        24.73"
+          "Full_System                  |     40.0% |        0.0% |       1.60 |        19.46"
         ],
-        "stdout": "=====================================================================\n  EVE-3 PHASE P3/P5: FULL 4-REGIME ABLATION BENCHMARK (SEEDS: [42])\n=====================================================================\n\n--- Running Baseline A: Naive Proposal (No Active Falsification) ---\n\n--- Running Baseline B: Active Falsifier Only (No Library) ---\n\n--- Running Baseline C: Active Falsifier + Library Reuse ---\n\n--- Running Full System: Active Falsifier + Library + Optimized Policy ---\n\n=====================================================================\n                   FINAL METRICS SUMMARY TABLE                       \n=====================================================================\nRegime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)\n--------------------------------------------------------------------------------\nBaseline_A_Naive             |     40.0% |        0.0% |       0.00 |         4.63\nBaseline_B_FalsifyOnly       |     40.0% |        0.0% |       1.60 |        25.16\nBaseline_C_Library           |     40.0% |        0.0% |       1.60 |        25.94\nFull_System                  |     40.0% |        0.0% |       1.60 |        24.73\n================================================================================\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE P3/P5: FULL 4-REGIME ABLATION BENCHMARK (SEEDS: [42])\n=====================================================================\n\n--- Running Baseline A: Naive Proposal (No Active Falsification) ---\n\n--- Running Baseline B: Active Falsifier Only (No Library) ---\n\n--- Running Baseline C: Active Falsifier + Library Reuse ---\n\n--- Running Full System: Active Falsifier + Library + Optimized Policy ---\n\n=====================================================================\n                   FINAL METRICS SUMMARY TABLE                       \n=====================================================================\nRegime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)\n--------------------------------------------------------------------------------\nBaseline_A_Naive             |     40.0% |        0.0% |       0.00 |         4.45\nBaseline_B_FalsifyOnly       |     40.0% |        0.0% |       1.60 |        18.16\nBaseline_C_Library           |     40.0% |        0.0% |       1.60 |        19.48\nFull_System                  |     40.0% |        0.0% |       1.60 |        19.46\n================================================================================\n"
       },
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 661.6,
+        "elapsed_ms": 523.79,
         "diagnostics": {
           "oracle_queries": 35,
           "z3_calls": 0,
@@ -4457,17 +4137,9 @@
             "NameError": 40
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 768,
-            "bayesian_prober.group_by_output": 813,
             "sandbox.filter_valid_candidates.exec": 40
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 768
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 813
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 40
             }
@@ -4475,16 +4147,16 @@
         },
         "key_lines": [
           "Regime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)",
-          "Full_System                  |    100.0% |        0.0% |       1.80 |        30.70"
+          "Full_System                  |    100.0% |        0.0% |       1.80 |        23.87"
         ],
-        "stdout": "=====================================================================\n  EVE-3 PHASE P3/P5: FULL 4-REGIME ABLATION BENCHMARK (SEEDS: [42])\n=====================================================================\n\n--- Running Baseline A: Naive Proposal (No Active Falsification) ---\n\n--- Running Baseline B: Active Falsifier Only (No Library) ---\n\n--- Running Baseline C: Active Falsifier + Library Reuse ---\n\n--- Running Full System: Active Falsifier + Library + Optimized Policy ---\n\n=====================================================================\n                   FINAL METRICS SUMMARY TABLE                       \n=====================================================================\nRegime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)\n--------------------------------------------------------------------------------\nBaseline_A_Naive             |     80.0% |        0.0% |       0.00 |         9.31\nBaseline_B_FalsifyOnly       |    100.0% |        0.0% |       1.80 |        31.14\nBaseline_C_Library           |    100.0% |        0.0% |       1.80 |        31.49\nFull_System                  |    100.0% |        0.0% |       1.80 |        30.70\n================================================================================\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE P3/P5: FULL 4-REGIME ABLATION BENCHMARK (SEEDS: [42])\n=====================================================================\n\n--- Running Baseline A: Naive Proposal (No Active Falsification) ---\n\n--- Running Baseline B: Active Falsifier Only (No Library) ---\n\n--- Running Baseline C: Active Falsifier + Library Reuse ---\n\n--- Running Full System: Active Falsifier + Library + Optimized Policy ---\n\n=====================================================================\n                   FINAL METRICS SUMMARY TABLE                       \n=====================================================================\nRegime                       | Pass Rate  | False Verif  | Avg Probes | Avg Time (ms)\n--------------------------------------------------------------------------------\nBaseline_A_Naive             |     80.0% |        0.0% |       0.00 |        10.14\nBaseline_B_FalsifyOnly       |    100.0% |        0.0% |       1.80 |        23.95\nBaseline_C_Library           |    100.0% |        0.0% |       1.80 |        25.04\nFull_System                  |    100.0% |        0.0% |       1.80 |        23.87\n================================================================================\n"
       }
     },
     "experiments/run_library_ablation.py": {
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 271.73,
+        "elapsed_ms": 191.73,
         "diagnostics": {
           "oracle_queries": 24,
           "z3_calls": 0,
@@ -4499,17 +4171,9 @@
             "NameError": 16
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 320,
-            "bayesian_prober.group_by_output": 448,
             "sandbox.filter_valid_candidates.exec": 16
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 320
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 448
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 16
             }
@@ -4519,12 +4183,12 @@
           "Success Rate: No-Lib=100% vs With-Lib=100%",
           "Avg Probes:   No-Lib=4.00 vs With-Lib=4.00"
         ],
-        "stdout": "=== Bootstrapping Knowledge Library with dev_train tasks ===\n  Trained task: list_increment_all -> status=held_out_tests_passed\n  Trained task: filter_evens -> status=held_out_tests_passed\n\n=== Evaluating Regime A: No Knowledge Library ===\n  Task list_double_all: converged=True, probes=0, time=6.0ms\n  Task list_sum: converged=True, probes=8, time=55.3ms\n\n=== Evaluating Regime B: With Knowledge Library ===\n  Task list_double_all: converged=True, probes=0, time=9.1ms\n  Task list_sum: converged=True, probes=8, time=56.9ms\n\n=== Summary ===\nSuccess Rate: No-Lib=100% vs With-Lib=100%\nAvg Probes:   No-Lib=4.00 vs With-Lib=4.00\n"
+        "stdout": "=== Bootstrapping Knowledge Library with dev_train tasks ===\n  Trained task: list_increment_all -> status=held_out_tests_passed\n  Trained task: filter_evens -> status=held_out_tests_passed\n\n=== Evaluating Regime A: No Knowledge Library ===\n  Task list_double_all: converged=True, probes=0, time=6.4ms\n  Task list_sum: converged=True, probes=8, time=36.0ms\n\n=== Evaluating Regime B: With Knowledge Library ===\n  Task list_double_all: converged=True, probes=0, time=8.9ms\n  Task list_sum: converged=True, probes=8, time=39.5ms\n\n=== Summary ===\nSuccess Rate: No-Lib=100% vs With-Lib=100%\nAvg Probes:   No-Lib=4.00 vs With-Lib=4.00\n"
       },
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 240.85,
+        "elapsed_ms": 168.29,
         "diagnostics": {
           "oracle_queries": 16,
           "z3_calls": 0,
@@ -4539,17 +4203,9 @@
             "NameError": 8
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 384,
-            "bayesian_prober.group_by_output": 384,
             "sandbox.filter_valid_candidates.exec": 8
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 384
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 384
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 8
             }
@@ -4559,12 +4215,12 @@
           "Success Rate: No-Lib=50% vs With-Lib=50%",
           "Avg Probes:   No-Lib=4.00 vs With-Lib=4.00"
         ],
-        "stdout": "=== Bootstrapping Knowledge Library with dev_train tasks ===\n  Trained task: list_increment_all -> status=collapsed\n  Trained task: filter_evens -> status=collapsed\n\n=== Evaluating Regime A: No Knowledge Library ===\n  Task list_double_all: converged=False, probes=0, time=4.5ms\n  Task list_sum: converged=True, probes=8, time=107.9ms\n\n=== Evaluating Regime B: With Knowledge Library ===\n  Task list_double_all: converged=False, probes=0, time=5.7ms\n  Task list_sum: converged=True, probes=8, time=108.9ms\n\n=== Summary ===\nSuccess Rate: No-Lib=50% vs With-Lib=50%\nAvg Probes:   No-Lib=4.00 vs With-Lib=4.00\n"
+        "stdout": "=== Bootstrapping Knowledge Library with dev_train tasks ===\n  Trained task: list_increment_all -> status=collapsed\n  Trained task: filter_evens -> status=collapsed\n\n=== Evaluating Regime A: No Knowledge Library ===\n  Task list_double_all: converged=False, probes=0, time=4.7ms\n  Task list_sum: converged=True, probes=8, time=70.2ms\n\n=== Evaluating Regime B: With Knowledge Library ===\n  Task list_double_all: converged=False, probes=0, time=6.0ms\n  Task list_sum: converged=True, probes=8, time=73.1ms\n\n=== Summary ===\nSuccess Rate: No-Lib=50% vs With-Lib=50%\nAvg Probes:   No-Lib=4.00 vs With-Lib=4.00\n"
       },
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 377.22,
+        "elapsed_ms": 279.82,
         "diagnostics": {
           "oracle_queries": 24,
           "z3_calls": 0,
@@ -4579,17 +4235,9 @@
             "NameError": 8
           },
           "swallowed_errors": {
-            "smt_distinguisher._heuristic_distinguishing": 576,
-            "bayesian_prober.group_by_output": 576,
             "sandbox.filter_valid_candidates.exec": 8
           },
           "swallowed_error_details": {
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 576
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 576
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 8
             }
@@ -4599,14 +4247,14 @@
           "Success Rate: No-Lib=100% vs With-Lib=100%",
           "Avg Probes:   No-Lib=4.00 vs With-Lib=4.00"
         ],
-        "stdout": "=== Bootstrapping Knowledge Library with dev_train tasks ===\n  Trained task: list_increment_all -> status=held_out_tests_passed\n  Trained task: filter_evens -> status=held_out_tests_passed\n\n=== Evaluating Regime A: No Knowledge Library ===\n  Task list_double_all: converged=True, probes=0, time=8.5ms\n  Task list_sum: converged=True, probes=8, time=106.5ms\n\n=== Evaluating Regime B: With Knowledge Library ===\n  Task list_double_all: converged=True, probes=0, time=11.5ms\n  Task list_sum: converged=True, probes=8, time=107.7ms\n\n=== Summary ===\nSuccess Rate: No-Lib=100% vs With-Lib=100%\nAvg Probes:   No-Lib=4.00 vs With-Lib=4.00\n"
+        "stdout": "=== Bootstrapping Knowledge Library with dev_train tasks ===\n  Trained task: list_increment_all -> status=held_out_tests_passed\n  Trained task: filter_evens -> status=held_out_tests_passed\n\n=== Evaluating Regime A: No Knowledge Library ===\n  Task list_double_all: converged=True, probes=0, time=8.2ms\n  Task list_sum: converged=True, probes=8, time=73.5ms\n\n=== Evaluating Regime B: With Knowledge Library ===\n  Task list_double_all: converged=True, probes=0, time=11.8ms\n  Task list_sum: converged=True, probes=8, time=80.1ms\n\n=== Summary ===\nSuccess Rate: No-Lib=100% vs With-Lib=100%\nAvg Probes:   No-Lib=4.00 vs With-Lib=4.00\n"
       }
     },
     "experiments/run_memory_consolidation.py": {
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 739.29,
+        "elapsed_ms": 553.95,
         "diagnostics": {
           "oracle_queries": 50,
           "z3_calls": 0,
@@ -4621,29 +4269,21 @@
             "NameError": 200
           },
           "swallowed_errors": {
-            "sandbox.filter_valid_candidates.exec": 200,
-            "smt_distinguisher._heuristic_distinguishing": 560,
-            "bayesian_prober.group_by_output": 880
+            "sandbox.filter_valid_candidates.exec": 200
           },
           "swallowed_error_details": {
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 200
-            },
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 560
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 880
             }
           }
         },
         "key_lines": [],
-        "stdout": "=====================================================================\n  EVE-3 PHASE 8: TIERED MEMORY, RETENTION DECAY & COMPACTION BENCHMARK\n=====================================================================\n\n--- Running Policy A: Unbounded Accumulation Baseline ---\nPolicy A Completed: 14/16 solved | Active Library Size: 14 operators (Unbounded) | Avg Task Latency: 20.60 ms\n\n--- Running Policy B: Three-Tier Memory with Retention Decay & Compaction ---\n\nPolicy B Completed: 14/16 solved | Active Hot Tier: 7 | Cold Tier Demoted: 7 | Total Retained: 14 | Episodic Summaries: 6 | Detailed: 5\nLatency: Baseline 20.60 ms vs Tiered 23.92 ms (-16.2% faster)\n\n=====================================================================\n             PHASE 8 TIERED MEMORY CONSOLIDATION METRICS             \n=====================================================================\nMetric                            | Baseline (Unbounded) | Tiered (Phase 8)  | Target Requirement | Status\n-----------------------------------------------------------------------------------------------------\nActive Hot Operators Count        |                   14 |                 7 | Bounded (< Base)   | PASS\nCold Tier Demoted (Lossless)      |                    0 |                 7 | Demote != Delete   | PASS\nPhysical Deletions                |                    0 |                 0 | == 0 (Auditability)| PASS\nEpisodic Lossless Summaries       |                    0 |                 6 | Trajectory Compact | PASS\nSnapshot Rollback Integrity       |                  --- |          VERIFIED | Transactional Safe | PASS\nFalse Verification Rate           |                0.00% |             0.00% | == 0.00%           | PASS\n=====================================================================\n\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE 8: TIERED MEMORY, RETENTION DECAY & COMPACTION BENCHMARK\n=====================================================================\n\n--- Running Policy A: Unbounded Accumulation Baseline ---\nPolicy A Completed: 14/16 solved | Active Library Size: 14 operators (Unbounded) | Avg Task Latency: 17.87 ms\n\n--- Running Policy B: Three-Tier Memory with Retention Decay & Compaction ---\n\nPolicy B Completed: 14/16 solved | Active Hot Tier: 7 | Cold Tier Demoted: 7 | Total Retained: 14 | Episodic Summaries: 6 | Detailed: 5\nLatency: Baseline 17.87 ms vs Tiered 14.99 ms (+16.1% faster)\n\n=====================================================================\n             PHASE 8 TIERED MEMORY CONSOLIDATION METRICS             \n=====================================================================\nMetric                            | Baseline (Unbounded) | Tiered (Phase 8)  | Target Requirement | Status\n-----------------------------------------------------------------------------------------------------\nActive Hot Operators Count        |                   14 |                 7 | Bounded (< Base)   | PASS\nCold Tier Demoted (Lossless)      |                    0 |                 7 | Demote != Delete   | PASS\nPhysical Deletions                |                    0 |                 0 | == 0 (Auditability)| PASS\nEpisodic Lossless Summaries       |                    0 |                 6 | Trajectory Compact | PASS\nSnapshot Rollback Integrity       |                  --- |          VERIFIED | Transactional Safe | PASS\nFalse Verification Rate           |                0.00% |             0.00% | == 0.00%           | PASS\n=====================================================================\n\n"
       },
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 512.13,
+        "elapsed_ms": 394.85,
         "diagnostics": {
           "oracle_queries": 40,
           "z3_calls": 0,
@@ -4658,29 +4298,21 @@
             "NameError": 15
           },
           "swallowed_errors": {
-            "sandbox.filter_valid_candidates.exec": 15,
-            "smt_distinguisher._heuristic_distinguishing": 480,
-            "bayesian_prober.group_by_output": 720
+            "sandbox.filter_valid_candidates.exec": 15
           },
           "swallowed_error_details": {
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 15
-            },
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 480
-            },
-            "bayesian_prober.group_by_output": {
-              "TypeError": 720
             }
           }
         },
         "key_lines": [],
-        "stdout": "=====================================================================\n  EVE-3 PHASE 8: TIERED MEMORY, RETENTION DECAY & COMPACTION BENCHMARK\n=====================================================================\n\n--- Running Policy A: Unbounded Accumulation Baseline ---\nPolicy A Completed: 6/16 solved | Active Library Size: 6 operators (Unbounded) | Avg Task Latency: 15.78 ms\n\n--- Running Policy B: Three-Tier Memory with Retention Decay & Compaction ---\n\nPolicy B Completed: 6/16 solved | Active Hot Tier: 3 | Cold Tier Demoted: 3 | Total Retained: 6 | Episodic Summaries: 6 | Detailed: 5\nLatency: Baseline 15.78 ms vs Tiered 14.99 ms (+5.0% faster)\n\n=====================================================================\n             PHASE 8 TIERED MEMORY CONSOLIDATION METRICS             \n=====================================================================\nMetric                            | Baseline (Unbounded) | Tiered (Phase 8)  | Target Requirement | Status\n-----------------------------------------------------------------------------------------------------\nActive Hot Operators Count        |                    6 |                 3 | Bounded (< Base)   | PASS\nCold Tier Demoted (Lossless)      |                    0 |                 3 | Demote != Delete   | PASS\nPhysical Deletions                |                    0 |                 0 | == 0 (Auditability)| PASS\nEpisodic Lossless Summaries       |                    0 |                 6 | Trajectory Compact | PASS\nSnapshot Rollback Integrity       |                  --- |          VERIFIED | Transactional Safe | PASS\nFalse Verification Rate           |                0.00% |             0.00% | == 0.00%           | PASS\n=====================================================================\n\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE 8: TIERED MEMORY, RETENTION DECAY & COMPACTION BENCHMARK\n=====================================================================\n\n--- Running Policy A: Unbounded Accumulation Baseline ---\nPolicy A Completed: 6/16 solved | Active Library Size: 6 operators (Unbounded) | Avg Task Latency: 11.61 ms\n\n--- Running Policy B: Three-Tier Memory with Retention Decay & Compaction ---\n\nPolicy B Completed: 6/16 solved | Active Hot Tier: 3 | Cold Tier Demoted: 3 | Total Retained: 6 | Episodic Summaries: 6 | Detailed: 5\nLatency: Baseline 11.61 ms vs Tiered 11.80 ms (-1.7% faster)\n\n=====================================================================\n             PHASE 8 TIERED MEMORY CONSOLIDATION METRICS             \n=====================================================================\nMetric                            | Baseline (Unbounded) | Tiered (Phase 8)  | Target Requirement | Status\n-----------------------------------------------------------------------------------------------------\nActive Hot Operators Count        |                    6 |                 3 | Bounded (< Base)   | PASS\nCold Tier Demoted (Lossless)      |                    0 |                 3 | Demote != Delete   | PASS\nPhysical Deletions                |                    0 |                 0 | == 0 (Auditability)| PASS\nEpisodic Lossless Summaries       |                    0 |                 6 | Trajectory Compact | PASS\nSnapshot Rollback Integrity       |                  --- |          VERIFIED | Transactional Safe | PASS\nFalse Verification Rate           |                0.00% |             0.00% | == 0.00%           | PASS\n=====================================================================\n\n"
       },
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 850.31,
+        "elapsed_ms": 678.92,
         "diagnostics": {
           "oracle_queries": 54,
           "z3_calls": 0,
@@ -4695,31 +4327,23 @@
             "NameError": 100
           },
           "swallowed_errors": {
-            "bayesian_prober.group_by_output": 1020,
-            "sandbox.filter_valid_candidates.exec": 100,
-            "smt_distinguisher._heuristic_distinguishing": 720
+            "sandbox.filter_valid_candidates.exec": 100
           },
           "swallowed_error_details": {
-            "bayesian_prober.group_by_output": {
-              "TypeError": 1020
-            },
             "sandbox.filter_valid_candidates.exec": {
               "NameError": 100
-            },
-            "smt_distinguisher._heuristic_distinguishing": {
-              "TypeError": 720
             }
           }
         },
         "key_lines": [],
-        "stdout": "=====================================================================\n  EVE-3 PHASE 8: TIERED MEMORY, RETENTION DECAY & COMPACTION BENCHMARK\n=====================================================================\n\n--- Running Policy A: Unbounded Accumulation Baseline ---\nPolicy A Completed: 14/16 solved | Active Library Size: 14 operators (Unbounded) | Avg Task Latency: 27.54 ms\n\n--- Running Policy B: Three-Tier Memory with Retention Decay & Compaction ---\n\nPolicy B Completed: 14/16 solved | Active Hot Tier: 7 | Cold Tier Demoted: 7 | Total Retained: 14 | Episodic Summaries: 6 | Detailed: 5\nLatency: Baseline 27.54 ms vs Tiered 23.99 ms (+12.9% faster)\n\n=====================================================================\n             PHASE 8 TIERED MEMORY CONSOLIDATION METRICS             \n=====================================================================\nMetric                            | Baseline (Unbounded) | Tiered (Phase 8)  | Target Requirement | Status\n-----------------------------------------------------------------------------------------------------\nActive Hot Operators Count        |                   14 |                 7 | Bounded (< Base)   | PASS\nCold Tier Demoted (Lossless)      |                    0 |                 7 | Demote != Delete   | PASS\nPhysical Deletions                |                    0 |                 0 | == 0 (Auditability)| PASS\nEpisodic Lossless Summaries       |                    0 |                 6 | Trajectory Compact | PASS\nSnapshot Rollback Integrity       |                  --- |          VERIFIED | Transactional Safe | PASS\nFalse Verification Rate           |                0.00% |             0.00% | == 0.00%           | PASS\n=====================================================================\n\n"
+        "stdout": "=====================================================================\n  EVE-3 PHASE 8: TIERED MEMORY, RETENTION DECAY & COMPACTION BENCHMARK\n=====================================================================\n\n--- Running Policy A: Unbounded Accumulation Baseline ---\nPolicy A Completed: 14/16 solved | Active Library Size: 14 operators (Unbounded) | Avg Task Latency: 20.61 ms\n\n--- Running Policy B: Three-Tier Memory with Retention Decay & Compaction ---\n\nPolicy B Completed: 14/16 solved | Active Hot Tier: 7 | Cold Tier Demoted: 7 | Total Retained: 14 | Episodic Summaries: 6 | Detailed: 5\nLatency: Baseline 20.61 ms vs Tiered 20.19 ms (+2.0% faster)\n\n=====================================================================\n             PHASE 8 TIERED MEMORY CONSOLIDATION METRICS             \n=====================================================================\nMetric                            | Baseline (Unbounded) | Tiered (Phase 8)  | Target Requirement | Status\n-----------------------------------------------------------------------------------------------------\nActive Hot Operators Count        |                   14 |                 7 | Bounded (< Base)   | PASS\nCold Tier Demoted (Lossless)      |                    0 |                 7 | Demote != Delete   | PASS\nPhysical Deletions                |                    0 |                 0 | == 0 (Auditability)| PASS\nEpisodic Lossless Summaries       |                    0 |                 6 | Trajectory Compact | PASS\nSnapshot Rollback Integrity       |                  --- |          VERIFIED | Transactional Safe | PASS\nFalse Verification Rate           |                0.00% |             0.00% | == 0.00%           | PASS\n=====================================================================\n\n"
       }
     },
     "experiments/run_perception_frontend.py": {
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 29.81,
+        "elapsed_ms": 29.57,
         "diagnostics": {
           "oracle_queries": 0,
           "z3_calls": 0,
@@ -4749,7 +4373,7 @@
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 29.41,
+        "elapsed_ms": 29.92,
         "diagnostics": {
           "oracle_queries": 0,
           "z3_calls": 0,
@@ -4779,7 +4403,7 @@
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 28.95,
+        "elapsed_ms": 29.03,
         "diagnostics": {
           "oracle_queries": 0,
           "z3_calls": 0,
@@ -4811,7 +4435,7 @@
       "leaky_templates": {
         "proposer_mode": "leaky_templates",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 61.83,
+        "elapsed_ms": 66.1,
         "diagnostics": {
           "oracle_queries": 0,
           "z3_calls": 0,
@@ -4829,12 +4453,12 @@
         "key_lines": [
           "Online Solved Rate for Top Policy: 3/3"
         ],
-        "stdout": "=== Phase P2: Policy Evolution & Replay Simulation ===\n\n1. Offline Policy Replay Evaluation on Historical Discovery Tree:\n  Policy conservative (v1.0-conservative): simulated_cost=2.20, steps=4\n  Policy balanced (v1.1-balanced): simulated_cost=2.20, steps=4\n  Policy verification_first (v1.2-verification_first): simulated_cost=2.20, steps=4\n\n2. Live Online Validation on Independent Held-Out Tasks:\n  Policy conservative: solved=3/3, total_time=19.7ms\n  Policy balanced: solved=3/3, total_time=19.5ms\n  Policy verification_first: solved=3/3, total_time=20.4ms\n\n=== Replay-to-Online Correlation Analysis ===\nFastest Offline Policy: conservative\nOnline Solved Rate for Top Policy: 3/3\nAlignment Verified: True\n"
+        "stdout": "=== Phase P2: Policy Evolution & Replay Simulation ===\n\n1. Offline Policy Replay Evaluation on Historical Discovery Tree:\n  Policy conservative (v1.0-conservative): simulated_cost=2.20, steps=4\n  Policy balanced (v1.1-balanced): simulated_cost=2.20, steps=4\n  Policy verification_first (v1.2-verification_first): simulated_cost=2.20, steps=4\n\n2. Live Online Validation on Independent Held-Out Tasks:\n  Policy conservative: solved=3/3, total_time=20.8ms\n  Policy balanced: solved=3/3, total_time=21.7ms\n  Policy verification_first: solved=3/3, total_time=22.1ms\n\n=== Replay-to-Online Correlation Analysis ===\nFastest Offline Policy: conservative\nOnline Solved Rate for Top Policy: 3/3\nAlignment Verified: True\n"
       },
       "generic_enumeration_d3": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 3,
-        "elapsed_ms": 45.06,
+        "elapsed_ms": 47.46,
         "diagnostics": {
           "oracle_queries": 0,
           "z3_calls": 0,
@@ -4852,12 +4476,12 @@
         "key_lines": [
           "Online Solved Rate for Top Policy: 1/3"
         ],
-        "stdout": "=== Phase P2: Policy Evolution & Replay Simulation ===\n\n1. Offline Policy Replay Evaluation on Historical Discovery Tree:\n  Policy conservative (v1.0-conservative): simulated_cost=2.20, steps=4\n  Policy balanced (v1.1-balanced): simulated_cost=2.20, steps=4\n  Policy verification_first (v1.2-verification_first): simulated_cost=2.20, steps=4\n\n2. Live Online Validation on Independent Held-Out Tasks:\n  Policy conservative: solved=1/3, total_time=14.7ms\n  Policy balanced: solved=1/3, total_time=14.3ms\n  Policy verification_first: solved=1/3, total_time=14.2ms\n\n=== Replay-to-Online Correlation Analysis ===\nFastest Offline Policy: conservative\nOnline Solved Rate for Top Policy: 1/3\nAlignment Verified: False\n"
+        "stdout": "=== Phase P2: Policy Evolution & Replay Simulation ===\n\n1. Offline Policy Replay Evaluation on Historical Discovery Tree:\n  Policy conservative (v1.0-conservative): simulated_cost=2.20, steps=4\n  Policy balanced (v1.1-balanced): simulated_cost=2.20, steps=4\n  Policy verification_first (v1.2-verification_first): simulated_cost=2.20, steps=4\n\n2. Live Online Validation on Independent Held-Out Tasks:\n  Policy conservative: solved=1/3, total_time=15.5ms\n  Policy balanced: solved=1/3, total_time=15.0ms\n  Policy verification_first: solved=1/3, total_time=15.1ms\n\n=== Replay-to-Online Correlation Analysis ===\nFastest Offline Policy: conservative\nOnline Solved Rate for Top Policy: 1/3\nAlignment Verified: False\n"
       },
       "generic_enumeration_d4": {
         "proposer_mode": "generic_enumeration",
         "enumerator_max_depth": 4,
-        "elapsed_ms": 103.94,
+        "elapsed_ms": 100.26,
         "diagnostics": {
           "oracle_queries": 3,
           "z3_calls": 0,
@@ -4869,19 +4493,13 @@
           "llm_syntax_valid_candidates": 0,
           "llm_sandbox_passed_candidates": 0,
           "sandbox_rejections": {},
-          "swallowed_errors": {
-            "bayesian_prober.group_by_output": 45
-          },
-          "swallowed_error_details": {
-            "bayesian_prober.group_by_output": {
-              "TypeError": 45
-            }
-          }
+          "swallowed_errors": {},
+          "swallowed_error_details": {}
         },
         "key_lines": [
           "Online Solved Rate for Top Policy: 3/3"
         ],
-        "stdout": "=== Phase P2: Policy Evolution & Replay Simulation ===\n\n1. Offline Policy Replay Evaluation on Historical Discovery Tree:\n  Policy conservative (v1.0-conservative): simulated_cost=2.20, steps=4\n  Policy balanced (v1.1-balanced): simulated_cost=2.20, steps=4\n  Policy verification_first (v1.2-verification_first): simulated_cost=2.20, steps=4\n\n2. Live Online Validation on Independent Held-Out Tasks:\n  Policy conservative: solved=3/3, total_time=33.0ms\n  Policy balanced: solved=3/3, total_time=35.8ms\n  Policy verification_first: solved=3/3, total_time=33.3ms\n\n=== Replay-to-Online Correlation Analysis ===\nFastest Offline Policy: conservative\nOnline Solved Rate for Top Policy: 3/3\nAlignment Verified: True\n"
+        "stdout": "=== Phase P2: Policy Evolution & Replay Simulation ===\n\n1. Offline Policy Replay Evaluation on Historical Discovery Tree:\n  Policy conservative (v1.0-conservative): simulated_cost=2.20, steps=4\n  Policy balanced (v1.1-balanced): simulated_cost=2.20, steps=4\n  Policy verification_first (v1.2-verification_first): simulated_cost=2.20, steps=4\n\n2. Live Online Validation on Independent Held-Out Tasks:\n  Policy conservative: solved=3/3, total_time=32.9ms\n  Policy balanced: solved=3/3, total_time=33.0ms\n  Policy verification_first: solved=3/3, total_time=32.4ms\n\n=== Replay-to-Online Correlation Analysis ===\nFastest Offline Policy: conservative\nOnline Solved Rate for Top Policy: 3/3\nAlignment Verified: True\n"
       }
     }
   }

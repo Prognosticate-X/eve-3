@@ -83,7 +83,8 @@ class BayesianProber:
             ) as exc:
                 self.diagnostics.record_swallowed_error("bayesian_prober.group_by_output", exc)
                 logger.debug("Swallowed error in group_by_output for %s on %r: %s", p.code_str, probe_input, exc)
-                out_key = "__EXEC_ERROR__"
+                # S1.1: Each failing candidate gets its own unique error partition so errors are never lumped together
+                out_key = f"__ERROR_{type(exc).__name__}_{idx}__"
 
             if out_key not in groups:
                 groups[out_key] = []
