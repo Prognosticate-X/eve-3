@@ -128,30 +128,105 @@ class TestStageS0Diagnostics(unittest.TestCase):
         )
 
     def test_no_bare_except_exception_in_eve3_codebase(self):
-        """Iron Rule 3: No `except Exception:` blocks may remain in eve3/."""
-        eve3_dir = Path(__file__).parent.parent / "eve3"
+        """Iron Rule 3 & S1.1: No bare except, except (..., Exception), BaseException,
+        or contextlib.suppress(Exception) in eve3/, experiments/, or scripts/."""
+        root_dir = Path(__file__).parent.parent
+        target_dirs = [root_dir / "eve3", root_dir / "experiments", root_dir / "scripts"]
         violations = []
-        for py_file in sorted(eve3_dir.rglob("*.py")):
-            tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
-            for node in ast.walk(tree):
-                if isinstance(node, ast.ExceptHandler):
-                    if node.type is None:
-                        violations.append(f"{py_file.relative_to(eve3_dir.parent)}:{node.lineno} bare except:")
-                    elif isinstance(node.type, ast.Name) and node.type.id in ("Exception", "BaseException"):
-                        violations.append(
-                            f"{py_file.relative_to(eve3_dir.parent)}:{node.lineno} except {node.type.id}:"
-                        )
-                    elif isinstance(node.type, ast.Tuple):
-                        for elt in node.type.elts:
-                            if isinstance(elt, ast.Name) and elt.id in ("Exception", "BaseException"):
-                                violations.append(
-                                    f"{py_file.relative_to(eve3_dir.parent)}:{node.lineno} except (..., {elt.id}):"
-                                )
+        for d in target_dirs:
+            if not d.exists():
+                continue
+            for py_file in sorted(d.rglob("*.py")):
+                tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ExceptHandler):
+                        if node.type is None:
+                            violations.append(f"{py_file.relative_to(root_dir)}:{node.lineno} bare except:")
+                        elif isinstance(node.type, ast.Name) and node.type.id in ("Exception", "BaseException"):
+                            violations.append(
+                                f"{py_file.relative_to(root_dir)}:{node.lineno} except {node.type.id}:"
+                            )
+                        elif isinstance(node.type, ast.Tuple):
+                            for elt in node.type.elts:
+                                if isinstance(elt, ast.Name) and elt.id in ("Exception", "BaseException"):
+                                    violations.append(
+                                        f"{py_file.relative_to(root_dir)}:{node.lineno} except (..., {elt.id}):"
+                                    )
+                    elif isinstance(node, ast.Call):
+                        func_name = ""
+                        if isinstance(node.func, ast.Name):
+                            func_name = node.func.id
+                        elif isinstance(node.func, ast.Attribute):
+                            func_name = node.func.attr
+                        if func_name == "suppress":
+                            for arg in node.args:
+                                if isinstance(arg, ast.Name) and arg.id in ("Exception", "BaseException"):
+                                    violations.append(
+                                        f"{py_file.relative_to(root_dir)}:{node.lineno} suppress({arg.id})"
+                                    )
         self.assertEqual(
             violations,
             [],
-            f"Found prohibited blanket except blocks in eve3/:\n" + "\n".join(violations),
+            f"Found prohibited blanket except blocks / suppress calls in codebase:\n" + "\n".join(violations),
         )
+
+    def test_threadpool_worker_exceptions_recorded_in_cegis_diagnostics(self):
+        """S0.1 / S1.1: Exceptions raised inside ThreadPool worker threads must be recorded in diagnostics."""
+        from concurrent.futures import ThreadPoolExecutor
+        from eve3.models import Diagnostics, active_diagnostics_scope
+
+        # Case 1: Sandbox evaluating failing candidate through interpreter's ThreadPoolExecutor
+        sandbox = ProgramSandbox(timeout_per_exec=0.2)
+        # Construct candidate that executes division by zero or invalid type in worker thread
+        cands = [
+            "(+ x 1)",             # TypeError on list input [1]
+            "(/ 1 0)",             # ZeroDivisionError
+            "(tail (head x))",     # TypeError: 'int' object is not subscriptable / head returns int
+        ]
+        examples = [([1, 2], [2, 3])]
+        _ = sandbox.filter_valid_candidates(cands, examples)
+        self.assertGreaterEqual(sandbox.diagnostics.sandbox_rejections.get("TypeError", 0), 1)
+        self.assertGreaterEqual(
+            sandbox.diagnostics.swallowed_errors.get("sandbox.filter_valid_candidates.exec", 0),
+            1,
+        )
+
+        # Case 2: Concurrent evaluation in a multi-threaded ThreadPoolExecutor
+        diag = Diagnostics()
+        with active_diagnostics_scope(diag):
+            def _worker_eval(code_str: str):
+                sb = ProgramSandbox(timeout_per_exec=0.2)
+                sb.diagnostics = diag
+                sb.filter_valid_candidates([code_str], [([1, 2], [2, 3])])
+
+            with ThreadPoolExecutor(max_workers=3) as pool:
+                list(pool.map(_worker_eval, ["(+ x 1)", "(/ 1 0)", "(tail 42)"]))
+
+        self.assertGreaterEqual(diag.sandbox_rejections.get("TypeError", 0), 1)
+        self.assertGreaterEqual(diag.swallowed_errors.get("sandbox.filter_valid_candidates.exec", 0), 2)
+
+    def test_swallowed_errors_ratchet_only_decreases(self):
+        """S0.1 / S1.1 Ratchet test: Swallowed error counts in diagnostics must never exceed baseline."""
+        import json
+        baseline_path = Path(__file__).parent / "diagnostics_ratchet_baseline.json"
+        self.assertTrue(baseline_path.exists(), "Ratchet baseline JSON missing")
+        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))["max_allowed_swallowed_errors"]
+
+        # Run representative CEGISLoop task and check that every recorded swallowed error <= baseline
+        loop = CEGISLoop(EveConfig(max_falsification_rounds=3))
+        res = loop.run_synthesis(
+            initial_examples=[([1, 2], [2, 3])],
+            oracle_fn=lambda x: [v + 1 for v in x],
+            held_out_tests=[([0], [1])],
+        )
+
+        for loc, count in res.diagnostics.swallowed_errors.items():
+            max_allowed = baseline.get(loc, float("inf"))
+            self.assertLessEqual(
+                count,
+                max_allowed,
+                f"Swallowed error at {loc} count={count} exceeded ratchet baseline max={max_allowed}",
+            )
 
 
 if __name__ == "__main__":
