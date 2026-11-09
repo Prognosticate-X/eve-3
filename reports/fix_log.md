@@ -165,3 +165,48 @@ AssertionError: CandidateProgram(code_str='(reverse x)', created_by='heuristic')
     AssertionError: Accounting mismatch: raw (101) != syntax_invalid (21) + exec_error (13) + wrong_output (52) + passed (14)
     ```
 
+---
+
+## 4. Stage S2：System 2 数学与流程正确性修复（H3, H4, H5, H2, 随机对照臂）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **`tests/test_audit_p0_regressions.py`**：
+  - `test_h3`、`test_h4`、`test_h5` 在代码修复后严格实现预期逻辑，移除了 `@pytest.mark.xfail(strict=True)` 装饰器，直接转绿为正常 PASS。
+  - 在 `test_h4` 中补充了原作者在注释中声明但遗漏的候选池限制 mock，使测试真实覆盖"全候选被证伪后重提议耗尽并返回 COLLAPSED"的闭环逻辑。
+- **`tests/test_prober.py`**：
+  - `test_posterior_update_and_collapse_prevention` 显式传入新增参数 `noise_model="noisy(1e-4)"`，以测试带 Laplace 平滑的噪声更新场景，断言保持原样不变。
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s2_bayesian.py`**：
+  - `test_deterministic_posterior_strictly_zero_on_falsification`：断言在 `deterministic` 模式下被证伪候选后验严格归零且 `falsified=True`, `status=REJECTED`。
+  - `test_deterministic_posterior_when_all_falsified_returns_all_zeros`：断言全候选被证伪时返回严格全零分布 `[0.0, ...] `。
+  - `test_noisy_mode_preserves_laplace_smoothing`：断言在显式 `noisy(eps)` 模式下 Laplace 平滑正常保留。
+- **`tests/test_stage_s2_collapse.py`**：
+  - `test_collapse_detected_when_all_candidates_falsified_and_repropose_exhausted`：验证全候选证伪且重提议无新候选时正确返回 `COLLAPSED` 与 `verified_program=None`。
+  - `test_active_repropose_recovers_when_better_candidate_found`：验证通过累积反例进行重提议能够成功恢复并找到真程序。
+- **`tests/test_stage_s2_mathematics.py`**：
+  - 针对 H2 编写 4 项数值单元测试，手算 3 候选、2/3 分区及非均匀先验下的信息增益（IG），实测误差 $< 10^{-6}$。
+- **`tests/test_stage_s2_random_probes.py`**：
+  - 测试 `probe_strategy` 的全部三种模式（`none`, `random`, `bayesian_ig`）。
+
+### 3. S2 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 H3（Laplace 平滑抬高已证伪程序）：
+```text
+AssertionError: 0.001994015956119673 != 0.0 : Falsified program posterior should be 0.0, but got 0.001994015956119673 (remains top-1!)
+```
+
+#### 修复前 H4（假设塌缩判定失效）：
+```text
+AssertionError: <VerificationStatus.HELD_OUT_TESTS_PASSED> != <VerificationStatus.COLLAPSED> : Expected status COLLAPSED when candidates fail, got held_out_tests_passed
+```
+
+#### 修复前 H5（SMT 求解器缺失高阶列表展开）：
+```text
+AssertionError: 'heuristic_boundary' != 'smt_symbolic'
+- heuristic_boundary
++ smt_symbolic
+ : Expected probe from Z3 SMT symbolic solve, got heuristic_boundary
+```
+
+
