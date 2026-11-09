@@ -92,3 +92,76 @@ AssertionError: 0 not greater than 0 : gen.diagnostics.llm_calls was 0 due to si
 ```text
 AssertionError: CandidateProgram(code_str='(reverse x)', created_by='heuristic') created_by is 'heuristic', expected 'llm'
 ```
+
+---
+
+## 3. Stage S1.1 修复记录与修复前失败输出（Pre-fix Failure Outputs）
+
+### 1. S1.1-A（仓库卫生与 S0.1 遗留项）
+- **修复内容**：
+  - 扩展 AST 检查覆盖 `eve3/`、`experiments/`、`scripts/` 下的 `except (..., Exception)`、`BaseException` 与 `contextlib.suppress(Exception)`。
+  - 新增线程池工作线程内吞异常计入当前 `CEGISResult.diagnostics` 的回归测试。
+  - 新增 `swallowed_errors` 棘轮测试（基线存入 `tests/diagnostics_ratchet_baseline.json`，只降不升）。
+  - 将审计报告 P0 数值（H3/H4/H5/H11/H12）做成 `@pytest.mark.xfail(strict=True)` 回归测试（`tests/test_audit_p0_regressions.py`，5 项全部严格 xfail）。
+  - 固定运行硬件记录于 `reports/env.md`（澄清物理机器为 Apple M1 Max 64GB，S1 文本中 "M4 16GB" 系笔误）。
+- **修复前失败输出**：
+  - AST 宽泛异常漏检：
+    ```text
+    AssertionError: Lists differ: ['eve3/search/enumeration_full.py:237 except Exception:'] != []
+    ```
+  - 线程池异常漏记：
+    ```text
+    AssertionError: 0 == 0 : Thread pool worker exception not recorded in CEGISResult.diagnostics.swallowed_errors
+    ```
+  - 棘轮测试超限失败：
+    ```text
+    AssertionError: Current swallowed_errors count 1935 exceeded ratchet baseline 0 for smt_distinguisher.py:112
+    ```
+
+### 2. S1.1-B（探针类型修复与错误隔离，提前自 S3）
+- **修复内容**：
+  - 在 `eve3/system2_falsifier/smt_distinguisher.py` 中引入 `domain_hint`（`"list"` vs `"int"`），探针候选池按输入域分区生成。
+  - 在 `eve3/system2_falsifier/bayesian_prober.py:86` 中将执行异常候选隔离为独立错误分区 `f"__ERROR_{type(exc).__name__}_{idx}__"`，严禁并入公共 `__EXEC_ERROR__`。
+- **修复前失败输出**：
+  - 探针调用域不匹配导致大量 TypeError：
+    ```text
+    TypeError: unsupported operand type(s) for +: 'int' and 'list'
+    [Recorded 1,323 times at smt_distinguisher.py:112 and 612 times at bayesian_prober.py:86]
+    ```
+  - 错误合并导致虚假信息增益：
+    ```text
+    AssertionError: '__EXEC_ERROR__' unexpectedly found in output partition classes
+    ```
+  - 修复后对比：两处 TypeError 被吞计数均严格归零（`1,935 -> 0`）。
+
+### 3. S1.1-C（枚举器诚实化与基线强化）
+- **修复内容**：
+  - 常量池去基准化：从 `{0, 1, 2, 3, 10, -1, 100}` 彻底清除，改为 `{0, 1} ∪ 当前任务训练样例提取数值`（`extract_constants_from_examples`）。
+  - 新增真正的自底向上枚举基线 `BottomUpOEEnumerator`（`eve3/search/enumeration_full.py`），支持任意嵌套与观测等价（OE）剪枝，预算至多 size=9 或 60s。
+  - 建立文法外泛化基准 `benchmarks/ood_constants.json`（常量含 4, 6, 7, 3）与高歧义基准 `benchmarks/high_ambiguity.json`（初始仅 1 样例）。
+- **修复前失败输出**：
+  - `leaky_templates` 在文法外常量任务上全部崩溃：
+    ```text
+    AssertionError: 0 != 4 : leaky_templates scored 0/4 (0.0%) on benchmarks/ood_constants.json
+    ```
+  - 旧枚举器硬编码深度限制导致组合任务失败：
+    ```text
+    VerificationStatus.COLLAPSED != VerificationStatus.HELD_OUT_TESTS_PASSED : filter_evens_and_sum collapsed at depth 4
+    ```
+  - `enumeration_full` 验证：`filter_evens_and_sum`（224.3ms）、`filter_positive_and_sum`（1258.1ms）、`reverse_and_tail`（4.5ms）均成功解出，证实无需库学习即可解出。
+
+### 4. S1.1-D（LLM 公平测试与封闭核算）
+- **修复内容**：
+  - 构建严密非基准 few-shot 提示词库 `prompts/fewshot.json` 与测试 `tests/test_fewshot_integrity.py`，保证与 13 任务零重合。
+  - 在本机 MLX 环境对 Qwen2.5-Coder-3B-Instruct-4bit 运行 4 组配置（$k \in \{8, 16\} \times \text{temp} \in \{0.7, 1.0\}$），支持至多 2 轮报错反馈修补。
+  - 实施严格封闭核算断言：`raw_candidates == syntax_invalid + exec_error + wrong_output + passed`。
+- **修复前失败输出**：
+  - Few-shot 污染检测：
+    ```text
+    AssertionError: Fewshot task input/output overlaps with benchmark task list_increment_all
+    ```
+  - 封闭核算不守恒：
+    ```text
+    AssertionError: Accounting mismatch: raw (101) != syntax_invalid (21) + exec_error (13) + wrong_output (52) + passed (14)
+    ```
+
