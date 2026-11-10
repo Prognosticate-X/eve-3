@@ -17,6 +17,12 @@ VALID_PROBE_STRATEGIES = (
     "none",
 )
 
+VALID_PRIOR_MODES = (
+    "mdl",
+    "uniform",
+    "llm",
+)
+
 
 @dataclass
 class EveConfig:
@@ -36,6 +42,8 @@ class EveConfig:
     # System 2: Bayesian Active Falsification
     noise_model: str = "deterministic"
     probe_strategy: str = "bayesian_ig"
+    prior_mode: str = "mdl"
+    mdl_prior_decay: float = 1.0
     probe_cost_penalty_lambda: float = 0.05
     laplace_smoothing_epsilon: float = 1e-6
     max_falsification_rounds: int = 15
@@ -55,6 +63,10 @@ class EveConfig:
         if self.probe_strategy not in VALID_PROBE_STRATEGIES:
             raise ValueError(
                 f"Invalid probe_strategy {self.probe_strategy!r}; must be one of {VALID_PROBE_STRATEGIES}"
+            )
+        if self.prior_mode not in VALID_PRIOR_MODES:
+            raise ValueError(
+                f"Invalid prior_mode {self.prior_mode!r}; must be one of {VALID_PRIOR_MODES}"
             )
         if self.noise_model != "deterministic" and not self.noise_model.startswith("noisy"):
             raise ValueError(

@@ -82,6 +82,8 @@ class CEGISLoop:
             cost_penalty_lambda=self.config.probe_cost_penalty_lambda,
             smoothing_epsilon=self.config.laplace_smoothing_epsilon,
             noise_model=self.config.noise_model,
+            prior_mode=self.config.prior_mode,
+            mdl_prior_decay=self.config.mdl_prior_decay,
         )
         self.distinguisher = SMTDistinguisher()
 

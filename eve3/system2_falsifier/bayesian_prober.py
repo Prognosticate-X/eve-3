@@ -42,10 +42,14 @@ class BayesianProber:
         cost_penalty_lambda: float = 0.05,
         smoothing_epsilon: float = 1e-6,
         noise_model: str = "deterministic",
+        prior_mode: str = "mdl",
+        mdl_prior_decay: float = 1.0,
     ):
         self.cost_penalty_lambda = cost_penalty_lambda
         self.smoothing_epsilon = smoothing_epsilon
         self.noise_model = noise_model
+        self.prior_mode = prior_mode
+        self.mdl_prior_decay = mdl_prior_decay
         self.diagnostics = Diagnostics()
 
     def _get_noise_epsilon(self) -> float:
@@ -61,12 +65,26 @@ class BayesianProber:
         return 0.0
 
     def initialize_beliefs(self, hypotheses: List[CandidateProgram]) -> List[float]:
-        r"""Compute initial Occam/MDL prior: b_i \propto 2^{-L(P_i)}."""
+        r"""Compute initial prior: uniform, MDL b_i \propto 2^{-decay*L(P_i)}, or LLM likelihood."""
         if not hypotheses:
             return []
-        
-        # Calculate unnormalized priors
-        raw_weights = [2.0 ** (-float(p.description_length)) for p in hypotheses]
+
+        if self.prior_mode == "uniform":
+            return [1.0 / len(hypotheses)] * len(hypotheses)
+        elif self.prior_mode == "llm":
+            raw_weights = []
+            for p in hypotheses:
+                lp = getattr(p, "logprob", None)
+                if lp is not None:
+                    raw_weights.append(math.exp(float(lp)))
+                else:
+                    raw_weights.append(2.0 ** (-self.mdl_prior_decay * float(p.description_length)))
+        else:
+            # Default: "mdl"
+            raw_weights = [
+                2.0 ** (-self.mdl_prior_decay * float(p.description_length)) for p in hypotheses
+            ]
+
         total = sum(raw_weights)
         if total <= 1e-12:
             return [1.0 / len(hypotheses)] * len(hypotheses)
