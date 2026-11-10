@@ -38,6 +38,10 @@ class EveConfig:
     generation_temperature: float = 0.7
     sandbox_timeout_seconds: float = 1.0
     max_ast_depth: int = 8
+    sandbox_max_output_size: int = 1000
+    sandbox_max_integer_bits: int = 2048
+    sandbox_max_recursion_depth: int = 50
+    sandbox_step_budget: int = 20000
     
     # System 2: Bayesian Active Falsification
     noise_model: str = "deterministic"

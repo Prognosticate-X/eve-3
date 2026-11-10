@@ -9,19 +9,68 @@ class ExecutionStepLimitExceeded(RuntimeError):
     pass
 
 
+class ExecutionSizeLimitExceeded(RuntimeError):
+    """Raised when DSL execution produces output exceeding size or bit-length budget."""
+    pass
+
+
+class ExecutionRecursionLimitExceeded(RuntimeError):
+    """Raised when DSL execution exceeds maximum recursion depth budget."""
+    pass
+
+
 class ExecutionContext:
     """Tracks execution budget and resource consumption."""
 
-    def __init__(self, step_budget: int = 20000):
+    def __init__(
+        self,
+        step_budget: int = 20000,
+        max_output_size: int = 1000,
+        max_integer_bits: int = 2048,
+        max_recursion_depth: int = 50,
+    ):
         self.step_budget = step_budget
+        self.max_output_size = max_output_size
+        self.max_integer_bits = max_integer_bits
+        self.max_recursion_depth = max_recursion_depth
         self.steps_executed = 0
+        self.current_recursion_depth = 0
 
-    def tick(self):
+    def tick(self) -> None:
         self.steps_executed += 1
         if self.steps_executed > self.step_budget:
             raise ExecutionStepLimitExceeded(
                 f"DSL execution step budget exceeded ({self.step_budget} steps)"
             )
+
+    def enter_call(self) -> None:
+        self.current_recursion_depth += 1
+        if self.current_recursion_depth > self.max_recursion_depth:
+            raise ExecutionRecursionLimitExceeded(
+                f"DSL execution exceeded recursion limit ({self.max_recursion_depth})"
+            )
+
+    def exit_call(self) -> None:
+        if self.current_recursion_depth > 0:
+            self.current_recursion_depth -= 1
+
+    def check_val(self, val: Any) -> Any:
+        if isinstance(val, (list, tuple)):
+            if len(val) > self.max_output_size:
+                raise ExecutionSizeLimitExceeded(
+                    f"DSL output collection size ({len(val)}) exceeded limit ({self.max_output_size})"
+                )
+        elif isinstance(val, str):
+            if len(val) > self.max_output_size:
+                raise ExecutionSizeLimitExceeded(
+                    f"DSL string length ({len(val)}) exceeded limit ({self.max_output_size})"
+                )
+        elif isinstance(val, int) and not isinstance(val, bool):
+            if val.bit_length() > self.max_integer_bits:
+                raise ExecutionSizeLimitExceeded(
+                    f"DSL integer bit length ({val.bit_length()}) exceeded limit ({self.max_integer_bits})"
+                )
+        return val
 
 
 class ASTNode(ABC):
@@ -73,6 +122,7 @@ class ConstNode(ASTNode):
     def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
         if context:
             context.tick()
+            context.check_val(self.value)
         return self.value
 
     def to_sexpr(self) -> str:
@@ -102,7 +152,10 @@ class VarNode(ASTNode):
             context.tick()
         if self.name not in env:
             raise NameError(f"Undefined variable in DSL environment: '{self.name}'")
-        return env[self.name]
+        val = env[self.name]
+        if context:
+            context.check_val(val)
+        return val
 
     def to_sexpr(self) -> str:
         return self.name
@@ -128,10 +181,19 @@ class LambdaNode(ASTNode):
             context.tick()
 
         def closure(*args: Any) -> Any:
-            new_env = dict(env)
-            for name, val in zip(self.arg_names, args):
-                new_env[name] = val
-            return self.body.evaluate(new_env, context)
+            if context:
+                context.enter_call()
+            try:
+                new_env = dict(env)
+                for name, val in zip(self.arg_names, args):
+                    new_env[name] = val
+                res = self.body.evaluate(new_env, context)
+                if context:
+                    context.check_val(res)
+                return res
+            finally:
+                if context:
+                    context.exit_call()
 
         return closure
 
@@ -158,11 +220,19 @@ class ApplyNode(ASTNode):
     def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
         if context:
             context.tick()
-        if self.op_name not in env:
-            raise NameError(f"Unknown primitive or function '{self.op_name}' in environment")
-        fn = env[self.op_name]
-        evaluated_args = [arg.evaluate(env, context) for arg in self.args]
-        return fn(*evaluated_args)
+            context.enter_call()
+        try:
+            if self.op_name not in env:
+                raise NameError(f"Unknown primitive or function '{self.op_name}' in environment")
+            fn = env[self.op_name]
+            evaluated_args = [arg.evaluate(env, context) for arg in self.args]
+            res = fn(*evaluated_args)
+            if context:
+                context.check_val(res)
+            return res
+        finally:
+            if context:
+                context.exit_call()
 
     def to_sexpr(self) -> str:
         if not self.args:

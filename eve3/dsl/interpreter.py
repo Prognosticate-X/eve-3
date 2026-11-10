@@ -183,6 +183,9 @@ class DSLInterpreter:
         timeout_seconds: float = 1.0,
         step_budget: int = 20000,
         max_depth: Optional[int] = None,
+        max_output_size: int = 1000,
+        max_integer_bits: int = 2048,
+        max_recursion_depth: int = 50,
     ) -> Any:
         """Execute program on an input value with hard step budget and timeout."""
         if isinstance(program, str):
@@ -198,19 +201,28 @@ class DSLInterpreter:
         env["x"] = input_val
         env["input"] = input_val
 
-        context = ExecutionContext(step_budget=step_budget)
+        context = ExecutionContext(
+            step_budget=step_budget,
+            max_output_size=max_output_size,
+            max_integer_bits=max_integer_bits,
+            max_recursion_depth=max_recursion_depth,
+        )
 
         def _execute_sync():
             return ast.evaluate(env, context)
 
-        # Execute with thread pool to enforce hard wall-clock timeout
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        # Execute with thread pool to enforce hard wall-clock timeout without blocking on exit
+        executor = ThreadPoolExecutor(max_workers=1)
+        try:
             future = executor.submit(_execute_sync)
             try:
                 return future.result(timeout=timeout_seconds)
             except FuturesTimeoutError:
+                future.cancel()
                 raise ExecutionTimeoutError(
                     f"Execution exceeded hard timeout budget of {timeout_seconds}s"
                 )
             except RecursionError:
                 raise RuntimeError("DSL execution hit max Python recursion depth")
+        finally:
+            executor.shutdown(wait=False, cancel_futures=True)

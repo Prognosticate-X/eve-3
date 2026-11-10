@@ -28,7 +28,14 @@ class SearchController:
         self.knowledge_library = knowledge_library
         self.generator = HypothesisGenerator(self.config)
         self.enumerator = SymbolicEnumerator(max_depth=self.config.enumerator_max_depth)
-        self.sandbox = ProgramSandbox(timeout_per_exec=self.config.sandbox_timeout_seconds)
+        self.sandbox = ProgramSandbox(
+            timeout_per_exec=self.config.sandbox_timeout_seconds,
+            max_ast_depth=self.config.max_ast_depth,
+            step_budget=self.config.sandbox_step_budget,
+            max_output_size=self.config.sandbox_max_output_size,
+            max_integer_bits=self.config.sandbox_max_integer_bits,
+            max_recursion_depth=self.config.sandbox_max_recursion_depth,
+        )
 
     def propose_candidates(
         self,
