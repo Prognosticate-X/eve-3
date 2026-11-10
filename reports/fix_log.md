@@ -308,6 +308,50 @@ NameError: Unknown primitive or function 'abs_synth_list_structural_189c81' in e
 NameError: Unknown primitive or function 'base_abs_synth_list_mapping_7942d8_2' in environment
 ```
 
+---
+
+## 7. Stage S5：策略更新与迁移真实性（H15, H16, H17, H18）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **修改数**：**0**（所有先前阶段的测试未做任何删除或断言放宽，继续 100% 全量通过）。
+- **`run_continual_learning_experiment` 默认模式切换**：
+  - 默认参数从 `"leaky_templates"` 切换为严格无泄漏的 `"generic_enumeration"`，并在真实接入结晶知识库后全量通过已有的 `tests/test_continual_learning.py` 断言。
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s5_tree_support.py`**（4 个测试，遵循“先红后绿”流程）：
+  1. `test_backward_compatibility_of_simulator_output_keys`：验证 `ReplaySimulator` 输出保留全部已有键，并新增 `evaluatable`, `status`, `support_coverage`, `is_weights`, `effective_sample_size`, `weight_variance`。
+  2. `test_unsupported_tree_without_verification_marked_out_of_support`：验证缺失验证节点或策略偏好动作未被探索的树被明确标记为 `evaluatable=False` 与 `status="out_of_support"`。
+  3. `test_branching_tree_produces_differentiated_policy_decisions`：验证分叉决策树上不同策略产生区分性回放成本与步骤数（消除全同 2.20 退化）。
+  4. `test_importance_sampling_weights_and_ess_calculation`：验证重要性采样权重与有效样本量（ESS）计算的数学正确性。
+- **`tests/test_stage_s5_gate_tamper_resistance.py`**（3 个测试，遵循“先红后绿”流程）：
+  1. `test_regression_gate_config_is_strictly_immutable`：验证 `RegressionGateConfig` 为 `frozen=True`，运行时任何属性修改直接抛出 `FrozenInstanceError`。
+  2. `test_preregistration_hash_and_validity_check`：验证基于 SHA-256 的预注册安全指纹与超限参数拒绝机制。
+  3. `test_consolidator_uses_real_tree_performance_not_hardcoded_pass`：验证 `Consolidator` 基于探索树真实统计经验通过率，拒绝失败树进入适配器库。
+- **`tests/test_stage_s5_continual_learning.py`**（2 个测试，遵循“先红后绿”流程）：
+  1. `test_search_controller_generates_compositional_library_candidates`：验证 `SearchController` 将结晶算子与基础归约/结构原语自动组合生成复合候选。
+  2. `test_run_continual_learning_under_generic_enumeration_mode`：验证持续学习在非泄漏的 `generic_enumeration` 下真实实现 FWT Delta $\ge +10.0\%$。
+
+### 3. S5 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 H16（回放模拟器缺少支撑集检查与 IS 统计字段）：
+```text
+AssertionError: 'evaluatable' not found in {'found_verified': True, 'simulated_cost': 1.2, 'simulated_steps': 2, 'causal_path_cost': 1.2, 'tree_total_cost': 1.2}
+KeyError: 'is_weights'
+```
+
+#### 修复前 H17（门禁配置可被随意篡改且无指纹）：
+```text
+AssertionError: FrozenInstanceError not raised
+AttributeError: 'RegressionGateConfig' object has no attribute 'compute_preregistration_hash'
+```
+
+#### 修复前 H15（非泄漏模式下持续学习缺乏知识库导致 FWT 增益为零）：
+```text
+AssertionError: 0.0 not greater than or equal to 10.0
+Forward Transfer (FWT) Delta: +0.00%
+```
+
+
 
 
 

@@ -98,8 +98,13 @@
   3. **次模价值函数与防正反馈锁定（H13）已闭环**：设置 `max_reuse_saturation=20.0` 阻断旧算子垄断，重构 `compute_weighted_benefit` 采用规范降序消除输入排列顺序不对称性。
   4. **库学习消融实验纳入完全枚举（S1.1-C）已闭环**：在 `run_library_ablation.py` 中引入 `enumeration_full` (Bottom-Up OE) 基线对比，科学揭示库学习的搜索加速特性。
 
-- **接续阶段关注点（Stage S5：持续学习与 AdapterBank 真实性，H15 / P1）**：
-  - **AdapterBank 与 CEGISLoop 真实桥接（H15）**：在 `experiments/run_continual_learning.py` 中，消除由于未注入真实库而依赖模板泄漏的伪 FWT；
-  - **前向迁移（FWT）与后向抗遗忘（BWT）真实度量**：建立起真实的参数与语义适配器演进轨迹；
-  - **状态快照与回滚一致性**：验证当新任务发生灾难性回退时，门控机制能够无副作用地回滚知识库与适配器状态。
+- **Stage S5 已解决裁决**：
+  1. **反事实回放树支撑集与 IS 修正（H16）已闭环**：`ReplaySimulator` 引入 `support_coverage`、`is_weights`、有效样本量（ESS）与权重方差，当树缺乏支撑时明确输出 `evaluatable=False` 与 `status="out_of_support"`；分叉决策树实现差异化策略排序（消除全同 2.20 退化）。
+  2. **预注册门禁不可变与防篡改（H17）已闭环**：`RegressionGateConfig` 设为 `frozen=True` 并引入 SHA-256 唯一指纹校验；`Consolidator` 基于树真实统计经验通过率，拒绝失败树进入适配器库。
+  3. **持续学习知识库注入与复合前向迁移（H15 / H18）已闭环**：`SearchController` 引入宏算子与归约/结构原语的二阶组合提议；`run_continual_learning.py` 接入真实库并在非泄漏的 `generic_enumeration` 下达标 FWT Delta = +33.33%（BWT 遗忘 0.00%）。
+
+- **接续阶段关注点（Stage S6：终期全系统诚实科学评测，论文级验收）**：
+  - **全量无泄漏端到端重跑**：在全真基线、无模板泄漏、真实库与适配器条件下，运行全仓核心实验脚本；
+  - **多维度科学消融对比**：System 1 (LLM vs 符号 vs 混合), System 2 (确定性 vs 噪声 vs 随机探针 vs SMT), System 3 (无库 vs 结晶库 vs 完全枚举), Plasticity (持续学习与回滚)；
+  - **产出终验论文级报告**：形成具有完全复现性与学术诚实度的最终科学评估报告。
 
