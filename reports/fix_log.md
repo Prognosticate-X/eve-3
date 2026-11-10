@@ -258,5 +258,56 @@ AssertionError: assert 3 == 1 (sandbox passed 3 duplicate alpha-equivalent progr
 TypeError: HypothesisGenerator.build_prompt() got an unexpected keyword argument 'num_candidates'
 ```
 
+---
+
+## 6. Stage S4：System 3 库学习真实性（H11, H12, H13, H14, S1.1-C）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **修改数**：**0**（所有先前阶段的测试未做任何删除或断言放宽，继续 100% 全量通过）。
+- **`tests/test_audit_p0_regressions.py` 严格转绿**：
+  - 此前标记为 `@pytest.mark.xfail(strict=True)` 的全部 5 个 P0 回归测试在 Stage S2、S3、S4 逐个修复后，现已全部移除 `xfail` 标记，**彻底 100% 正式 PASS**！
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s4_operators.py`**（5 个测试，遵循“先红后绿”流程）：
+  1. `test_default_crystallized_operators_execute_in_sandbox`：验证默认结晶算子（如 `op_increment_list`）在沙箱中成功执行，消除 `NameError`。
+  2. `test_dynamic_operator_registration_from_sexpr`：验证动态解析 S-expression 表达式注册新算子并在沙箱中可执行。
+  3. `test_parameterized_dynamic_operator_registration`：验证带参数的二元算子动态编译与注册执行。
+  4. `test_search_controller_syncs_library_operators_to_sandbox`：验证搜索控制器自动将知识库结晶算子同步给沙箱。
+  5. `test_h14_max_active_library_operators_cap`：验证 `max_active_library_operators` 容量截断机制，避免算子爆炸。
+- **`tests/test_stage_s4_pattern_mining.py`**（3 个测试，遵循“先红后绿”流程）：
+  1. `test_dynamic_lambda_pattern_mining_no_crash`：验证处理包含 `LambdaNode` 的高阶表达式时模式挖掘零崩溃。
+  2. `test_dynamic_pattern_compression_savings`：验证从程序对中挖掘公共子表达式并正确计算 AST 压缩节约量。
+  3. `test_arbitrary_nested_subpattern_mining`：验证深层嵌套 lambda 复合结构的子模式稳定提取。
+- **`tests/test_stage_s4_submodular.py`**（3 个测试，遵循“先红后绿”流程）：
+  1. `test_reuse_saturation_prevents_positive_feedback_lockin`：验证 `max_reuse_saturation=20.0` 阻止陈旧算子的复用权重无界攀升。
+  2. `test_order_independent_library_benefit`：验证 `compute_weighted_benefit` 规范降序后对于任意输入排列顺序输出严格相同的集合价值。
+  3. `test_better_new_abstraction_wins_over_stale_lower_saving_abstraction`：验证高压缩比新算子在次模选择中能够击败低节约量的老算子。
+
+### 3. S4 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 H11（结晶算子沙箱执行未定义）：
+```text
+AssertionError: 0 != 1 : Crystallized operator should execute successfully in sandbox when registered
+NameError: 'op_increment_list' is not defined
+```
+
+#### 修复前 H12（模式挖掘处理 LambdaNode 崩溃与列表 add 异常）：
+```text
+WARNING: Swallowed NameError in extract_candidate_abstractions: name 'LambdaNode' is not defined
+AttributeError: 'list' object has no attribute 'add'
+```
+
+#### 修复前 H13（次模集合函数计算结果强依赖于输入顺序）：
+```text
+AssertionError: Evaluation order caused asymmetry: f([c1, c2])=12.0 != f([c2, c1])=16.0
+```
+
+#### 修复前 H11-Dyn（自主演化循环动态结晶算子跨周期求值报 NameError）：
+```text
+NameError: Unknown primitive or function 'abs_synth_list_structural_189c81' in environment
+NameError: Unknown primitive or function 'base_abs_synth_list_mapping_7942d8_2' in environment
+```
+
+
 
 

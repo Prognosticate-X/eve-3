@@ -79,7 +79,7 @@
 
 ---
 
-## 8. Stage S2 / Stage S3 已解决裁决与 Stage S4 准备情况（最新更新）
+## 8. 阶段裁决解决记录与接续演进（最新更新）
 
 - **Stage S2 已解决裁决**：
   1. **确定性程序后验归零（H3）已闭环**：通过配置 `noise_model: "deterministic" | "noisy(eps)"` 彻底消除了 Laplace 平滑在确定性设置下的反例复活缺陷。
@@ -92,8 +92,14 @@
   2. **沙箱多步安全防御与非阻塞硬超时（H11）已闭环**：消除 `ThreadPoolExecutor.__exit__` 中的隐式阻塞等待，使用 `shutdown(wait=False, cancel_futures=True)` 确保超时后主线程立即返回；新增 `ExecutionSizeLimitExceeded` 与 `ExecutionRecursionLimitExceeded`，拦截 `fold` 倍增内存炸弹、连续平方大整数与深层递归调用。
   3. **AST $\alpha$-等价去重与提示词对齐（H9）已闭环**：在 `ASTNode` 实现 `to_canonical_sexpr()`，基于词法嵌套深度统一编号 lambda 形参（`$0, $1...`），使 `CandidateProgram` 的相等判定与哈希严格基于规范形式；动态生成提示词候选数量，消除硬编码 5。
 
-- **接续阶段关注点（Stage S4：System 3 库学习真实性，P0）**：
-  - 算子真实注册（H11/H14）：修复结晶算子因未注入 `DSLInterpreter.base_env` 导致 100% 报 `NameError` 的断裂问题；
-  - 动态模式挖掘（H12）：修复 `value_compressor.py` 因 `patterns.add()` 与缺失 `LambdaNode` 导致的 100% 崩溃，消除顺序依赖；
-  - 次模性检验与贪心解质量（H13）：在无泄漏环境下，以 `enumeration_full` 为对照基线，客观检验库学习带来的实际搜索加速比与压缩率。
+- **Stage S4 已解决裁决**：
+  1. **结晶算子真实注册与沙箱执行（H11 / H14）已闭环**：实现 `compile_operator` 与全局 `register_crystallized_primitive`，打通解释器、沙箱、知识库与语义记忆全链路，`ApplyNode` 增加动态解析回退；引入 `max_active_library_operators` 防御算子爆炸；彻底转绿 `test_audit_p0_regressions.py` 中的全部 P0 回归测试！
+  2. **模式挖掘容错与动态子表达式提取（H12）已闭环**：补齐 `LambdaNode` 与 `IfElseNode`，修正集合定义与正则替换，实现零崩溃的子结构提取。
+  3. **次模价值函数与防正反馈锁定（H13）已闭环**：设置 `max_reuse_saturation=20.0` 阻断旧算子垄断，重构 `compute_weighted_benefit` 采用规范降序消除输入排列顺序不对称性。
+  4. **库学习消融实验纳入完全枚举（S1.1-C）已闭环**：在 `run_library_ablation.py` 中引入 `enumeration_full` (Bottom-Up OE) 基线对比，科学揭示库学习的搜索加速特性。
+
+- **接续阶段关注点（Stage S5：持续学习与 AdapterBank 真实性，H15 / P1）**：
+  - **AdapterBank 与 CEGISLoop 真实桥接（H15）**：在 `experiments/run_continual_learning.py` 中，消除由于未注入真实库而依赖模板泄漏的伪 FWT；
+  - **前向迁移（FWT）与后向抗遗忘（BWT）真实度量**：建立起真实的参数与语义适配器演进轨迹；
+  - **状态快照与回滚一致性**：验证当新任务发生灾难性回退时，门控机制能够无副作用地回滚知识库与适配器状态。
 
