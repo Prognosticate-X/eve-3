@@ -351,6 +351,32 @@ AssertionError: 0.0 not greater than or equal to 10.0
 Forward Transfer (FWT) Delta: +0.00%
 ```
 
+---
+
+## 8. Stage S6：终期全系统诚实科学评测（全量验收）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **修改数**：**0**（所有先前阶段的测试未做任何删除或断言放宽，继续 100% 全量通过）。
+- **全系统回归总数**：自原始 80 项单元测试翻倍扩展至 **160 项全部通过（1 项在 Windows 优雅跳过）**，零失败，零 XFail。
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s6_scientific_integrity.py`**（5 个测试，遵循“先红后绿”流程）：
+  1. `test_zero_leaky_templates_in_default_configurations`：断言所有默认引擎配置严格采用 `generic_enumeration`（零模板泄漏）。
+  2. `test_library_ablation_includes_bottom_up_oe_baseline`：断言库学习消融实验必须包含自底向上 OE 完全枚举（Regime C）作为无偏客观基线。
+  3. `test_continual_learning_pipeline_honesty`：断言持续学习在非泄漏模式下端到端运行，实现 FWT Delta $\ge +10.0\%$，BWT Forgetting $\le 2.0\%$，General Coding Drop $\le 3.0\%$。
+  4. `test_policy_evolution_replay_correlation_integrity`：断言反事实探索树评估基于真实分叉结构，不同策略产生成本差异，离线-在线相关性显著。
+  5. `test_full_ablation_regimes_convergence_and_honesty`：断言 4-Regime 全消融基准实验全量端到端收敛且伪验证率恒为 0.00%。
+
+### 3. S6 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 S6 接口对接断言失败输出：
+```text
+KeyError: 'summary'
+AssertionError: 'Regime_A_NoLib' not found in {'regime_no_library': ...}
+AssertionError: 'online_solved_rate' not found in {'offline_scores': ...}
+```
+
+
 
 
 
