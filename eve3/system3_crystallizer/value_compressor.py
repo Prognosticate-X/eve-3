@@ -74,13 +74,15 @@ class CandidateAbstraction:
 class ValueCompressor:
     """Selects abstractions by maximizing value-weighted compression benefit."""
 
-    def __init__(self, gamma: float = 1.2):
+    def __init__(self, gamma: float = 1.2, max_reuse_saturation: float = 20.0):
         self.gamma = gamma
+        self.max_reuse_saturation = max_reuse_saturation
         self.diagnostics = Diagnostics()
 
     def calculate_program_weight(self, prog_meta: Dict[str, Any]) -> float:
-        """Compute value weight: w_i = |{task_family}| * (1 + log(1 + reuse_count))."""
-        reuse = prog_meta.get("reuse_count", 0)
+        """Compute value weight: w_i = |{task_family}| * (1 + log(1 + min(reuse_count, max_reuse_saturation)))."""
+        raw_reuse = float(prog_meta.get("reuse_count", 0))
+        reuse = min(raw_reuse, self.max_reuse_saturation) if self.max_reuse_saturation is not None else raw_reuse
         task_diversity = 1.0
         if "task_family" in prog_meta and prog_meta["task_family"]:
             families = {f.strip() for f in prog_meta["task_family"].split(",") if f.strip()}
@@ -205,15 +207,26 @@ class ValueCompressor:
         programs: List[Dict[str, Any]],
         weights: List[float],
     ) -> float:
-        """Compute: sum_i w_i * [ DL(P_i | empty) - DL(P_i | L) ]."""
+        """Compute: sum_i w_i * [ DL(P_i | empty) - DL(P_i | L) ].
+        
+        Evaluates the library in descending order of pattern specificity/cost to guarantee
+        order-independence and preserve maximal munch across sub-expressions.
+        """
         total_benefit = 0.0
+
+        # Canonical sort: larger/deeper/costlier patterns applied before smaller sub-patterns
+        sorted_library = sorted(
+            selected_library,
+            key=lambda a: (a.cost, len(a.pattern)),
+            reverse=True,
+        )
 
         for prog, w in zip(programs, weights):
             code = prog["code"]
 
             current_code = code
             total_savings = 0
-            for ab in selected_library:
+            for ab in sorted_library:
                 current_code, savings = ab.apply_compression(current_code)
                 total_savings += savings
 
