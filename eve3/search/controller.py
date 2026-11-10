@@ -36,6 +36,9 @@ class SearchController:
             max_integer_bits=self.config.sandbox_max_integer_bits,
             max_recursion_depth=self.config.sandbox_max_recursion_depth,
         )
+        if self.knowledge_library is not None:
+            active_ops = self.knowledge_library.get_crystallized_operators()
+            self.sandbox.register_crystallized_operators(active_ops)
 
     def propose_candidates(
         self,
@@ -54,6 +57,7 @@ class SearchController:
         crystallized_ops: List[Dict[str, Any]] = []
         if self.knowledge_library is not None:
             crystallized_ops = self.knowledge_library.get_crystallized_operators()
+            self.sandbox.register_crystallized_operators(crystallized_ops)
 
         proposals: List[CandidateProgram] = []
         seen_canonical = set()
@@ -157,7 +161,8 @@ class SearchController:
         add_fn: Any,
     ) -> None:
         lib_codes: List[Tuple[str, str]] = []
-        for op in crystallized_ops:
+        capped_ops = crystallized_ops[: self.config.max_active_library_operators]
+        for op in capped_ops:
             op_name = op["operator_name"]
             arity = op.get("arity", 1)
             if arity == 1:

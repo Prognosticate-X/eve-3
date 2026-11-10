@@ -58,6 +58,7 @@ class EveConfig:
     crystallization_threshold_rounds: int = 5
     library_size_penalty_gamma: float = 1.2
     enable_task_family_weighting: bool = True
+    max_active_library_operators: int = 8
 
     def __post_init__(self) -> None:
         if self.proposer_mode not in VALID_PROPOSER_MODES:

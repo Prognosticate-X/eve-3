@@ -271,7 +271,8 @@ class HypothesisGenerator:
 
         # Dynamically inject learned crystallized operators into candidate templates
         if crystallized_operators:
-            for op in crystallized_operators:
+            max_ops = getattr(self.config, "max_active_library_operators", 8)
+            for op in crystallized_operators[:max_ops]:
                 op_name = op.get("operator_name")
                 arity = op.get("arity", 1)
                 if arity == 1:

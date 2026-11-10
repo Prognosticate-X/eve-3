@@ -108,10 +108,6 @@ class TestAuditP0Regressions(unittest.TestCase):
         )
         self.assertGreater(dist.diagnostics.z3_calls, 0, "Z3 solver must be invoked for map candidates")
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H11 (audit.md:374-382): Crystallized operators are not registered in DSLInterpreter.env and raise NameError in sandbox (Pending Stage S4)",
-    )
     def test_h11_crystallized_operators_must_execute_successfully_in_sandbox(self):
         """H11: Crystallized operators produced by System 3 must execute in the sandbox without NameError."""
         sandbox = ProgramSandbox()

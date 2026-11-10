@@ -3,7 +3,7 @@
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 import re
 import time
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from eve3.dsl.ast import (
     ASTNode,
@@ -175,6 +175,19 @@ class DSLInterpreter:
         self.base_env: Dict[str, Any] = get_default_primitives()
         if extra_primitives:
             self.base_env.update(extra_primitives)
+
+    def register_operator(
+        self,
+        name: str,
+        body_or_fn: Union[str, Callable[..., Any], ASTNode],
+        arity: int = 1,
+    ) -> None:
+        """Register a crystallized or custom operator into the interpreter environment."""
+        if callable(body_or_fn):
+            self.base_env[name] = body_or_fn
+        else:
+            from eve3.dsl.primitives import compile_operator
+            self.base_env[name] = compile_operator(body_or_fn, arity=arity)
 
     def run(
         self,

@@ -2,7 +2,7 @@
 
 import logging
 import time
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from eve3.dsl.interpreter import (
     DSLDepthExceededError,
@@ -36,6 +36,24 @@ class ProgramSandbox:
         self.max_recursion_depth = max_recursion_depth
         self.interpreter = DSLInterpreter(extra_primitives=extra_primitives)
         self.diagnostics = Diagnostics()
+
+    def register_operator(
+        self,
+        name: str,
+        body_or_fn: Union[str, Callable[..., Any], Any],
+        arity: int = 1,
+    ) -> None:
+        """Register operator directly into the sandbox's DSLInterpreter."""
+        self.interpreter.register_operator(name, body_or_fn, arity=arity)
+
+    def register_crystallized_operators(self, operators: List[Dict[str, Any]]) -> None:
+        """Batch register crystallized library operators into interpreter environment."""
+        for op in operators:
+            name = op.get("operator_name") or op.get("name")
+            body = op.get("body_sexpr") or op.get("pattern_sexpr")
+            arity = op.get("arity", 1)
+            if name and body:
+                self.register_operator(name, body, arity=arity)
 
     def filter_valid_candidates(
         self,
