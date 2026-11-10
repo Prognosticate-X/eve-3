@@ -186,8 +186,15 @@ class ReplaySimulator:
     def evaluate_policy_sample_efficiency(
         self,
         policy_priority_fn: Callable[[DiscoveryNode], float],
+        min_support_coverage: float = 0.5,
     ) -> Dict[str, Any]:
-        """Simulate an alternative exploration policy by rolling out the tree along its causal frontier."""
+        """Simulate an alternative exploration policy by rolling out the tree along its causal frontier.
+        
+        Tracks support coverage and importance sampling weights to detect when a policy steps
+        out of the tree's empirical support.
+        """
+        import math
+
         if not self.tree.nodes or self.tree.root_id is None:
             return {
                 "found_verified": False,
@@ -195,6 +202,12 @@ class ReplaySimulator:
                 "simulated_steps": 0,
                 "causal_path_cost": 0.0,
                 "tree_total_cost": 0.0,
+                "evaluatable": False,
+                "status": "empty_tree",
+                "support_coverage": 0.0,
+                "is_weights": [],
+                "effective_sample_size": 0.0,
+                "weight_variance": 0.0,
             }
 
         # Initialize frontier strictly at the root
@@ -205,11 +218,37 @@ class ReplaySimulator:
         steps = 0
         found_verified = False
         target_node_id: Optional[str] = None
+        supported_decisions = 0
+        total_decisions = 0
+        is_weights: List[float] = []
 
         while frontier:
             # Policy chooses highest priority node among CURRENTLY REACHABLE frontier nodes
             candidates = [self.tree.nodes[nid] for nid in frontier]
-            best_node = max(candidates, key=policy_priority_fn)
+            scores = [policy_priority_fn(n) for n in candidates]
+            best_idx = max(range(len(candidates)), key=lambda i: scores[i])
+            best_node = candidates[best_idx]
+
+            # Importance sampling step weight
+            if len(candidates) > 1:
+                shifted = [s - max(scores) for s in scores]
+                exps = [math.exp(max(-50.0, min(50.0, s))) for s in shifted]
+                sum_exps = sum(exps)
+                probs = [e / sum_exps for e in exps]
+                p_chosen = probs[best_idx]
+                mu_chosen = 1.0 / len(candidates)
+                w_step = p_chosen / mu_chosen
+                supported_decisions += 1
+            else:
+                w_step = 1.0
+                # If only 1 choice exists, check if it matches verify or has tree continuation
+                if best_node.outcome in ("verified", "success") or best_node.action_type == "verify":
+                    supported_decisions += 1
+                elif any(self.tree.nodes[cid].outcome in ("verified", "success") for cid in best_node.children if cid in self.tree.nodes):
+                    supported_decisions += 1
+
+            total_decisions += 1
+            is_weights.append(w_step)
 
             frontier.remove(best_node.node_id)
             explored.add(best_node.node_id)
@@ -217,7 +256,12 @@ class ReplaySimulator:
             simulated_cost += best_node.cost
             steps += 1
 
-            if best_node.outcome in ("verified", "success") or best_node.action_type == "verify":
+            is_terminal_verified = (
+                best_node.outcome == "verified"
+                or (best_node.action_type == "verify" and best_node.outcome != "falsified")
+                or (best_node.outcome == "success" and best_node.action_type == "verify")
+            )
+            if is_terminal_verified:
                 found_verified = True
                 target_node_id = best_node.node_id
                 break
@@ -232,10 +276,51 @@ class ReplaySimulator:
             path_from_root = self.tree.get_path_from_root(target_node_id)
             causal_path_cost = sum(self.tree.nodes[nid].cost for nid in path_from_root)
 
+        # Check support coverage and evaluatability
+        has_verified_in_tree = any(
+            n.outcome == "verified" or (n.action_type == "verify" and n.outcome != "falsified")
+            for n in self.tree.nodes.values()
+        )
+
+        if not found_verified:
+            if not has_verified_in_tree:
+                evaluatable = False
+                status = "out_of_support"
+                support_coverage = 0.0 if total_decisions == 0 else (supported_decisions / total_decisions) * 0.4
+            else:
+                support_coverage = supported_decisions / total_decisions if total_decisions > 0 else 0.0
+                if support_coverage < min_support_coverage:
+                    evaluatable = False
+                    status = "out_of_support"
+                else:
+                    evaluatable = True
+                    status = "unconverged"
+        else:
+            support_coverage = 1.0 if total_decisions == 0 else supported_decisions / total_decisions
+            evaluatable = True
+            status = "evaluatable"
+
+        # Effective Sample Size (ESS) and weight variance
+        if is_weights:
+            sum_w = sum(is_weights)
+            sum_w2 = sum(w * w for w in is_weights)
+            ess = (sum_w * sum_w) / sum_w2 if sum_w2 > 0 else 1.0
+            mean_w = sum_w / len(is_weights)
+            weight_var = sum((w - mean_w) ** 2 for w in is_weights) / len(is_weights)
+        else:
+            ess = 0.0
+            weight_var = 0.0
+
         return {
             "found_verified": found_verified,
             "simulated_cost": simulated_cost,
             "simulated_steps": steps,
             "causal_path_cost": causal_path_cost,
             "tree_total_cost": self.tree.total_cost(),
+            "evaluatable": evaluatable,
+            "status": status,
+            "support_coverage": support_coverage,
+            "is_weights": is_weights,
+            "effective_sample_size": ess,
+            "weight_variance": weight_var,
         }
