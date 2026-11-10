@@ -129,10 +129,6 @@ class TestAuditP0Regressions(unittest.TestCase):
             "Sandbox must not reject crystallized operator with NameError",
         )
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H12 (audit.md:395-410): ValueCompressor crashes on LambdaNode and lacks submodular greedy guarantee (Pending Stage S4)",
-    )
     def test_h12_submodular_pattern_mining_must_extract_abstractions_from_lambda(self):
         """H12: ValueCompressor.extract_candidate_abstractions must extract patterns from programs
         with lambda nodes without crashing or falling back to static templates."""
