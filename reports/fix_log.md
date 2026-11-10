@@ -209,4 +209,54 @@ AssertionError: 'heuristic_boundary' != 'smt_symbolic'
  : Expected probe from Z3 SMT symbolic solve, got heuristic_boundary
 ```
 
+---
+
+## 5. Stage S3：System 1 提议器质量与鲁棒性修复（H1, H11, H9）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **修改数**：**0**（所有先前阶段的测试未做任何删除或断言放宽，继续 100% 全量通过）。
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s3_prior.py`**（4 个测试，遵循“先红后绿”流程）：
+  1. `test_config_prior_mode_validation`：验证 `EveConfig` 的 `prior_mode` 校验，支持 `"mdl"`, `"uniform"`, `"llm"`，非法模式抛出 `ValueError`。
+  2. `test_uniform_prior_mode`：验证 `BayesianProber` 在 `uniform` 模式下为所有候选程序赋予均匀先验 $1/N$。
+  3. `test_mdl_prior_mode_with_custom_decay`：验证 `mdl` 模式下结合 `mdl_prior_decay` 动态缩放描述长度惩罚项。
+  4. `test_llm_prior_mode_uses_candidate_logprob`：验证 `llm` 模式下依据候选的 `logprob` 进行 softmax 归一化分配先验。
+- **`tests/test_stage_s3_sandbox_security.py`**（5 个测试，遵循“先红后绿”流程）：
+  1. `test_timeout_is_non_blocking`：验证硬超时机制在超时发生时立即返回（实测 $<0.35$s），不阻塞主线程等待后台 worker 执行。
+  2. `test_fold_memory_bomb_caught_by_size_limit`：验证 `(fold (lambda (acc item) (concat acc acc)) [1] x)` 列表指数倍增在 12 步内被 `ExecutionSizeLimitExceeded` 安全拦截。
+  3. `test_fold_integer_squaring_bomb_caught_by_bit_limit`：验证 `(fold (lambda (acc item) (* acc acc)) 2 x)` 整数连续平方在 12 步内超过 2048 位被 `ExecutionSizeLimitExceeded` 安全拦截。
+  4. `test_call_chain_recursion_limit`：验证深层嵌套调用链超过 `max_recursion_depth` 时被 `ExecutionRecursionLimitExceeded` 安全拦截。
+  5. `test_sandbox_filters_and_records_all_security_rejections`：验证 `ProgramSandbox` 安全捕获全部超时/内存/递归炸弹并分类记录进 `diagnostics.sandbox_rejections`。
+- **`tests/test_stage_s3_dedup.py`**（6 个测试，遵循“先红后绿”流程）：
+  1. `test_ast_canonical_sexpr_alpha_equivalence`：验证 `to_canonical_sexpr` 将形参按词法作用域规范化为 `$0, $1...`，实现 `(map (lambda (a) (+ a 1)) x)` 与 `(map (lambda (b) (+ b 1)) x)` 等价。
+  2. `test_nested_lambdas_alpha_equivalence`：验证多层嵌套 lambda 的规范化一致性。
+  3. `test_candidate_program_equality_and_alpha_equivalence`：验证 `CandidateProgram.__eq__` 与 `__hash__` 严格基于 $\alpha$-等价，消融同义候选。
+  4. `test_sandbox_deduplicates_alpha_equivalent_candidates`：验证 `ProgramSandbox.filter_valid_candidates` 自动去重 $\alpha$-等价候选。
+  5. `test_search_controller_deduplicates_alpha_equivalent_proposals`：验证 `SearchController.propose_candidates` 基于规范形式去重。
+  6. `test_build_prompt_dynamically_aligns_candidate_count`：验证 `HypothesisGenerator.build_prompt` 动态反映请求的候选数 $k$，消除硬编码 5。
+
+### 3. S3 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 H1（先验模式不可配置与缺失 LLM/均匀支持）：
+```text
+AttributeError: 'EveConfig' object has no attribute 'prior_mode'
+AssertionError: BayesianProber prior was not uniform
+```
+
+#### 修复前 H11（沙箱超时阻塞主线程与内存炸弹击穿）：
+```text
+ImportError: cannot import name 'ExecutionRecursionLimitExceeded' from 'eve3.dsl.ast'
+AssertionError: Timeout blocked the main thread! Elapsed: 1.503s
+AssertionError: did not raise ExecutionSizeLimitExceeded (memory bomb generated huge output)
+```
+
+#### 修复前 H9（$\alpha$-等价候选未去重与提示词硬编码）：
+```text
+AssertionError: ASTNode must implement to_canonical_sexpr
+AssertionError: assert 3 == 1 (sandbox passed 3 duplicate alpha-equivalent programs)
+TypeError: HypothesisGenerator.build_prompt() got an unexpected keyword argument 'num_candidates'
+```
+
+
 

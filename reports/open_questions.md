@@ -79,14 +79,21 @@
 
 ---
 
-## 8. Stage S2 已解决裁决与 Stage S3 准备情况（最新更新）
+## 8. Stage S2 / Stage S3 已解决裁决与 Stage S4 准备情况（最新更新）
 
-- **已解决裁决**：
+- **Stage S2 已解决裁决**：
   1. **确定性程序后验归零（H3）已闭环**：通过配置 `noise_model: "deterministic" | "noisy(eps)"` 彻底消除了 Laplace 平滑在确定性设置下的反例复活缺陷。
   2. **假设塌缩与主动重提议（H4）已闭环**：建立起了携带历史全部反例约束的重提议机制（`max_repropose_rounds=3`），并在耗尽后准确报告 `COLLAPSED` 与 `verified_program=None`。
   3. **SMT 列表高阶原语有界符号展开（H5）已闭环**：实现了对 `map`、`reverse`、`tail`、`head`、`sum`、`length` 等的 Z3 符号展开与模型提取，消除了非必要的边界回退。
   4. **随机探针对照臂已就绪**：引入了 `probe_strategy="random"`，消除了此前基线主表的 `INVALID_PENDING_RANDOM_CONTROL` 状态。
-- **接续阶段关注点（Stage S3：System 1 提议器质量与鲁棒性）**：
-  - 先验多样化（H1）：引入程序描述长度（MDL）或 LLM log-likelihood 作为动态非均匀先验分布；
-  - 沙箱防护升级（H11）：进一步防范递归与死循环，提升并发执行鲁棒性。
+
+- **Stage S3 已解决裁决**：
+  1. **贝叶斯先验多样化与强度调节（H1）已闭环**：支持 `prior_mode: "mdl" | "uniform" | "llm"`，引入 `mdl_prior_decay` 调节描述长度惩罚项，支持候选程序 `logprob` 的 softmax 归一化后验传播。
+  2. **沙箱多步安全防御与非阻塞硬超时（H11）已闭环**：消除 `ThreadPoolExecutor.__exit__` 中的隐式阻塞等待，使用 `shutdown(wait=False, cancel_futures=True)` 确保超时后主线程立即返回；新增 `ExecutionSizeLimitExceeded` 与 `ExecutionRecursionLimitExceeded`，拦截 `fold` 倍增内存炸弹、连续平方大整数与深层递归调用。
+  3. **AST $\alpha$-等价去重与提示词对齐（H9）已闭环**：在 `ASTNode` 实现 `to_canonical_sexpr()`，基于词法嵌套深度统一编号 lambda 形参（`$0, $1...`），使 `CandidateProgram` 的相等判定与哈希严格基于规范形式；动态生成提示词候选数量，消除硬编码 5。
+
+- **接续阶段关注点（Stage S4：System 3 库学习真实性，P0）**：
+  - 算子真实注册（H11/H14）：修复结晶算子因未注入 `DSLInterpreter.base_env` 导致 100% 报 `NameError` 的断裂问题；
+  - 动态模式挖掘（H12）：修复 `value_compressor.py` 因 `patterns.add()` 与缺失 `LambdaNode` 导致的 100% 崩溃，消除顺序依赖；
+  - 次模性检验与贪心解质量（H13）：在无泄漏环境下，以 `enumeration_full` 为对照基线，客观检验库学习带来的实际搜索加速比与压缩率。
 
