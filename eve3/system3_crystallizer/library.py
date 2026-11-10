@@ -85,6 +85,15 @@ class KnowledgeLibrary:
             """)
             conn.commit()
 
+            cursor = conn.cursor()
+            cursor.execute("SELECT operator_name, body_sexpr, arity FROM crystallized_operators")
+            for row in cursor.fetchall():
+                try:
+                    from eve3.dsl.primitives import register_crystallized_primitive
+                    register_crystallized_primitive(row["operator_name"], row["body_sexpr"], arity=row["arity"])
+                except (ValueError, TypeError, SyntaxError, KeyError, IndexError, AttributeError):
+                    pass
+
     def record_verified_program(
         self,
         program: CandidateProgram,
@@ -153,6 +162,12 @@ class KnowledgeLibrary:
             )
             conn.commit()
 
+        try:
+            from eve3.dsl.primitives import register_crystallized_primitive
+            register_crystallized_primitive(operator_name, body_sexpr, arity=arity)
+        except (ValueError, TypeError, SyntaxError, KeyError, IndexError, AttributeError):
+            pass
+
     def get_crystallized_operators(self) -> List[Dict[str, Any]]:
         """Fetch crystallized library operators."""
         with self._connection() as conn:
@@ -201,6 +216,14 @@ class KnowledgeLibrary:
                 (abs_record.name, abs_record.pattern_sexpr, abs_record.arity, 10.0, len(abs_record.applicable_task_families) or 1, time.time()),
             )
             conn.commit()
+
+        try:
+            from eve3.dsl.primitives import register_crystallized_primitive
+            register_crystallized_primitive(abs_record.name, abs_record.pattern_sexpr, arity=abs_record.arity)
+            if hasattr(abs_record, "abstraction_id") and abs_record.abstraction_id:
+                register_crystallized_primitive(abs_record.abstraction_id, abs_record.pattern_sexpr, arity=abs_record.arity)
+        except (ValueError, TypeError, SyntaxError, KeyError, IndexError, AttributeError):
+            pass
 
     def get_learned_abstractions(self, status: Optional[str] = None) -> List[Dict[str, Any]]:
         """Fetch all structured learned abstractions, optionally filtered by status."""

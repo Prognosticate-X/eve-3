@@ -247,7 +247,11 @@ class ApplyNode(ASTNode):
             context.enter_call()
         try:
             if self.op_name not in env:
-                raise NameError(f"Unknown primitive or function '{self.op_name}' in environment")
+                from eve3.dsl.primitives import _DEFAULT_CRYSTALLIZED_PRIMITIVES
+                if self.op_name in _DEFAULT_CRYSTALLIZED_PRIMITIVES:
+                    env[self.op_name] = _DEFAULT_CRYSTALLIZED_PRIMITIVES[self.op_name]
+                else:
+                    raise NameError(f"Unknown primitive or function '{self.op_name}' in environment")
             fn = env[self.op_name]
             evaluated_args = [arg.evaluate(env, context) for arg in self.args]
             res = fn(*evaluated_args)

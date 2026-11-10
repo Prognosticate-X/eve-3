@@ -250,6 +250,16 @@ class SemanticMemory:
             source_task_id=source_task_id,
         )
         self.provenance.record_event(abs_id, "created", {"pattern": abstraction.pattern_sexpr})
+
+        try:
+            from eve3.dsl.primitives import register_crystallized_primitive
+            if hasattr(abstraction, "name") and abstraction.name:
+                register_crystallized_primitive(abstraction.name, abstraction.pattern_sexpr, arity=getattr(abstraction, "arity", 1))
+            if hasattr(abstraction, "abstraction_id") and abstraction.abstraction_id:
+                register_crystallized_primitive(abstraction.abstraction_id, abstraction.pattern_sexpr, arity=getattr(abstraction, "arity", 1))
+        except (ValueError, TypeError, SyntaxError, KeyError, IndexError, AttributeError):
+            pass
+
         return abs_id
 
     def compute_retention_score(

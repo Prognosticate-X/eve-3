@@ -75,6 +75,18 @@ _DEFAULT_CRYSTALLIZED_PRIMITIVES: Dict[str, Callable[..., Any]] = {
 }
 
 
+def register_crystallized_primitive(
+    name: str,
+    fn_or_sexpr: Any,
+    arity: int = 1,
+) -> None:
+    """Register a crystallized operator globally into standard primitives."""
+    if callable(fn_or_sexpr):
+        _DEFAULT_CRYSTALLIZED_PRIMITIVES[name] = fn_or_sexpr
+    else:
+        _DEFAULT_CRYSTALLIZED_PRIMITIVES[name] = compile_operator(fn_or_sexpr, arity=arity)
+
+
 def compile_operator(body_sexpr_or_ast: Any, arity: int = 1) -> Callable[..., Any]:
     """Compile an S-expression string or ASTNode into an executable callable primitive."""
     from eve3.dsl.ast import ASTNode
@@ -111,6 +123,10 @@ def compile_operator(body_sexpr_or_ast: Any, arity: int = 1) -> Callable[..., An
                 call_env["k"] = args[0]
                 call_env["x"] = args[-1]
                 call_env["input"] = args[-1]
-        return ast.evaluate(call_env)
+        res = ast.evaluate(call_env)
+        from eve3.dsl.ast import VarNode
+        if callable(res) and not isinstance(ast, VarNode):
+            res = res(*args)
+        return res
 
     return _compiled_op
