@@ -162,14 +162,21 @@ class SearchController:
     ) -> None:
         lib_codes: List[Tuple[str, str]] = []
         capped_ops = crystallized_ops[: self.config.max_active_library_operators]
+        comp_prims = ("sum", "tail", "head", "reverse", "len", "neg")
         for op in capped_ops:
             op_name = op["operator_name"]
             arity = op.get("arity", 1)
             if arity == 1:
                 lib_codes.append((f"({op_name} x)", f"library:{op_name}"))
+                for comp_prim in comp_prims:
+                    lib_codes.append((f"({comp_prim} ({op_name} x))", f"library:composed:{comp_prim}:{op_name}"))
+                    lib_codes.append((f"({op_name} ({comp_prim} x))", f"library:composed:{op_name}:{comp_prim}"))
             elif arity == 2:
                 for k in (1, 2, 0, -1):
                     lib_codes.append((f"({op_name} {k} x)", f"library:{op_name}"))
+                    for comp_prim in comp_prims:
+                        lib_codes.append((f"({comp_prim} ({op_name} {k} x))", f"library:composed:{comp_prim}:{op_name}"))
+                        lib_codes.append((f"({op_name} {k} ({comp_prim} x))", f"library:composed:{op_name}:{comp_prim}"))
         lib_filtered = self.sandbox.filter_valid_candidates(
             lib_codes, examples, created_by="library"
         )

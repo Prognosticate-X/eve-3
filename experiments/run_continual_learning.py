@@ -32,7 +32,7 @@ from eve3.system2_falsifier.cegis_loop import CEGISLoop, VerificationStatus
 from eve3.system3_crystallizer.library import KnowledgeLibrary
 
 
-def run_continual_learning_experiment(proposer_mode: str = "leaky_templates") -> Dict[str, Any]:
+def run_continual_learning_experiment(proposer_mode: str = "generic_enumeration") -> Dict[str, Any]:
     print("=====================================================================")
     print("  EVE-3 PHASE 6: CONTINUAL LEARNING, RETENTION & TRANSFER EXPERIMENT  ")
     print("=====================================================================")
@@ -57,14 +57,14 @@ def run_continual_learning_experiment(proposer_mode: str = "leaky_templates") ->
 
     with tempfile.TemporaryDirectory() as tmpdir:
         db_path = str(Path(tmpdir) / "continual_adapters.sqlite")
+        kb_path = Path(tmpdir) / "continual_kb.db"
+        kb = KnowledgeLibrary(kb_path)
         bank = AdapterBank(db_path=db_path)
         gate = RegressionGate(benchmarks_dir=benchmarks_dir)
         consolidator = Consolidator(adapter_bank=bank, regression_gate=gate)
 
-        # Note (S1/H15): Until Stage S4/S6 wire crystallized library & AdapterBank into CEGISLoop,
-        # this script's FWT delta depends on leaky_templates vs symbolic_only.
         config = EveConfig(max_falsification_rounds=8, proposer_mode=proposer_mode)
-        loop = CEGISLoop(config)
+        loop = CEGISLoop(config, knowledge_library=kb)
 
         # Baseline evaluation on general coding probe
         initial_general_score = gate.run_general_coding_probe_evaluation()
@@ -121,6 +121,15 @@ def run_continual_learning_experiment(proposer_mode: str = "leaky_templates") ->
 
                 if res.converged and res.held_out_accuracy == 1.0:
                     stage_solved += 1
+                    # Crystallize verified abstraction into knowledge library for forward transfer
+                    from eve3.models import LearnedAbstraction
+                    abs_record = LearnedAbstraction(
+                        name=f"abs_{task['task_id']}",
+                        pattern_sexpr=res.verified_program.code_str,
+                        applicable_task_families=[current_family],
+                        reuse_count=1,
+                    )
+                    kb.record_learned_abstraction(abs_record)
                     tree.add_node(
                         action_type="verify",
                         payload={"code": res.verified_program.code_str, "task_family": current_family, "task_id": task["task_id"]},
