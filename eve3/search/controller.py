@@ -56,12 +56,13 @@ class SearchController:
             crystallized_ops = self.knowledge_library.get_crystallized_operators()
 
         proposals: List[CandidateProgram] = []
-        seen_codes = set()
+        seen_canonical = set()
 
         def add_candidates(cands: List[CandidateProgram]):
             for c in cands:
-                if c.code_str not in seen_codes and len(proposals) < max_candidates:
-                    seen_codes.add(c.code_str)
+                canonical = getattr(c, "canonical_code", c.code_str)
+                if canonical not in seen_canonical and len(proposals) < max_candidates:
+                    seen_canonical.add(canonical)
                     proposals.append(c)
 
         # C.2: Constant pool de-benchmarking: constants strictly from {0, 1} U values appearing in examples

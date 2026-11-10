@@ -86,6 +86,11 @@ class ASTNode(ABC):
         """Convert AST node to canonical S-expression string."""
         pass
 
+    @abstractmethod
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        """Convert AST node to alpha-normalized canonical S-expression string."""
+        pass
+
     @property
     @abstractmethod
     def description_length(self) -> int:
@@ -132,6 +137,9 @@ class ConstNode(ASTNode):
             return f"[{', '.join(str(x) for x in self.value)}]"
         return str(self.value)
 
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        return self.to_sexpr()
+
     @property
     def description_length(self) -> int:
         return 1
@@ -158,6 +166,11 @@ class VarNode(ASTNode):
         return val
 
     def to_sexpr(self) -> str:
+        return self.name
+
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        if env_map and self.name in env_map:
+            return env_map[self.name]
         return self.name
 
     @property
@@ -201,6 +214,17 @@ class LambdaNode(ASTNode):
         args_str = " ".join(self.arg_names)
         return f"(lambda ({args_str}) {self.body.to_sexpr()})"
 
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        new_env = dict(env_map) if env_map is not None else {}
+        canonical_params: List[str] = []
+        for name in self.arg_names:
+            var_id = f"${len(new_env)}"
+            new_env[name] = var_id
+            canonical_params.append(var_id)
+        params_str = " ".join(canonical_params)
+        body_str = self.body.to_canonical_sexpr(new_env)
+        return f"(lambda ({params_str}) {body_str})"
+
     @property
     def description_length(self) -> int:
         return 1 + len(self.arg_names) + self.body.description_length
@@ -240,6 +264,13 @@ class ApplyNode(ASTNode):
         args_str = " ".join(arg.to_sexpr() for arg in self.args)
         return f"({self.op_name} {args_str})"
 
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        op = env_map.get(self.op_name, self.op_name) if env_map else self.op_name
+        if not self.args:
+            return f"({op})"
+        args_str = " ".join(arg.to_canonical_sexpr(env_map) for arg in self.args)
+        return f"({op} {args_str})"
+
     @property
     def description_length(self) -> int:
         return 1 + sum(arg.description_length for arg in self.args)
@@ -268,6 +299,12 @@ class IfElseNode(ASTNode):
 
     def to_sexpr(self) -> str:
         return f"(if {self.condition.to_sexpr()} {self.then_expr.to_sexpr()} {self.else_expr.to_sexpr()})"
+
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        cond_str = self.condition.to_canonical_sexpr(env_map)
+        then_str = self.then_expr.to_canonical_sexpr(env_map)
+        else_str = self.else_expr.to_canonical_sexpr(env_map)
+        return f"(if {cond_str} {then_str} {else_str})"
 
     @property
     def description_length(self) -> int:

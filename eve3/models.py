@@ -270,13 +270,22 @@ class CandidateProgram:
     def __repr__(self) -> str:
         return f"CandidateProgram({self.candidate_id}: {self.code_str!r}, status={self.status})"
 
+    @property
+    def canonical_code(self) -> str:
+        return self.ast.to_canonical_sexpr()
+
+    def is_alpha_equivalent(self, other: "CandidateProgram") -> bool:
+        if not isinstance(other, CandidateProgram):
+            return False
+        return self.canonical_code == other.canonical_code
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, CandidateProgram):
             return False
-        return self.code_str == other.code_str
+        return self.canonical_code == other.canonical_code
 
     def __hash__(self) -> int:
-        return hash(self.code_str)
+        return hash(self.canonical_code)
 
 
 @dataclass
