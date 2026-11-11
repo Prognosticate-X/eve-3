@@ -81,6 +81,9 @@ class CEGISLoop:
         self.prober = BayesianProber(
             cost_penalty_lambda=self.config.probe_cost_penalty_lambda,
             smoothing_epsilon=self.config.laplace_smoothing_epsilon,
+            noise_model=self.config.noise_model,
+            prior_mode=self.config.prior_mode,
+            mdl_prior_decay=self.config.mdl_prior_decay,
         )
         self.distinguisher = SMTDistinguisher()
 
@@ -118,6 +121,7 @@ class CEGISLoop:
                 )
 
             beliefs = self.prober.initialize_beliefs(hypotheses)
+            repropose_count = 0
 
             for round_idx in range(1, self.config.max_falsification_rounds + 1):
                 # Check high-confidence single hypothesis
@@ -159,9 +163,9 @@ class CEGISLoop:
                         diagnostics=run_diag,
                     )
 
-                # Select probe maximizing Information Gain
-                best_x, score = self.prober.select_best_probe(hypotheses, beliefs, novel_probes)
-                if best_x is None:
+                # Select probe based on configured probe_strategy
+                if self.config.probe_strategy == "none":
+                    # Baseline_A: No active probe falsification
                     best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
                     return self._finalize_result(
                         candidate=hypotheses[best_idx],
@@ -173,6 +177,25 @@ class CEGISLoop:
                         task_family=task_family,
                         diagnostics=run_diag,
                     )
+                elif self.config.probe_strategy == "random":
+                    # Baseline_Random: Random novel probe selection without IG maximization
+                    import random
+                    best_x = random.Random(42 + round_idx).choice(novel_probes)
+                else:
+                    # Default: "bayesian_ig"
+                    best_x, score = self.prober.select_best_probe(hypotheses, beliefs, novel_probes)
+                    if best_x is None:
+                        best_idx = max(range(len(beliefs)), key=lambda i: beliefs[i])
+                        return self._finalize_result(
+                            candidate=hypotheses[best_idx],
+                            rounds=round_idx,
+                            probes=probes_used,
+                            beliefs=beliefs,
+                            survivors=hypotheses,
+                            held_out_tests=held_out_tests,
+                            task_family=task_family,
+                            diagnostics=run_diag,
+                        )
 
                 # Query Oracle (count all invocations, including failed ones)
                 self.diagnostics.record_oracle_query()
@@ -206,11 +229,22 @@ class CEGISLoop:
                 survivors = []
                 survivor_beliefs = []
                 for h, b in zip(hypotheses, beliefs):
-                    if b > 1e-4:
+                    if b > 1e-4 and not getattr(h, "falsified", False):
                         survivors.append(h)
                         survivor_beliefs.append(b)
 
                 if not survivors:
+                    repropose_count += 1
+                    if repropose_count > self.config.max_repropose_rounds:
+                        return CEGISResult(
+                            status=VerificationStatus.COLLAPSED,
+                            verified_program=None,
+                            rounds_executed=round_idx,
+                            probes_used=probes_used,
+                            final_beliefs=[],
+                            surviving_candidates=[],
+                            diagnostics=run_diag,
+                        )
                     # Version space collapse: re-generate hypotheses with updated examples
                     hypotheses = self.search_controller.propose_candidates(
                         examples=current_examples,
@@ -315,7 +349,7 @@ class CEGISLoop:
             else:
                 return CEGISResult(
                     status=VerificationStatus.EXHAUSTED_UNVERIFIED,
-                    verified_program=candidate,
+                    verified_program=None,
                     rounds_executed=rounds,
                     probes_used=probes,
                     final_beliefs=beliefs,

@@ -61,4 +61,72 @@ def get_default_primitives() -> Dict[str, Callable[..., Any]]:
     prims["filter"] = dsl_filter
     prims["fold"] = dsl_fold
 
+    # Standard crystallized operators
+    prims.update(_DEFAULT_CRYSTALLIZED_PRIMITIVES)
+
     return prims
+
+
+_DEFAULT_CRYSTALLIZED_PRIMITIVES: Dict[str, Callable[..., Any]] = {
+    "op_increment_list": lambda lst: [x + 1 for x in lst] if isinstance(lst, list) else lst,
+    "map_add": lambda k, lst: [x + k for x in lst] if isinstance(lst, list) else lst,
+    "filter_gt": lambda k, lst: [x for x in lst if x > k] if isinstance(lst, list) else lst,
+    "map_mul": lambda k, lst: [x * k for x in lst] if isinstance(lst, list) else lst,
+}
+
+
+def register_crystallized_primitive(
+    name: str,
+    fn_or_sexpr: Any,
+    arity: int = 1,
+) -> None:
+    """Register a crystallized operator globally into standard primitives."""
+    if callable(fn_or_sexpr):
+        _DEFAULT_CRYSTALLIZED_PRIMITIVES[name] = fn_or_sexpr
+    else:
+        _DEFAULT_CRYSTALLIZED_PRIMITIVES[name] = compile_operator(fn_or_sexpr, arity=arity)
+
+
+def compile_operator(body_sexpr_or_ast: Any, arity: int = 1) -> Callable[..., Any]:
+    """Compile an S-expression string or ASTNode into an executable callable primitive."""
+    from eve3.dsl.ast import ASTNode
+    from eve3.dsl.interpreter import SExprParser
+
+    if isinstance(body_sexpr_or_ast, str):
+        ast = SExprParser.parse(body_sexpr_or_ast)
+    elif isinstance(body_sexpr_or_ast, ASTNode):
+        ast = body_sexpr_or_ast
+    else:
+        raise TypeError(f"Expected str or ASTNode for operator compilation, got {type(body_sexpr_or_ast)}")
+
+    def _compiled_op(*args: Any) -> Any:
+        call_env = get_default_primitives()
+        if arity == 1:
+            if args:
+                call_env["x"] = args[0]
+                call_env["input"] = args[0]
+        elif arity == 2:
+            if len(args) >= 2:
+                call_env["$k"] = args[0]
+                call_env["k"] = args[0]
+                call_env["x"] = args[1]
+                call_env["input"] = args[1]
+            elif len(args) == 1:
+                call_env["x"] = args[0]
+                call_env["input"] = args[0]
+        else:
+            if args:
+                for idx, a in enumerate(args[:-1]):
+                    call_env[f"$k{idx+1}"] = a
+                    call_env[f"k{idx+1}"] = a
+                call_env["$k"] = args[0]
+                call_env["k"] = args[0]
+                call_env["x"] = args[-1]
+                call_env["input"] = args[-1]
+        res = ast.evaluate(call_env)
+        from eve3.dsl.ast import VarNode
+        if callable(res) and not isinstance(ast, VarNode):
+            res = res(*args)
+        return res
+
+    return _compiled_op

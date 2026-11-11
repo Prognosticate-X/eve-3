@@ -28,7 +28,17 @@ class SearchController:
         self.knowledge_library = knowledge_library
         self.generator = HypothesisGenerator(self.config)
         self.enumerator = SymbolicEnumerator(max_depth=self.config.enumerator_max_depth)
-        self.sandbox = ProgramSandbox(timeout_per_exec=self.config.sandbox_timeout_seconds)
+        self.sandbox = ProgramSandbox(
+            timeout_per_exec=self.config.sandbox_timeout_seconds,
+            max_ast_depth=self.config.max_ast_depth,
+            step_budget=self.config.sandbox_step_budget,
+            max_output_size=self.config.sandbox_max_output_size,
+            max_integer_bits=self.config.sandbox_max_integer_bits,
+            max_recursion_depth=self.config.sandbox_max_recursion_depth,
+        )
+        if self.knowledge_library is not None:
+            active_ops = self.knowledge_library.get_crystallized_operators()
+            self.sandbox.register_crystallized_operators(active_ops)
 
     def propose_candidates(
         self,
@@ -47,14 +57,16 @@ class SearchController:
         crystallized_ops: List[Dict[str, Any]] = []
         if self.knowledge_library is not None:
             crystallized_ops = self.knowledge_library.get_crystallized_operators()
+            self.sandbox.register_crystallized_operators(crystallized_ops)
 
         proposals: List[CandidateProgram] = []
-        seen_codes = set()
+        seen_canonical = set()
 
         def add_candidates(cands: List[CandidateProgram]):
             for c in cands:
-                if c.code_str not in seen_codes and len(proposals) < max_candidates:
-                    seen_codes.add(c.code_str)
+                canonical = getattr(c, "canonical_code", c.code_str)
+                if canonical not in seen_canonical and len(proposals) < max_candidates:
+                    seen_canonical.add(canonical)
                     proposals.append(c)
 
         # C.2: Constant pool de-benchmarking: constants strictly from {0, 1} U values appearing in examples
@@ -149,14 +161,22 @@ class SearchController:
         add_fn: Any,
     ) -> None:
         lib_codes: List[Tuple[str, str]] = []
-        for op in crystallized_ops:
+        capped_ops = crystallized_ops[: self.config.max_active_library_operators]
+        comp_prims = ("sum", "tail", "head", "reverse", "len", "neg")
+        for op in capped_ops:
             op_name = op["operator_name"]
             arity = op.get("arity", 1)
             if arity == 1:
                 lib_codes.append((f"({op_name} x)", f"library:{op_name}"))
+                for comp_prim in comp_prims:
+                    lib_codes.append((f"({comp_prim} ({op_name} x))", f"library:composed:{comp_prim}:{op_name}"))
+                    lib_codes.append((f"({op_name} ({comp_prim} x))", f"library:composed:{op_name}:{comp_prim}"))
             elif arity == 2:
                 for k in (1, 2, 0, -1):
                     lib_codes.append((f"({op_name} {k} x)", f"library:{op_name}"))
+                    for comp_prim in comp_prims:
+                        lib_codes.append((f"({comp_prim} ({op_name} {k} x))", f"library:composed:{comp_prim}:{op_name}"))
+                        lib_codes.append((f"({op_name} {k} ({comp_prim} x))", f"library:composed:{op_name}:{comp_prim}"))
         lib_filtered = self.sandbox.filter_valid_candidates(
             lib_codes, examples, created_by="library"
         )

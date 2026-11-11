@@ -8,6 +8,7 @@ Each test is marked with @pytest.mark.xfail(strict=True) to enforce that:
 """
 
 from typing import Any
+from unittest.mock import patch
 import pytest
 import unittest
 
@@ -23,11 +24,6 @@ from eve3.system3_crystallizer.value_compressor import ValueCompressor
 class TestAuditP0Regressions(unittest.TestCase):
     """Rigorous regression tests for audit P0 issues (H3, H4, H5, H11, H12)."""
 
-    @unittest.expectedFailure
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H3 (audit.md:143-159): Laplace smoothing (eps=1e-6) elevates falsified program back to top-1 in deterministic setting (Pending Stage S2)",
-    )
     def test_h3_laplace_smoothing_must_not_promote_falsified_program(self):
         """H3: When a candidate deterministic program is falsified by an active probe,
         its posterior probability must become strictly 0.0 and it must never remain in top-1."""
@@ -61,11 +57,6 @@ class TestAuditP0Regressions(unittest.TestCase):
             "Falsified program must not remain top-1 after being falsified by observation",
         )
 
-    @unittest.expectedFailure
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H4 (audit.md:179-196): total <= 1e-12 collapse condition never fires when all candidates receive eps=1e-6 (Pending Stage S2)",
-    )
     def test_h4_hypothesis_collapse_must_report_collapsed_when_all_falsified(self):
         """H4: When all proposed candidates are falsified (true program is not in candidate set),
         the CEGIS loop must detect hypothesis space collapse and report COLLAPSED."""
@@ -80,11 +71,16 @@ class TestAuditP0Regressions(unittest.TestCase):
         held_out = [([5, 6], [6, 7])]
 
         # Restrict loop to candidates that are guaranteed to be falsified
-        res = loop.run_synthesis(
-            initial_examples=initial_examples,
-            oracle_fn=oracle_fn,
-            held_out_tests=held_out,
-        )
+        wrong_candidates = [
+            CandidateProgram("[2, 3]"),
+            CandidateProgram("(reverse [3, 2])"),
+        ]
+        with patch.object(loop.search_controller, "propose_candidates", side_effect=[wrong_candidates, []]):
+            res = loop.run_synthesis(
+                initial_examples=initial_examples,
+                oracle_fn=oracle_fn,
+                held_out_tests=held_out,
+            )
 
         # If all candidates fail observations, status must be COLLAPSED, never HELD_OUT_TESTS_PASSED
         # or EXHAUSTED_UNVERIFIED with a falsified top-1 program
@@ -93,12 +89,8 @@ class TestAuditP0Regressions(unittest.TestCase):
             VerificationStatus.COLLAPSED,
             f"Expected status COLLAPSED when candidates fail, got {res.status.value}",
         )
+        self.assertIsNone(res.verified_program)
 
-    @unittest.expectedFailure
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H5 (audit.md:213-232): SMTDistinguisher._ast_to_z3_seq lacks support for map/filter/reverse (Pending Stage S3)",
-    )
     def test_h5_z3_distinguisher_must_symbolically_differentiate_map_programs(self):
         """H5: SMTDistinguisher must symbolically prove distinguishability for map/filter programs
         using Z3 rather than falling back 100% to boundary testing."""
@@ -116,11 +108,6 @@ class TestAuditP0Regressions(unittest.TestCase):
         )
         self.assertGreater(dist.diagnostics.z3_calls, 0, "Z3 solver must be invoked for map candidates")
 
-    @unittest.expectedFailure
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H11 (audit.md:374-382): Crystallized operators are not registered in DSLInterpreter.env and raise NameError in sandbox (Pending Stage S4)",
-    )
     def test_h11_crystallized_operators_must_execute_successfully_in_sandbox(self):
         """H11: Crystallized operators produced by System 3 must execute in the sandbox without NameError."""
         sandbox = ProgramSandbox()
@@ -142,11 +129,6 @@ class TestAuditP0Regressions(unittest.TestCase):
             "Sandbox must not reject crystallized operator with NameError",
         )
 
-    @unittest.expectedFailure
-    @pytest.mark.xfail(
-        strict=True,
-        reason="H12 (audit.md:395-410): ValueCompressor crashes on LambdaNode and lacks submodular greedy guarantee (Pending Stage S4)",
-    )
     def test_h12_submodular_pattern_mining_must_extract_abstractions_from_lambda(self):
         """H12: ValueCompressor.extract_candidate_abstractions must extract patterns from programs
         with lambda nodes without crashing or falling back to static templates."""

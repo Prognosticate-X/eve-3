@@ -61,3 +61,7 @@ models/
 .idea/
 *.swp
 *.swo
+
+# External Tasks & Handover folders
+EVE-3 Task/
+eve-task/

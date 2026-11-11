@@ -165,3 +165,219 @@ AssertionError: CandidateProgram(code_str='(reverse x)', created_by='heuristic')
     AssertionError: Accounting mismatch: raw (101) != syntax_invalid (21) + exec_error (13) + wrong_output (52) + passed (14)
     ```
 
+---
+
+## 4. Stage S2：System 2 数学与流程正确性修复（H3, H4, H5, H2, 随机对照臂）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **`tests/test_audit_p0_regressions.py`**：
+  - `test_h3`、`test_h4`、`test_h5` 在代码修复后严格实现预期逻辑，移除了 `@pytest.mark.xfail(strict=True)` 装饰器，直接转绿为正常 PASS。
+  - 在 `test_h4` 中补充了原作者在注释中声明但遗漏的候选池限制 mock，使测试真实覆盖"全候选被证伪后重提议耗尽并返回 COLLAPSED"的闭环逻辑。
+- **`tests/test_prober.py`**：
+  - `test_posterior_update_and_collapse_prevention` 显式传入新增参数 `noise_model="noisy(1e-4)"`，以测试带 Laplace 平滑的噪声更新场景，断言保持原样不变。
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s2_bayesian.py`**：
+  - `test_deterministic_posterior_strictly_zero_on_falsification`：断言在 `deterministic` 模式下被证伪候选后验严格归零且 `falsified=True`, `status=REJECTED`。
+  - `test_deterministic_posterior_when_all_falsified_returns_all_zeros`：断言全候选被证伪时返回严格全零分布 `[0.0, ...] `。
+  - `test_noisy_mode_preserves_laplace_smoothing`：断言在显式 `noisy(eps)` 模式下 Laplace 平滑正常保留。
+- **`tests/test_stage_s2_collapse.py`**：
+  - `test_collapse_detected_when_all_candidates_falsified_and_repropose_exhausted`：验证全候选证伪且重提议无新候选时正确返回 `COLLAPSED` 与 `verified_program=None`。
+  - `test_active_repropose_recovers_when_better_candidate_found`：验证通过累积反例进行重提议能够成功恢复并找到真程序。
+- **`tests/test_stage_s2_mathematics.py`**：
+  - 针对 H2 编写 4 项数值单元测试，手算 3 候选、2/3 分区及非均匀先验下的信息增益（IG），实测误差 $< 10^{-6}$。
+- **`tests/test_stage_s2_random_probes.py`**：
+  - 测试 `probe_strategy` 的全部三种模式（`none`, `random`, `bayesian_ig`）。
+
+### 3. S2 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 H3（Laplace 平滑抬高已证伪程序）：
+```text
+AssertionError: 0.001994015956119673 != 0.0 : Falsified program posterior should be 0.0, but got 0.001994015956119673 (remains top-1!)
+```
+
+#### 修复前 H4（假设塌缩判定失效）：
+```text
+AssertionError: <VerificationStatus.HELD_OUT_TESTS_PASSED> != <VerificationStatus.COLLAPSED> : Expected status COLLAPSED when candidates fail, got held_out_tests_passed
+```
+
+#### 修复前 H5（SMT 求解器缺失高阶列表展开）：
+```text
+AssertionError: 'heuristic_boundary' != 'smt_symbolic'
+- heuristic_boundary
++ smt_symbolic
+ : Expected probe from Z3 SMT symbolic solve, got heuristic_boundary
+```
+
+---
+
+## 5. Stage S3：System 1 提议器质量与鲁棒性修复（H1, H11, H9）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **修改数**：**0**（所有先前阶段的测试未做任何删除或断言放宽，继续 100% 全量通过）。
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s3_prior.py`**（4 个测试，遵循“先红后绿”流程）：
+  1. `test_config_prior_mode_validation`：验证 `EveConfig` 的 `prior_mode` 校验，支持 `"mdl"`, `"uniform"`, `"llm"`，非法模式抛出 `ValueError`。
+  2. `test_uniform_prior_mode`：验证 `BayesianProber` 在 `uniform` 模式下为所有候选程序赋予均匀先验 $1/N$。
+  3. `test_mdl_prior_mode_with_custom_decay`：验证 `mdl` 模式下结合 `mdl_prior_decay` 动态缩放描述长度惩罚项。
+  4. `test_llm_prior_mode_uses_candidate_logprob`：验证 `llm` 模式下依据候选的 `logprob` 进行 softmax 归一化分配先验。
+- **`tests/test_stage_s3_sandbox_security.py`**（5 个测试，遵循“先红后绿”流程）：
+  1. `test_timeout_is_non_blocking`：验证硬超时机制在超时发生时立即返回（实测 $<0.35$s），不阻塞主线程等待后台 worker 执行。
+  2. `test_fold_memory_bomb_caught_by_size_limit`：验证 `(fold (lambda (acc item) (concat acc acc)) [1] x)` 列表指数倍增在 12 步内被 `ExecutionSizeLimitExceeded` 安全拦截。
+  3. `test_fold_integer_squaring_bomb_caught_by_bit_limit`：验证 `(fold (lambda (acc item) (* acc acc)) 2 x)` 整数连续平方在 12 步内超过 2048 位被 `ExecutionSizeLimitExceeded` 安全拦截。
+  4. `test_call_chain_recursion_limit`：验证深层嵌套调用链超过 `max_recursion_depth` 时被 `ExecutionRecursionLimitExceeded` 安全拦截。
+  5. `test_sandbox_filters_and_records_all_security_rejections`：验证 `ProgramSandbox` 安全捕获全部超时/内存/递归炸弹并分类记录进 `diagnostics.sandbox_rejections`。
+- **`tests/test_stage_s3_dedup.py`**（6 个测试，遵循“先红后绿”流程）：
+  1. `test_ast_canonical_sexpr_alpha_equivalence`：验证 `to_canonical_sexpr` 将形参按词法作用域规范化为 `$0, $1...`，实现 `(map (lambda (a) (+ a 1)) x)` 与 `(map (lambda (b) (+ b 1)) x)` 等价。
+  2. `test_nested_lambdas_alpha_equivalence`：验证多层嵌套 lambda 的规范化一致性。
+  3. `test_candidate_program_equality_and_alpha_equivalence`：验证 `CandidateProgram.__eq__` 与 `__hash__` 严格基于 $\alpha$-等价，消融同义候选。
+  4. `test_sandbox_deduplicates_alpha_equivalent_candidates`：验证 `ProgramSandbox.filter_valid_candidates` 自动去重 $\alpha$-等价候选。
+  5. `test_search_controller_deduplicates_alpha_equivalent_proposals`：验证 `SearchController.propose_candidates` 基于规范形式去重。
+  6. `test_build_prompt_dynamically_aligns_candidate_count`：验证 `HypothesisGenerator.build_prompt` 动态反映请求的候选数 $k$，消除硬编码 5。
+
+### 3. S3 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 H1（先验模式不可配置与缺失 LLM/均匀支持）：
+```text
+AttributeError: 'EveConfig' object has no attribute 'prior_mode'
+AssertionError: BayesianProber prior was not uniform
+```
+
+#### 修复前 H11（沙箱超时阻塞主线程与内存炸弹击穿）：
+```text
+ImportError: cannot import name 'ExecutionRecursionLimitExceeded' from 'eve3.dsl.ast'
+AssertionError: Timeout blocked the main thread! Elapsed: 1.503s
+AssertionError: did not raise ExecutionSizeLimitExceeded (memory bomb generated huge output)
+```
+
+#### 修复前 H9（$\alpha$-等价候选未去重与提示词硬编码）：
+```text
+AssertionError: ASTNode must implement to_canonical_sexpr
+AssertionError: assert 3 == 1 (sandbox passed 3 duplicate alpha-equivalent programs)
+TypeError: HypothesisGenerator.build_prompt() got an unexpected keyword argument 'num_candidates'
+```
+
+---
+
+## 6. Stage S4：System 3 库学习真实性（H11, H12, H13, H14, S1.1-C）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **修改数**：**0**（所有先前阶段的测试未做任何删除或断言放宽，继续 100% 全量通过）。
+- **`tests/test_audit_p0_regressions.py` 严格转绿**：
+  - 此前标记为 `@pytest.mark.xfail(strict=True)` 的全部 5 个 P0 回归测试在 Stage S2、S3、S4 逐个修复后，现已全部移除 `xfail` 标记，**彻底 100% 正式 PASS**！
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s4_operators.py`**（5 个测试，遵循“先红后绿”流程）：
+  1. `test_default_crystallized_operators_execute_in_sandbox`：验证默认结晶算子（如 `op_increment_list`）在沙箱中成功执行，消除 `NameError`。
+  2. `test_dynamic_operator_registration_from_sexpr`：验证动态解析 S-expression 表达式注册新算子并在沙箱中可执行。
+  3. `test_parameterized_dynamic_operator_registration`：验证带参数的二元算子动态编译与注册执行。
+  4. `test_search_controller_syncs_library_operators_to_sandbox`：验证搜索控制器自动将知识库结晶算子同步给沙箱。
+  5. `test_h14_max_active_library_operators_cap`：验证 `max_active_library_operators` 容量截断机制，避免算子爆炸。
+- **`tests/test_stage_s4_pattern_mining.py`**（3 个测试，遵循“先红后绿”流程）：
+  1. `test_dynamic_lambda_pattern_mining_no_crash`：验证处理包含 `LambdaNode` 的高阶表达式时模式挖掘零崩溃。
+  2. `test_dynamic_pattern_compression_savings`：验证从程序对中挖掘公共子表达式并正确计算 AST 压缩节约量。
+  3. `test_arbitrary_nested_subpattern_mining`：验证深层嵌套 lambda 复合结构的子模式稳定提取。
+- **`tests/test_stage_s4_submodular.py`**（3 个测试，遵循“先红后绿”流程）：
+  1. `test_reuse_saturation_prevents_positive_feedback_lockin`：验证 `max_reuse_saturation=20.0` 阻止陈旧算子的复用权重无界攀升。
+  2. `test_order_independent_library_benefit`：验证 `compute_weighted_benefit` 规范降序后对于任意输入排列顺序输出严格相同的集合价值。
+  3. `test_better_new_abstraction_wins_over_stale_lower_saving_abstraction`：验证高压缩比新算子在次模选择中能够击败低节约量的老算子。
+
+### 3. S4 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 H11（结晶算子沙箱执行未定义）：
+```text
+AssertionError: 0 != 1 : Crystallized operator should execute successfully in sandbox when registered
+NameError: 'op_increment_list' is not defined
+```
+
+#### 修复前 H12（模式挖掘处理 LambdaNode 崩溃与列表 add 异常）：
+```text
+WARNING: Swallowed NameError in extract_candidate_abstractions: name 'LambdaNode' is not defined
+AttributeError: 'list' object has no attribute 'add'
+```
+
+#### 修复前 H13（次模集合函数计算结果强依赖于输入顺序）：
+```text
+AssertionError: Evaluation order caused asymmetry: f([c1, c2])=12.0 != f([c2, c1])=16.0
+```
+
+#### 修复前 H11-Dyn（自主演化循环动态结晶算子跨周期求值报 NameError）：
+```text
+NameError: Unknown primitive or function 'abs_synth_list_structural_189c81' in environment
+NameError: Unknown primitive or function 'base_abs_synth_list_mapping_7942d8_2' in environment
+```
+
+---
+
+## 7. Stage S5：策略更新与迁移真实性（H15, H16, H17, H18）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **修改数**：**0**（所有先前阶段的测试未做任何删除或断言放宽，继续 100% 全量通过）。
+- **`run_continual_learning_experiment` 默认模式切换**：
+  - 默认参数从 `"leaky_templates"` 切换为严格无泄漏的 `"generic_enumeration"`，并在真实接入结晶知识库后全量通过已有的 `tests/test_continual_learning.py` 断言。
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s5_tree_support.py`**（4 个测试，遵循“先红后绿”流程）：
+  1. `test_backward_compatibility_of_simulator_output_keys`：验证 `ReplaySimulator` 输出保留全部已有键，并新增 `evaluatable`, `status`, `support_coverage`, `is_weights`, `effective_sample_size`, `weight_variance`。
+  2. `test_unsupported_tree_without_verification_marked_out_of_support`：验证缺失验证节点或策略偏好动作未被探索的树被明确标记为 `evaluatable=False` 与 `status="out_of_support"`。
+  3. `test_branching_tree_produces_differentiated_policy_decisions`：验证分叉决策树上不同策略产生区分性回放成本与步骤数（消除全同 2.20 退化）。
+  4. `test_importance_sampling_weights_and_ess_calculation`：验证重要性采样权重与有效样本量（ESS）计算的数学正确性。
+- **`tests/test_stage_s5_gate_tamper_resistance.py`**（3 个测试，遵循“先红后绿”流程）：
+  1. `test_regression_gate_config_is_strictly_immutable`：验证 `RegressionGateConfig` 为 `frozen=True`，运行时任何属性修改直接抛出 `FrozenInstanceError`。
+  2. `test_preregistration_hash_and_validity_check`：验证基于 SHA-256 的预注册安全指纹与超限参数拒绝机制。
+  3. `test_consolidator_uses_real_tree_performance_not_hardcoded_pass`：验证 `Consolidator` 基于探索树真实统计经验通过率，拒绝失败树进入适配器库。
+- **`tests/test_stage_s5_continual_learning.py`**（2 个测试，遵循“先红后绿”流程）：
+  1. `test_search_controller_generates_compositional_library_candidates`：验证 `SearchController` 将结晶算子与基础归约/结构原语自动组合生成复合候选。
+  2. `test_run_continual_learning_under_generic_enumeration_mode`：验证持续学习在非泄漏的 `generic_enumeration` 下真实实现 FWT Delta $\ge +10.0\%$。
+
+### 3. S5 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 H16（回放模拟器缺少支撑集检查与 IS 统计字段）：
+```text
+AssertionError: 'evaluatable' not found in {'found_verified': True, 'simulated_cost': 1.2, 'simulated_steps': 2, 'causal_path_cost': 1.2, 'tree_total_cost': 1.2}
+KeyError: 'is_weights'
+```
+
+#### 修复前 H17（门禁配置可被随意篡改且无指纹）：
+```text
+AssertionError: FrozenInstanceError not raised
+AttributeError: 'RegressionGateConfig' object has no attribute 'compute_preregistration_hash'
+```
+
+#### 修复前 H15（非泄漏模式下持续学习缺乏知识库导致 FWT 增益为零）：
+```text
+AssertionError: 0.0 not greater than or equal to 10.0
+Forward Transfer (FWT) Delta: +0.00%
+```
+
+---
+
+## 8. Stage S6：终期全系统诚实科学评测（全量验收）
+
+### 1. 现有测试适配说明（遵循铁律 2）
+- **修改数**：**0**（所有先前阶段的测试未做任何删除或断言放宽，继续 100% 全量通过）。
+- **全系统回归总数**：自原始 80 项单元测试翻倍扩展至 **160 项全部通过（1 项在 Windows 优雅跳过）**，零失败，零 XFail。
+
+### 2. 新增回归测试记录
+- **`tests/test_stage_s6_scientific_integrity.py`**（5 个测试，遵循“先红后绿”流程）：
+  1. `test_zero_leaky_templates_in_default_configurations`：断言所有默认引擎配置严格采用 `generic_enumeration`（零模板泄漏）。
+  2. `test_library_ablation_includes_bottom_up_oe_baseline`：断言库学习消融实验必须包含自底向上 OE 完全枚举（Regime C）作为无偏客观基线。
+  3. `test_continual_learning_pipeline_honesty`：断言持续学习在非泄漏模式下端到端运行，实现 FWT Delta $\ge +10.0\%$，BWT Forgetting $\le 2.0\%$，General Coding Drop $\le 3.0\%$。
+  4. `test_policy_evolution_replay_correlation_integrity`：断言反事实探索树评估基于真实分叉结构，不同策略产生成本差异，离线-在线相关性显著。
+  5. `test_full_ablation_regimes_convergence_and_honesty`：断言 4-Regime 全消融基准实验全量端到端收敛且伪验证率恒为 0.00%。
+
+### 3. S6 各修复项的修复前失败输出（Pre-fix Failure Outputs）
+
+#### 修复前 S6 接口对接断言失败输出：
+```text
+KeyError: 'summary'
+AssertionError: 'Regime_A_NoLib' not found in {'regime_no_library': ...}
+AssertionError: 'online_solved_rate' not found in {'offline_scores': ...}
+```
+
+
+
+
+
+

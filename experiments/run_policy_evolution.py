@@ -28,13 +28,22 @@ def run_policy_evolution_experiment() -> Dict[str, Any]:
     with open(benchmarks_dir / "held_out_test.json", "r", encoding="utf-8") as f:
         test_tasks = json.load(f)["tasks"]
 
-    # 1. Build a representative discovery tree from prior tasks
+    # 1. Build a representative discovery tree with branching alternatives from prior tasks
     tree = DiscoveryTree(task_id="policy_tuning_corpus")
     root_id = tree.add_node(
         action_type="propose",
         payload={"candidates": ["x", "(reverse x)", "(map (lambda (a) (+ a 1)) x)"]},
         cost=1.0,
     )
+    # Direct verification branch (high verification priority chooses this)
+    v_direct = tree.add_node(
+        action_type="verify",
+        payload={"code": "(map (lambda (a) (+ a 1)) x)"},
+        parent_id=root_id,
+        cost=0.4,
+        outcome="verified",
+    )
+    # Multi-step probing branch (cautious policies choose this)
     p1 = tree.add_node(
         action_type="probe",
         payload={"input": [1, 2], "output": [2, 3]},
@@ -60,23 +69,23 @@ def run_policy_evolution_experiment() -> Dict[str, Any]:
         ExplorationPolicy(
             version="v1.0-conservative",
             name="conservative",
-            probe_cost_penalty_lambda=0.1,
-            verification_priority_weight=2.0,
-            probe_priority_weight=0.5,
+            probe_cost_penalty_lambda=0.01,
+            verification_priority_weight=1.0,
+            probe_priority_weight=4.0,
         ),
         ExplorationPolicy(
             version="v1.1-balanced",
             name="balanced",
             probe_cost_penalty_lambda=0.05,
             verification_priority_weight=5.0,
-            probe_priority_weight=1.0,
+            probe_priority_weight=2.0,
         ),
         ExplorationPolicy(
             version="v1.2-verification_first",
             name="verification_first",
             probe_cost_penalty_lambda=0.01,
             verification_priority_weight=10.0,
-            probe_priority_weight=2.0,
+            probe_priority_weight=1.0,
         ),
     ]
 

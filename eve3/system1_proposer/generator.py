@@ -58,7 +58,14 @@ class HypothesisGenerator:
 
     def __init__(self, config: Optional[EveConfig] = None):
         self.config = config or EveConfig()
-        self.sandbox = ProgramSandbox(timeout_per_exec=self.config.sandbox_timeout_seconds)
+        self.sandbox = ProgramSandbox(
+            timeout_per_exec=self.config.sandbox_timeout_seconds,
+            max_ast_depth=self.config.max_ast_depth,
+            step_budget=self.config.sandbox_step_budget,
+            max_output_size=self.config.sandbox_max_output_size,
+            max_integer_bits=self.config.sandbox_max_integer_bits,
+            max_recursion_depth=self.config.sandbox_max_recursion_depth,
+        )
         self.diagnostics = self.sandbox.diagnostics
         self._mlx_model = None
         self._mlx_tokenizer = None
@@ -68,8 +75,10 @@ class HypothesisGenerator:
         examples: List[Tuple[Any, Any]],
         library_primitives: Optional[List[str]] = None,
         crystallized_operators: Optional[List[Dict[str, Any]]] = None,
+        num_candidates: Optional[int] = None,
     ) -> str:
         """Construct prompt for local LLM (e.g. Qwen2.5-Coder-3B)."""
+        k = num_candidates if num_candidates is not None else self.config.max_hypotheses_per_round
         prims = list(library_primitives or [
             "map", "filter", "fold", "head", "tail", "cons", "reverse", "sum",
             "+", "-", "*", "inc", "dec", "is_even", "is_odd", "gt", "lt", "eq"
@@ -84,7 +93,7 @@ class HypothesisGenerator:
             "You are an expert neurosymbolic program synthesizer for EVE-3.\n"
             f"Available DSL primitives: {', '.join(prims)}\n"
             "DSL Syntax is Lisp S-expressions: (op arg1 arg2 ...), (lambda (x) body), (if c t e), [list].\n"
-            "Given the following input-output examples, generate 5 candidate DSL programs that transform 'x' to the output.\n"
+            f"Given the following input-output examples, generate {k} candidate DSL programs that transform 'x' to the output.\n"
             "Return only valid DSL expressions, one per line:\n\n"
             f"Examples:\n{ex_str}\n\n"
             "Candidates:\n"
@@ -193,7 +202,12 @@ class HypothesisGenerator:
         from mlx_lm.sample_utils import make_sampler
 
         self._ensure_mlx_loaded()
-        prompt = self.build_prompt(examples, library_primitives, crystallized_operators)
+        prompt = self.build_prompt(
+            examples,
+            library_primitives,
+            crystallized_operators,
+            num_candidates=max_candidates,
+        )
 
         formatted_prompt = prompt
         if hasattr(self._mlx_tokenizer, "apply_chat_template"):
@@ -257,7 +271,8 @@ class HypothesisGenerator:
 
         # Dynamically inject learned crystallized operators into candidate templates
         if crystallized_operators:
-            for op in crystallized_operators:
+            max_ops = getattr(self.config, "max_active_library_operators", 8)
+            for op in crystallized_operators[:max_ops]:
                 op_name = op.get("operator_name")
                 arity = op.get("arity", 1)
                 if arity == 1:

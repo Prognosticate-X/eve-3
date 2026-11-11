@@ -10,6 +10,7 @@ Covers H9 & H10 from reports/audit.md and Stage S1 requirements:
 5. Real MLX-LM smoke test verifying sampler API compatibility (llm_calls > 0, zero TypeError on temp).
 """
 
+from typing import Tuple
 import unittest
 from unittest.mock import patch
 import pytest
@@ -36,7 +37,6 @@ def _mlx_and_model_available() -> Tuple[bool, str]:
     return True, ""
 
 
-from typing import Tuple
 _MLX_OK, _MLX_REASON = _mlx_and_model_available()
 
 
@@ -124,7 +124,7 @@ class TestStageS1ProposerModes(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 ctrl.propose_candidates([([1, 2], [2, 3])])
 
-    @pytest.mark.skipif(not _MLX_OK, reason=_MLX_REASON or "MLX-LM not available")
+    @unittest.skipIf(not _MLX_OK, _MLX_REASON or "MLX-LM not available")
     def test_mlx_llm_smoke_test_sampler_compatibility_and_telemetry(self) -> None:
         """S1.4: Real MLX-LM smoke test verifying sampler API (llm_calls > 0, no temp TypeError) and LLM telemetry."""
         cfg = EveConfig(proposer_mode="llm_only", max_hypotheses_per_round=5)

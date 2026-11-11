@@ -277,8 +277,18 @@ class Consolidator:
         if eval_fn is not None:
             cand_scores, gen_score, false_verif_rate = eval_fn()
         else:
-            cand_scores = {target_family: 1.0}
-            gen_score = 1.0
+            # Empirically evaluate candidate family performance from discovery tree
+            gen_score = self.regression_gate.run_general_coding_probe_evaluation()
+            verified_count = sum(
+                1 for n in tree.nodes.values()
+                if n.outcome == "verified" or (n.action_type == "verify" and n.outcome != "falsified")
+            )
+            total_attempts = sum(
+                1 for n in tree.nodes.values()
+                if n.action_type in ("verify", "falsify") or n.outcome in ("verified", "falsified")
+            )
+            cand_family_score = verified_count / total_attempts if total_attempts > 0 else 1.0
+            cand_scores = {target_family: cand_family_score}
             false_verif_rate = 0.0
 
         historical_scores = {target_family: 0.95}

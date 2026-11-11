@@ -207,6 +207,7 @@ class CandidateProgram:
         created_by: str = "heuristic",  # llm, enumerator, library, heuristic
         source_detail: str = "",
         parent_candidate_ids: Optional[List[str]] = None,
+        logprob: Optional[float] = None,
     ):
         self.code_str = code_str.strip()
         self.ast = ast if ast is not None else SExprParser.parse(self.code_str)
@@ -216,8 +217,10 @@ class CandidateProgram:
         self.created_by = created_by
         self.source_detail = source_detail or created_by
         self.parent_candidate_ids = parent_candidate_ids or []
+        self.logprob = logprob
         self.evidence_ids: List[str] = []
         self.counterexample_ids: List[str] = []
+        self.falsified: bool = False
 
     @property
     def description_length(self) -> int:
@@ -267,13 +270,22 @@ class CandidateProgram:
     def __repr__(self) -> str:
         return f"CandidateProgram({self.candidate_id}: {self.code_str!r}, status={self.status})"
 
+    @property
+    def canonical_code(self) -> str:
+        return self.ast.to_canonical_sexpr()
+
+    def is_alpha_equivalent(self, other: "CandidateProgram") -> bool:
+        if not isinstance(other, CandidateProgram):
+            return False
+        return self.canonical_code == other.canonical_code
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, CandidateProgram):
             return False
-        return self.code_str == other.code_str
+        return self.canonical_code == other.canonical_code
 
     def __hash__(self) -> int:
-        return hash(self.code_str)
+        return hash(self.canonical_code)
 
 
 @dataclass

@@ -14,13 +14,26 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 
-@dataclass
+@dataclass(frozen=True)
 class RegressionGateConfig:
     """Configuration parameters for the regression gate."""
     max_family_regression_pct: float = 2.0     # Max allowable drop per family (%)
     max_general_drop_pct: float = 3.0          # Max allowable drop on general probe (%)
     max_false_verification_rate: float = 0.0   # Strict zero false verification
     min_overall_accuracy: float = 0.80         # Minimum overall accuracy across families
+
+    def compute_preregistration_hash(self) -> str:
+        import hashlib
+        payload = f"{self.max_family_regression_pct:.4f}:{self.max_general_drop_pct:.4f}:{self.max_false_verification_rate:.4f}:{self.min_overall_accuracy:.4f}"
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+    def is_preregistered_valid(self) -> bool:
+        return (
+            self.max_family_regression_pct <= 2.0 + 1e-6
+            and self.max_general_drop_pct <= 3.0 + 1e-6
+            and self.max_false_verification_rate <= 1e-6
+            and self.min_overall_accuracy >= 0.80 - 1e-6
+        )
 
 
 @dataclass
@@ -90,6 +103,15 @@ class RegressionGate:
         """Evaluate precomputed scores against pre-registered regression thresholds."""
         rejection_reasons: List[str] = []
         family_regressions: Dict[str, float] = {}
+
+        # 0. Check pre-registration config validity
+        if not self.config.is_preregistered_valid():
+            rejection_reasons.append(
+                f"Regression gate configuration violates pre-registered limits: "
+                f"max_family_regression={self.config.max_family_regression_pct}%, "
+                f"max_general_drop={self.config.max_general_drop_pct}%, "
+                f"min_accuracy={self.config.min_overall_accuracy*100}%"
+            )
 
         # 1. Check family regressions
         for family, hist_score in historical_family_scores.items():

@@ -38,7 +38,7 @@ class TestBayesianProber(unittest.TestCase):
         self.assertIn(best_probe, ([0], [5]))
 
     def test_posterior_update_and_collapse_prevention(self):
-        prober = BayesianProber(smoothing_epsilon=1e-4)
+        prober = BayesianProber(smoothing_epsilon=1e-4, noise_model="noisy(1e-4)")
 
         p1 = CandidateProgram("(map (lambda (a) (+ a 1)) x)")
         p2 = CandidateProgram("(map (lambda (a) (+ a 2)) x)")

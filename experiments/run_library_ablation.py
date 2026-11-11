@@ -120,17 +120,39 @@ def run_library_ablation_experiment() -> Dict[str, Any]:
             })
             print(f"  Task {task['task_id']}: converged={res.converged}, probes={len(res.probes_used)}, time={elapsed_ms:.1f}ms")
 
+        # 4. Evaluate dev_eval tasks under Regime C (enumeration_full Baseline)
+        print("\n=== Evaluating Regime C: enumeration_full (Bottom-Up OE) ===")
+        from eve3.search.enumeration_full import BottomUpOEEnumerator
+        oe_enumerator = BottomUpOEEnumerator(max_size=9, timeout_seconds=10.0)
+        oe_results = []
+
+        for task in eval_tasks:
+            vis = [(ex["input"], ex["output"]) for ex in task["visible_examples"]]
+            hid = [(ex["input"], ex["output"]) for ex in task["hidden_tests"]]
+            oe_res = oe_enumerator.synthesize(vis, hid)
+            oe_results.append({
+                "task_id": task["task_id"],
+                "status": "held_out_tests_passed" if oe_res["solved"] else "failed",
+                "converged": oe_res["solved"],
+                "probes_used": 0,
+                "total_enumerated": oe_res.get("total_enumerated", 0),
+                "runtime_ms": oe_res.get("elapsed_ms", 0.0),
+            })
+            print(f"  Task {task['task_id']}: converged={oe_res['solved']}, enumerated={oe_res.get('total_enumerated', 0)}, time={oe_res.get('elapsed_ms', 0.0):.1f}ms")
+
         # Summary
         summary = {
             "regime_no_library": no_lib_results,
             "regime_with_library": with_lib_results,
+            "regime_enumeration_full": oe_results,
             "avg_probes_no_lib": sum(r["probes_used"] for r in no_lib_results) / len(no_lib_results),
             "avg_probes_with_lib": sum(r["probes_used"] for r in with_lib_results) / len(with_lib_results),
             "success_rate_no_lib": sum(1 for r in no_lib_results if r["converged"]) / len(no_lib_results),
             "success_rate_with_lib": sum(1 for r in with_lib_results if r["converged"]) / len(with_lib_results),
+            "success_rate_oe": sum(1 for r in oe_results if r["converged"]) / len(oe_results),
         }
         print("\n=== Summary ===")
-        print(f"Success Rate: No-Lib={summary['success_rate_no_lib']*100:.0f}% vs With-Lib={summary['success_rate_with_lib']*100:.0f}%")
+        print(f"Success Rate: No-Lib={summary['success_rate_no_lib']*100:.0f}% vs With-Lib={summary['success_rate_with_lib']*100:.0f}% vs Full-OE={summary['success_rate_oe']*100:.0f}%")
         print(f"Avg Probes:   No-Lib={summary['avg_probes_no_lib']:.2f} vs With-Lib={summary['avg_probes_with_lib']:.2f}")
 
         return summary

@@ -9,19 +9,68 @@ class ExecutionStepLimitExceeded(RuntimeError):
     pass
 
 
+class ExecutionSizeLimitExceeded(RuntimeError):
+    """Raised when DSL execution produces output exceeding size or bit-length budget."""
+    pass
+
+
+class ExecutionRecursionLimitExceeded(RuntimeError):
+    """Raised when DSL execution exceeds maximum recursion depth budget."""
+    pass
+
+
 class ExecutionContext:
     """Tracks execution budget and resource consumption."""
 
-    def __init__(self, step_budget: int = 20000):
+    def __init__(
+        self,
+        step_budget: int = 20000,
+        max_output_size: int = 1000,
+        max_integer_bits: int = 2048,
+        max_recursion_depth: int = 50,
+    ):
         self.step_budget = step_budget
+        self.max_output_size = max_output_size
+        self.max_integer_bits = max_integer_bits
+        self.max_recursion_depth = max_recursion_depth
         self.steps_executed = 0
+        self.current_recursion_depth = 0
 
-    def tick(self):
+    def tick(self) -> None:
         self.steps_executed += 1
         if self.steps_executed > self.step_budget:
             raise ExecutionStepLimitExceeded(
                 f"DSL execution step budget exceeded ({self.step_budget} steps)"
             )
+
+    def enter_call(self) -> None:
+        self.current_recursion_depth += 1
+        if self.current_recursion_depth > self.max_recursion_depth:
+            raise ExecutionRecursionLimitExceeded(
+                f"DSL execution exceeded recursion limit ({self.max_recursion_depth})"
+            )
+
+    def exit_call(self) -> None:
+        if self.current_recursion_depth > 0:
+            self.current_recursion_depth -= 1
+
+    def check_val(self, val: Any) -> Any:
+        if isinstance(val, (list, tuple)):
+            if len(val) > self.max_output_size:
+                raise ExecutionSizeLimitExceeded(
+                    f"DSL output collection size ({len(val)}) exceeded limit ({self.max_output_size})"
+                )
+        elif isinstance(val, str):
+            if len(val) > self.max_output_size:
+                raise ExecutionSizeLimitExceeded(
+                    f"DSL string length ({len(val)}) exceeded limit ({self.max_output_size})"
+                )
+        elif isinstance(val, int) and not isinstance(val, bool):
+            if val.bit_length() > self.max_integer_bits:
+                raise ExecutionSizeLimitExceeded(
+                    f"DSL integer bit length ({val.bit_length()}) exceeded limit ({self.max_integer_bits})"
+                )
+        return val
 
 
 class ASTNode(ABC):
@@ -35,6 +84,11 @@ class ASTNode(ABC):
     @abstractmethod
     def to_sexpr(self) -> str:
         """Convert AST node to canonical S-expression string."""
+        pass
+
+    @abstractmethod
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        """Convert AST node to alpha-normalized canonical S-expression string."""
         pass
 
     @property
@@ -73,6 +127,7 @@ class ConstNode(ASTNode):
     def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
         if context:
             context.tick()
+            context.check_val(self.value)
         return self.value
 
     def to_sexpr(self) -> str:
@@ -81,6 +136,9 @@ class ConstNode(ASTNode):
         if isinstance(self.value, list):
             return f"[{', '.join(str(x) for x in self.value)}]"
         return str(self.value)
+
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        return self.to_sexpr()
 
     @property
     def description_length(self) -> int:
@@ -102,9 +160,17 @@ class VarNode(ASTNode):
             context.tick()
         if self.name not in env:
             raise NameError(f"Undefined variable in DSL environment: '{self.name}'")
-        return env[self.name]
+        val = env[self.name]
+        if context:
+            context.check_val(val)
+        return val
 
     def to_sexpr(self) -> str:
+        return self.name
+
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        if env_map and self.name in env_map:
+            return env_map[self.name]
         return self.name
 
     @property
@@ -128,16 +194,36 @@ class LambdaNode(ASTNode):
             context.tick()
 
         def closure(*args: Any) -> Any:
-            new_env = dict(env)
-            for name, val in zip(self.arg_names, args):
-                new_env[name] = val
-            return self.body.evaluate(new_env, context)
+            if context:
+                context.enter_call()
+            try:
+                new_env = dict(env)
+                for name, val in zip(self.arg_names, args):
+                    new_env[name] = val
+                res = self.body.evaluate(new_env, context)
+                if context:
+                    context.check_val(res)
+                return res
+            finally:
+                if context:
+                    context.exit_call()
 
         return closure
 
     def to_sexpr(self) -> str:
         args_str = " ".join(self.arg_names)
         return f"(lambda ({args_str}) {self.body.to_sexpr()})"
+
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        new_env = dict(env_map) if env_map is not None else {}
+        canonical_params: List[str] = []
+        for name in self.arg_names:
+            var_id = f"${len(new_env)}"
+            new_env[name] = var_id
+            canonical_params.append(var_id)
+        params_str = " ".join(canonical_params)
+        body_str = self.body.to_canonical_sexpr(new_env)
+        return f"(lambda ({params_str}) {body_str})"
 
     @property
     def description_length(self) -> int:
@@ -158,17 +244,36 @@ class ApplyNode(ASTNode):
     def evaluate(self, env: Dict[str, Any], context: Optional[ExecutionContext] = None) -> Any:
         if context:
             context.tick()
-        if self.op_name not in env:
-            raise NameError(f"Unknown primitive or function '{self.op_name}' in environment")
-        fn = env[self.op_name]
-        evaluated_args = [arg.evaluate(env, context) for arg in self.args]
-        return fn(*evaluated_args)
+            context.enter_call()
+        try:
+            if self.op_name not in env:
+                from eve3.dsl.primitives import _DEFAULT_CRYSTALLIZED_PRIMITIVES
+                if self.op_name in _DEFAULT_CRYSTALLIZED_PRIMITIVES:
+                    env[self.op_name] = _DEFAULT_CRYSTALLIZED_PRIMITIVES[self.op_name]
+                else:
+                    raise NameError(f"Unknown primitive or function '{self.op_name}' in environment")
+            fn = env[self.op_name]
+            evaluated_args = [arg.evaluate(env, context) for arg in self.args]
+            res = fn(*evaluated_args)
+            if context:
+                context.check_val(res)
+            return res
+        finally:
+            if context:
+                context.exit_call()
 
     def to_sexpr(self) -> str:
         if not self.args:
             return f"({self.op_name})"
         args_str = " ".join(arg.to_sexpr() for arg in self.args)
         return f"({self.op_name} {args_str})"
+
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        op = env_map.get(self.op_name, self.op_name) if env_map else self.op_name
+        if not self.args:
+            return f"({op})"
+        args_str = " ".join(arg.to_canonical_sexpr(env_map) for arg in self.args)
+        return f"({op} {args_str})"
 
     @property
     def description_length(self) -> int:
@@ -198,6 +303,12 @@ class IfElseNode(ASTNode):
 
     def to_sexpr(self) -> str:
         return f"(if {self.condition.to_sexpr()} {self.then_expr.to_sexpr()} {self.else_expr.to_sexpr()})"
+
+    def to_canonical_sexpr(self, env_map: Optional[Dict[str, str]] = None) -> str:
+        cond_str = self.condition.to_canonical_sexpr(env_map)
+        then_str = self.then_expr.to_canonical_sexpr(env_map)
+        else_str = self.else_expr.to_canonical_sexpr(env_map)
+        return f"(if {cond_str} {then_str} {else_str})"
 
     @property
     def description_length(self) -> int:

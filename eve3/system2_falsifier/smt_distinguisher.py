@@ -7,7 +7,7 @@ downgrades or false claims of formal verification on unsupported operations.
 from enum import Enum
 import itertools
 import logging
-from typing import Any, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from eve3.dsl.interpreter import DSLParserError, ExecutionTimeoutError
 from eve3.models import CandidateProgram, Diagnostics
@@ -208,60 +208,238 @@ class SMTDistinguisher:
 
         return None
 
+    def _eval_ast_bounded(self, ast_node: Any, env: Dict[str, Any], z3: Any) -> Optional[Any]:
+        """Symbolically evaluate AST node over bounded lists and scalar Z3 expressions."""
+        from eve3.dsl.ast import ApplyNode, ConstNode, IfElseNode, LambdaNode, VarNode
+
+        if isinstance(ast_node, VarNode):
+            return env.get(ast_node.name)
+
+        if isinstance(ast_node, ConstNode):
+            if isinstance(ast_node.value, int):
+                return z3.IntVal(ast_node.value)
+            if isinstance(ast_node.value, bool):
+                return z3.BoolVal(ast_node.value)
+            if isinstance(ast_node.value, list):
+                return [z3.IntVal(v) for v in ast_node.value]
+            return None
+
+        if isinstance(ast_node, IfElseNode):
+            cond = self._eval_ast_bounded(ast_node.condition, env, z3)
+            then_b = self._eval_ast_bounded(ast_node.then_expr, env, z3)
+            else_b = self._eval_ast_bounded(ast_node.else_expr, env, z3)
+            if cond is not None and then_b is not None and else_b is not None:
+                return z3.If(cond, then_b, else_b)
+            return None
+
+        if isinstance(ast_node, ApplyNode):
+            op = ast_node.op_name
+            args = ast_node.args
+
+            if op == "map" and len(args) == 2:
+                fn_node, list_arg = args[0], args[1]
+                if not isinstance(fn_node, LambdaNode) or not fn_node.arg_names:
+                    return None
+                lst = self._eval_ast_bounded(list_arg, env, z3)
+                if not isinstance(lst, list):
+                    return None
+                var_name = fn_node.arg_names[0]
+                res = []
+                for elem in lst:
+                    sub_env = dict(env)
+                    sub_env[var_name] = elem
+                    out_elem = self._eval_ast_bounded(fn_node.body, sub_env, z3)
+                    if out_elem is None:
+                        return None
+                    res.append(out_elem)
+                return res
+
+            if op == "reverse" and len(args) == 1:
+                lst = self._eval_ast_bounded(args[0], env, z3)
+                if isinstance(lst, list):
+                    return list(reversed(lst))
+                return None
+
+            if op == "tail" and len(args) == 1:
+                lst = self._eval_ast_bounded(args[0], env, z3)
+                if isinstance(lst, list):
+                    return lst[1:] if len(lst) > 0 else []
+                return None
+
+            if op == "head" and len(args) == 1:
+                lst = self._eval_ast_bounded(args[0], env, z3)
+                if isinstance(lst, list):
+                    return lst[0] if len(lst) > 0 else z3.IntVal(0)
+                return None
+
+            if op == "length" and len(args) == 1:
+                lst = self._eval_ast_bounded(args[0], env, z3)
+                if isinstance(lst, list):
+                    return z3.IntVal(len(lst))
+                return None
+
+            if op == "sum" and len(args) == 1:
+                lst = self._eval_ast_bounded(args[0], env, z3)
+                if isinstance(lst, list):
+                    if not lst:
+                        return z3.IntVal(0)
+                    acc = lst[0]
+                    for it in lst[1:]:
+                        acc = acc + it
+                    return acc
+                return None
+
+            if op == "+" and len(args) == 2:
+                a1 = self._eval_ast_bounded(args[0], env, z3)
+                a2 = self._eval_ast_bounded(args[1], env, z3)
+                return (a1 + a2) if (a1 is not None and a2 is not None) else None
+
+            if op == "-" and len(args) == 2:
+                a1 = self._eval_ast_bounded(args[0], env, z3)
+                a2 = self._eval_ast_bounded(args[1], env, z3)
+                return (a1 - a2) if (a1 is not None and a2 is not None) else None
+
+            if op == "*" and len(args) == 2:
+                a1 = self._eval_ast_bounded(args[0], env, z3)
+                a2 = self._eval_ast_bounded(args[1], env, z3)
+                return (a1 * a2) if (a1 is not None and a2 is not None) else None
+
+            if op == "inc" and len(args) == 1:
+                a = self._eval_ast_bounded(args[0], env, z3)
+                return (a + 1) if a is not None else None
+
+            if op == "dec" and len(args) == 1:
+                a = self._eval_ast_bounded(args[0], env, z3)
+                return (a - 1) if a is not None else None
+
+            if op == "neg" and len(args) == 1:
+                a = self._eval_ast_bounded(args[0], env, z3)
+                return (-a) if a is not None else None
+
+            if op == "eq" and len(args) == 2:
+                a1 = self._eval_ast_bounded(args[0], env, z3)
+                a2 = self._eval_ast_bounded(args[1], env, z3)
+                return (a1 == a2) if (a1 is not None and a2 is not None) else None
+
+            if op == "gt" and len(args) == 2:
+                a1 = self._eval_ast_bounded(args[0], env, z3)
+                a2 = self._eval_ast_bounded(args[1], env, z3)
+                return (a1 > a2) if (a1 is not None and a2 is not None) else None
+
+            if op == "lt" and len(args) == 2:
+                a1 = self._eval_ast_bounded(args[0], env, z3)
+                a2 = self._eval_ast_bounded(args[1], env, z3)
+                return (a1 < a2) if (a1 is not None and a2 is not None) else None
+
+        return None
+
     def _z3_solve_list_distinguishing(
         self,
         p1: CandidateProgram,
         p2: CandidateProgram,
         timeout_ms: int,
     ) -> Optional[List[int]]:
-        """Z3 SMT solver formulation for sequence/list transformations."""
+        """Z3 SMT solver formulation for bounded list transformations."""
         import z3
 
         s = z3.Solver()
         s.set("timeout", timeout_ms)
 
-        seq_sort = z3.SeqSort(z3.IntSort())
-        x = z3.Const("x_seq", seq_sort)
+        for k in (1, 2, 3, 0):
+            elems = [z3.Int(f"x_{k}_{i}") for i in range(k)]
+            env = {"x": elems, "input": elems}
 
-        s.add(z3.Length(x) >= 0)
-        s.add(z3.Length(x) <= 6)
+            expr1 = self._eval_ast_bounded(p1.ast, env, z3)
+            expr2 = self._eval_ast_bounded(p2.ast, env, z3)
 
-        expr1 = self._ast_to_z3_seq(p1.ast, x, z3, seq_sort)
-        expr2 = self._ast_to_z3_seq(p2.ast, x, z3, seq_sort)
+            if expr1 is None or expr2 is None:
+                continue
 
-        if expr1 is not None and expr2 is not None:
-            s.add(expr1 != expr2)
-            self.diagnostics.record_z3_call()
-            check_res = s.check()
-            if check_res == z3.unknown:
-                self.diagnostics.record_z3_timeout()
-            elif check_res == z3.sat:
-                m = s.model()
-                extracted_seq = []
-                seq_val = m.eval(x)
-                try:
-                    length = m.eval(z3.Length(x)).as_long()
-                    for i in range(min(length, 10)):
-                        elem = m.eval(seq_val[i]).as_long()
-                        extracted_seq.append(elem)
-                    if p1.evaluate(extracted_seq) != p2.evaluate(extracted_seq):
-                        return extracted_seq
-                except (
-                    AttributeError,
-                    ExecutionTimeoutError,
-                    DSLParserError,
-                    ValueError,
-                    TypeError,
-                    ZeroDivisionError,
-                    IndexError,
-                    KeyError,
-                    RuntimeError,
-                    ArithmeticError,
-                ) as exc:
-                    self.diagnostics.record_swallowed_error(
-                        "smt_distinguisher._z3_solve_list_distinguishing", exc
-                    )
-                    logger.debug("List witness extraction/evaluation error: %s", exc)
+            # Case A: both outputs are lists
+            if isinstance(expr1, list) and isinstance(expr2, list):
+                if len(expr1) != len(expr2):
+                    self.diagnostics.record_z3_call()
+                    witness = [0] * k
+                    try:
+                        if p1.evaluate(witness) != p2.evaluate(witness):
+                            return witness
+                    except (
+                        ExecutionTimeoutError,
+                        DSLParserError,
+                        ValueError,
+                        TypeError,
+                        ZeroDivisionError,
+                        IndexError,
+                        KeyError,
+                        RuntimeError,
+                        ArithmeticError,
+                    ) as exc:
+                        self.diagnostics.record_swallowed_error(
+                            "smt_distinguisher._z3_solve_list_distinguishing", exc
+                        )
+                    continue
+
+                if not expr1:
+                    continue
+
+                diff_cond = z3.Or([e1 != e2 for e1, e2 in zip(expr1, expr2)])
+                s.push()
+                s.add(diff_cond)
+                self.diagnostics.record_z3_call()
+                check_res = s.check()
+                if check_res == z3.unknown:
+                    self.diagnostics.record_z3_timeout()
+                elif check_res == z3.sat:
+                    m = s.model()
+                    witness = [m.eval(elems[i], model_completion=True).as_long() for i in range(k)]
+                    try:
+                        if p1.evaluate(witness) != p2.evaluate(witness):
+                            return witness
+                    except (
+                        ExecutionTimeoutError,
+                        DSLParserError,
+                        ValueError,
+                        TypeError,
+                        ZeroDivisionError,
+                        IndexError,
+                        KeyError,
+                        RuntimeError,
+                        ArithmeticError,
+                    ) as exc:
+                        self.diagnostics.record_swallowed_error(
+                            "smt_distinguisher._z3_solve_list_distinguishing", exc
+                        )
+                s.pop()
+
+            # Case B: both outputs are scalar (e.g. sum, length)
+            elif not isinstance(expr1, list) and not isinstance(expr2, list):
+                s.push()
+                s.add(expr1 != expr2)
+                self.diagnostics.record_z3_call()
+                check_res = s.check()
+                if check_res == z3.unknown:
+                    self.diagnostics.record_z3_timeout()
+                elif check_res == z3.sat:
+                    m = s.model()
+                    witness = [m.eval(elems[i], model_completion=True).as_long() for i in range(k)]
+                    try:
+                        if p1.evaluate(witness) != p2.evaluate(witness):
+                            return witness
+                    except (
+                        ExecutionTimeoutError,
+                        DSLParserError,
+                        ValueError,
+                        TypeError,
+                        ZeroDivisionError,
+                        IndexError,
+                        KeyError,
+                        RuntimeError,
+                        ArithmeticError,
+                    ) as exc:
+                        self.diagnostics.record_swallowed_error(
+                            "smt_distinguisher._z3_solve_list_distinguishing", exc
+                        )
+                s.pop()
 
         return None
 

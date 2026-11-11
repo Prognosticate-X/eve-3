@@ -273,6 +273,13 @@ def main() -> None:
     results_by_mode: Dict[str, Any] = {}
     for mode_key, note, cfg in mode_configs:
         print(f"\n=== Running mode: {mode_key} ({note}) ===")
+        if "llm" in mode_key:
+            try:
+                import mlx.core  # noqa: F401
+                import mlx_lm  # noqa: F401
+            except ImportError:
+                print(f"  [SKIPPED] {mode_key}: MLX-LM not available on this platform (Apple Silicon only)")
+                continue
         t_mode = time.perf_counter()
         task_records = []
         for task in unique_tasks:
@@ -329,7 +336,7 @@ def main() -> None:
     leaky_map = {r["task_name"]: r for r in results_by_mode["leaky_templates"]["tasks"]}
     gen_d3_map = {r["task_name"]: r for r in results_by_mode["generic_enumeration_d3"]["tasks"]}
     gen_d4_map = {r["task_name"]: r for r in results_by_mode["generic_enumeration_d4"]["tasks"]}
-    llm_only_map = {r["task_name"]: r for r in results_by_mode["llm_only"]["tasks"]}
+    llm_only_map = {r["task_name"]: r for r in results_by_mode["llm_only"]["tasks"]} if "llm_only" in results_by_mode else {}
 
     leakage_dependent_vs_d3 = []
     leakage_dependent_vs_d4 = []
@@ -357,7 +364,7 @@ def main() -> None:
                 "reference_program": task["reference_program"],
                 "leaky_source": leaky_map[tn]["first_hit_source_detail"],
                 "d4_status": gen_d4_map[tn]["status"],
-                "llm_only_passed": llm_only_map[tn]["passed"],
+                "llm_only_passed": llm_only_map.get(tn, {}).get("passed", False),
             })
         if (d3_pass or d4_pass) and not l_pass:
             solved_only_by_non_leaky.append({
@@ -371,28 +378,31 @@ def main() -> None:
                 "d4_source": gen_d4_map[tn]["first_hit_source_detail"],
             })
 
-    # Compute LLM-only detailed telemetry
-    llm_diag = results_by_mode["llm_only"]["diagnostics_summary"]
-    latencies = llm_diag["llm_latencies_ms"]
-    raw_cands = llm_diag["llm_raw_candidates"]
-    syntax_valid = llm_diag["llm_syntax_valid_candidates"]
-    sandbox_passed = llm_diag["llm_sandbox_passed_candidates"]
-    llm_telemetry = {
-        "model_name": EveConfig().model_name,
-        "mlx_lm_version": "0.32.2",
-        "mlx_version": "0.32.4",
-        "total_llm_calls": llm_diag["llm_calls"],
-        "latencies_ms": [round(x, 2) for x in latencies],
-        "mean_latency_ms": round(sum(latencies) / len(latencies), 2) if latencies else 0.0,
-        "min_latency_ms": round(min(latencies), 2) if latencies else 0.0,
-        "max_latency_ms": round(max(latencies), 2) if latencies else 0.0,
-        "raw_candidates": raw_cands,
-        "syntax_valid_candidates": syntax_valid,
-        "syntax_valid_rate": round(syntax_valid / raw_cands, 4) if raw_cands > 0 else 0.0,
-        "sandbox_passed_candidates": sandbox_passed,
-        "sandbox_pass_rate_of_raw": round(sandbox_passed / raw_cands, 4) if raw_cands > 0 else 0.0,
-        "sandbox_pass_rate_of_syntax_valid": round(sandbox_passed / syntax_valid, 4) if syntax_valid > 0 else 0.0,
-    }
+    # Compute LLM-only detailed telemetry if available
+    if "llm_only" in results_by_mode:
+        llm_diag = results_by_mode["llm_only"]["diagnostics_summary"]
+        latencies = llm_diag["llm_latencies_ms"]
+        raw_cands = llm_diag["llm_raw_candidates"]
+        syntax_valid = llm_diag["llm_syntax_valid_candidates"]
+        sandbox_passed = llm_diag["llm_sandbox_passed_candidates"]
+        llm_telemetry = {
+            "model_name": EveConfig().model_name,
+            "mlx_lm_version": "0.32.2",
+            "mlx_version": "0.32.4",
+            "total_llm_calls": llm_diag["llm_calls"],
+            "latencies_ms": [round(x, 2) for x in latencies],
+            "mean_latency_ms": round(sum(latencies) / len(latencies), 2) if latencies else 0.0,
+            "min_latency_ms": round(min(latencies), 2) if latencies else 0.0,
+            "max_latency_ms": round(max(latencies), 2) if latencies else 0.0,
+            "raw_candidates": raw_cands,
+            "syntax_valid_candidates": syntax_valid,
+            "syntax_valid_rate": round(syntax_valid / raw_cands, 4) if raw_cands > 0 else 0.0,
+            "sandbox_passed_candidates": sandbox_passed,
+            "sandbox_pass_rate_of_raw": round(sandbox_passed / raw_cands, 4) if raw_cands > 0 else 0.0,
+            "sandbox_pass_rate_of_syntax_valid": round(sandbox_passed / syntax_valid, 4) if syntax_valid > 0 else 0.0,
+        }
+    else:
+        llm_telemetry = {"status": "skipped_on_non_apple_silicon"}
 
     print("\n=== Re-running all 9 experiments/*.py scripts across leaky vs non-leaky modes ===")
     experiments_comparison = run_experiments_comparison()
